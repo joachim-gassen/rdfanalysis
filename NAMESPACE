@@ -1,0 +1,9 @@
+importFrom(dplyr, "%>%")
+importFrom(foreach, "%do%")
+
+export(check_choice)
+export(doc)
+export(prepare_design_documentation)
+export(prepare_design_flow_chart)
+export(test_design)
+export(exhaust_design)

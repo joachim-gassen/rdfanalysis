@@ -1,0 +1,20 @@
+Package: rdfanalysis
+Type: Package
+Title: Analyse Researcher Degrees of Freedom
+Version: 0.0.0.9000
+Authors@R: person("Joachim", "Gassen", role = c("aut", "cre"), 
+    email = "gassen@wiwi.hu-berlin.de",
+    comment = c(ORCID = "0000-0003-4364-2911"))
+Description: This experimental in development package provides a set of functions 
+    that support researchers to develop code so that it systematically documents
+    researcher degrees of freedom. The resulting code base is self-documenting, 
+    supports unit testing and power simulations based on simulated data. The 
+    documented researcher degrees of freedom can be exhausted to generate a 
+    distribution of outcome estimates.
+License: MIT + file LICENSE
+URL: https://joachim-gassen.github.io/rdfanalysis
+BugReports: https://github.com/joachim-gassen/rdfanalysis/issues
+Encoding: UTF-8
+LazyData: true
+Imports: DiagrammeR, DiagrammeRsvg, rsvg, dplyr, rmarkdown, testthat, foreach
+RoxygenNote: 6.0.1

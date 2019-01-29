@@ -1,0 +1,139 @@
+---
+output: github_document
+author: Joachim Gassen
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(rdfanalysis)
+library(knitr)
+```
+
+# Researcher Degree of Freedom Analysis
+
+## A package to explore and document your degrees of freedom
+
+This experimental in development package provides a set of functions 
+that support researchers to develop code so that it systematically documents
+researcher degrees of freedom. The resulting code base is self-documenting, 
+supports unit testing and power simulations based on simulated data. The 
+documented researcher degrees of freedom can be exhausted to generate a 
+distribution of outcome estimates.
+
+### First: Define your research design by a series of functions
+    
+```{r steps}
+sim_data <- function(input = NULL, choice = NULL) {
+  step_description <- doc(
+    "## Simulates Data",
+    "### Content",
+    "",
+    "This step simulates some data.",
+    "The used equation is $y = x + z + \\epsilon$",
+    "with $z$ being N(0,1) distributed and $x$ being potentially endogenous to $z$ (see choices below)"
+  )
+  choice_description <- doc(
+    "### Choice",
+    "",
+    "A list containing a character value `make_x_endogenous` and a numerical value `noise_y`.", 
+    "`make_x_endogenous` may take one of the following values:",
+    "",
+    "- `yes`: x will depend on z",
+    "- `no`: x will not depend on z",
+    "",
+    "`noise_y` sets the standard deviation of the error term affecting y",
+    "and may take any value within [1, 2]"
+  )
+  choice_type <- list(
+    list(name = "make_x_endogenous", 
+         type = "character", 
+         valid_values = c("yes", "no")),
+    list(name = "noise_y", 
+         type = "double", 
+         valid_min = 1, valid_max = 2)
+  )
+  if (is.null(choice)) return(list(
+    step_description = step_description,
+    choice_description = choice_description,
+    choice_type = choice_type
+  )) else check_choice(choice, choice_type)
+
+  z <- rnorm(1000)
+  x <- rnorm(1000) 
+  if (choice[[1]] == "yes") x <- x + z
+  y <- x + z + rnorm(1000, sd = choice[[2]]) 
+  return(list(
+    data = data.frame(x = x, y = y, z = z),
+    protocol = choice
+  ))
+}
+
+
+est_model <- function(input = NULL, choice = NULL) {
+  step_description <- doc(
+    "## Estimate model",
+    "### Content",
+    "",
+    "This step estimates on OLS model based on the simulated data of the last step"
+  )
+  choice_description <- doc(
+    "### Choice",
+    "",
+    "A character value `control_for_z` that may take one of the following values:",
+    "",
+    "- `yes`: control for z",
+    "- `no`: do not control for z"
+  )
+  choice_type <- list(
+    list(name = "control_for_z", 
+         type = "character", 
+         valid_values = c("yes", "no"))
+  )
+  if (is.null(choice)) return(list(
+    step_description = step_description,
+    choice_description = choice_description,
+    choice_type = choice_type
+  )) else check_choice(choice, choice_type)
+
+  if(choice[[1]] == "yes") 
+    mod <- lm(y ~ x + z, data = input$data)
+  else     mod <- lm(y ~ x, data = input$data)
+  return(list(
+    data = list(
+      est = summary(mod)$coefficient[2,1],
+      lb = confint(mod)[2,1],
+      up = confint(mod)[2,2]
+    ),
+    protocol = c(input$protocol, choice)
+  ))  
+} 
+
+design <- c("sim_data", "est_model")
+```
+
+## Second: Display your design and verify it by testing it
+
+```{r test_design, echo=TRUE}
+prepare_design_flow_chart(design, landscape = TRUE)
+
+test_design(design, reporter = "minimal")
+```
+
+# Third: Run a single protocol
+
+```{r single_protocol, echo=TRUE}
+sim_data(NULL, list("no", 2)) %>%
+  est_model("no")
+```
+
+# Fourth: Exhaust your research degrees of freedom
+
+```{r exhaust_rdf, exho = TRUE, include = FALSE}
+df <- exhaust_design(design, NULL) 
+```
+
+```{r display_rdf, echo=TRUE}
+ggplot(data = df) + geom_histogram(aes(x = est))
+kable(df)
+```
