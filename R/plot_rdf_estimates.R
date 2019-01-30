@@ -35,5 +35,6 @@ plot_rdf_estimates <- function(df, est, lb, ub, color = "blue", n = 30) {
     ggplot2::geom_density(ggplot2::aes(x = est), fill = color, color = NA) +
     ggplot2::ylab("Density") +
     ggplot2::xlab(sprintf("Density of estimates and resp. CIs (gray), %s model variants",
-                 formatC(nrow(df), big.mark = ",")))
+                 formatC(nrow(df), big.mark = ","))) +
+    ggplot2::expand_limits(x = range(density(extdf$ci)$x))
 }

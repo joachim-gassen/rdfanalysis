@@ -51,7 +51,7 @@
 
 prepare_design_flow_chart <- function(d, file_name = NULL, landscape = FALSE,
                                       color_step = "red", color_dchoice = "green",
-                                      color_cchoice = "blue", color_result = "yellow") {
+                                      color_cchoice = "blue", color_result = "orange") {
   label <- c()
   type <- c()
   layer <- c()
@@ -64,12 +64,13 @@ prepare_design_flow_chart <- function(d, file_name = NULL, landscape = FALSE,
     row <- row + 1
     for (c in res$choice_type) {
       if(c$type == "character") {
-        label <- c(label, c$valid_values)
+        label <- c(label, paste0(c$name, ":\n", c$valid_values))
         type <- c(type, rep("dchoice", length(c$valid_values)))
         layer <- c(layer, rep(row, length(c$valid_values)))
         row <- row + 1
       }  else {
-        label <- c(label, c$name)
+        label <- c(label, sprintf("%s\nvalid_min: %d\nvalid_max: %d",
+                                  c$name, c$valid_min, c$valid_max))
         type <- c(type, "cchoice")
         layer <- c(layer, row)
         row <- row + 1

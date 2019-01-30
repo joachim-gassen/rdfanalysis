@@ -1,6 +1,7 @@
 ---
 output: github_document
 author: Joachim Gassen
+# always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -32,7 +33,8 @@ sim_data <- function(input = NULL, choice = NULL) {
     "",
     "This step simulates some data.",
     "The used equation is $y = x + z + \\epsilon$",
-    "with $z$ being N(0,1) distributed and $x$ being potentially endogenous to $z$ (see choices below)"
+    "with $z$ being $\\mathcal{N}(0,1)$ distributed and", 
+    "$x$ being potentially endogenous to $z$ (see choices below)."
   )
   choice_description <- doc(
     "### Choice",
@@ -40,10 +42,10 @@ sim_data <- function(input = NULL, choice = NULL) {
     "A list containing a character value `make_x_endogenous` and a numerical value `noise_y`.", 
     "`make_x_endogenous` may take one of the following values:",
     "",
-    "- `yes`: x will depend on z",
-    "- `no`: x will not depend on z",
+    "- `yes`: $x$ will depend on $z$",
+    "- `no`: $x$ will not depend on $z$",
     "",
-    "`noise_y` sets the standard deviation of the error term affecting y",
+    "`noise_y` sets the standard deviation of the error term $\\epsilon$ affecting y",
     "and may take any value within [1, 2]"
   )
   choice_type <- list(
@@ -76,7 +78,7 @@ est_model <- function(input = NULL, choice = NULL) {
     "## Estimate model",
     "### Content",
     "",
-    "This step estimates on OLS model based on the simulated data of the last step"
+    "This step estimates on OLS model based on the simulated data of the last step."
   )
   choice_description <- doc(
     "### Choice",
@@ -128,7 +130,7 @@ sim_data(NULL, list("no", 2)) %>%
   est_model("no")
 ```
 
-# Fourth: Exhaust your research degrees of freedom
+# Fourth: Exhaust your researcher degrees of freedom
 
 ```{r exhaust_rdf, results = "hide"}
 df <- exhaust_design(design, NULL) 
