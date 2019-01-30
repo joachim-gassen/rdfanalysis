@@ -121,5 +121,6 @@ exhaust_design <- function(d, start_input, weight = FALSE, est_by_cchoice = 10) 
   }
   close(pb)
   choice_df <- cbind(choice_df, results)
+  rownames(choice_df) <- NULL
   choice_df
 }

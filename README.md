@@ -1,12 +1,12 @@
 Joachim Gassen
 
-Researcher Degree of Freedom Analysis
-=====================================
+Researcher Degrees of Freedom Analysis
+======================================
 
 A package to explore and document your degrees of freedom
 ---------------------------------------------------------
 
-This experimental in development package provides a set of functions that support researchers to develop code so that it systematically documents researcher degrees of freedom. The resulting code base is self-documenting, supports unit testing and power simulations based on simulated data. The documented researcher degrees of freedom can be exhausted to generate a distribution of outcome estimates.
+This experimental in-development package provides a set of functions to develop data anylsis code that systematically documents researcher degrees of freedom when conducting analyses on observational data. The resulting code base is self-documenting, supports unit testing and power simulations based on simulated data. The documented researcher degrees of freedom can be exhausted to generate a distribution of outcome estimates.
 
 ### First: Define your research design by a series of functions
 
@@ -90,7 +90,7 @@ est_model <- function(input = NULL, choice = NULL) {
     data = list(
       est = summary(mod)$coefficient[2,1],
       lb = confint(mod)[2,1],
-      up = confint(mod)[2,2]
+      ub = confint(mod)[2,2]
     ),
     protocol = c(input$protocol, choice)
   ))  
@@ -124,13 +124,13 @@ sim_data(NULL, list("no", 2)) %>%
 
     ## $data
     ## $data$est
-    ## [1] 0.9616477
+    ## [1] 0.8756298
     ## 
     ## $data$lb
-    ## [1] 0.8248209
+    ## [1] 0.7366817
     ## 
-    ## $data$up
-    ## [1] 1.098475
+    ## $data$ub
+    ## [1] 1.014578
     ## 
     ## 
     ## $protocol
@@ -147,7 +147,11 @@ Fourth: Exhaust your research degrees of freedom
 ================================================
 
 ``` r
-ggplot(data = df) + geom_histogram(aes(x = est))
+df <- exhaust_design(design, NULL) 
+```
+
+``` r
+plot_rdf_estimates(df, est = "est", lb = "lb", ub = "ub")
 ```
 
 ![](README_files/figure-markdown_github/display_rdf-1.png)
@@ -156,49 +160,49 @@ ggplot(data = df) + geom_histogram(aes(x = est))
 kable(df)
 ```
 
-|           | make\_x\_endogenous |  noise\_y| control\_for\_z |        est|         lb|         up|
-|-----------|:--------------------|---------:|:----------------|----------:|----------:|----------:|
-| result.1  | yes                 |       1.0| yes             |  1.0048866|  0.9424485|  1.0673246|
-| result.2  | no                  |       1.0| yes             |  1.0383417|  0.9767014|  1.0999820|
-| result.3  | yes                 |       1.1| yes             |  0.9658920|  0.8985497|  1.0332342|
-| result.4  | no                  |       1.1| yes             |  1.0157834|  0.9449030|  1.0866638|
-| result.5  | yes                 |       1.2| yes             |  1.0016160|  0.9230360|  1.0801961|
-| result.6  | no                  |       1.2| yes             |  0.9897247|  0.9156679|  1.0637814|
-| result.7  | yes                 |       1.3| yes             |  0.9831030|  0.8962750|  1.0699311|
-| result.8  | no                  |       1.3| yes             |  0.9627626|  0.8820381|  1.0434870|
-| result.9  | yes                 |       1.4| yes             |  1.1336476|  1.0478035|  1.2194916|
-| result.10 | no                  |       1.4| yes             |  1.0119615|  0.9277144|  1.0962087|
-| result.11 | yes                 |       1.5| yes             |  0.9299387|  0.8344423|  1.0254351|
-| result.12 | no                  |       1.5| yes             |  1.0191141|  0.9225308|  1.1156974|
-| result.13 | yes                 |       1.6| yes             |  1.1683995|  1.0711180|  1.2656809|
-| result.14 | no                  |       1.6| yes             |  0.9697603|  0.8696797|  1.0698408|
-| result.15 | yes                 |       1.7| yes             |  0.9969275|  0.8882535|  1.1056015|
-| result.16 | no                  |       1.7| yes             |  0.9761950|  0.8696204|  1.0827697|
-| result.17 | yes                 |       1.8| yes             |  0.9549287|  0.8456491|  1.0642083|
-| result.18 | no                  |       1.8| yes             |  1.0440939|  0.9351197|  1.1530680|
-| result.19 | yes                 |       1.9| yes             |  0.9334816|  0.8174954|  1.0494678|
-| result.20 | no                  |       1.9| yes             |  0.8756892|  0.7592815|  0.9920969|
-| result.21 | yes                 |       2.0| yes             |  0.9353306|  0.8112624|  1.0593989|
-| result.22 | no                  |       2.0| yes             |  0.9730361|  0.8515470|  1.0945252|
-| result.23 | yes                 |       1.0| no              |  1.5336397|  1.4774740|  1.5898055|
-| result.24 | no                  |       1.0| no              |  0.9650359|  0.8784563|  1.0516154|
-| result.25 | yes                 |       1.1| no              |  1.4607692|  1.4039432|  1.5175952|
-| result.26 | no                  |       1.1| no              |  1.0578664|  0.9648209|  1.1509118|
-| result.27 | yes                 |       1.2| no              |  1.4964793|  1.4349079|  1.5580506|
-| result.28 | no                  |       1.2| no              |  0.9993233|  0.9058838|  1.0927628|
-| result.29 | yes                 |       1.3| no              |  1.4827808|  1.4154856|  1.5500760|
-| result.30 | no                  |       1.3| no              |  0.9098132|  0.8067051|  1.0129212|
-| result.31 | yes                 |       1.4| no              |  1.5635726|  1.4912941|  1.6358512|
-| result.32 | no                  |       1.4| no              |  0.9779360|  0.8678000|  1.0880720|
-| result.33 | yes                 |       1.5| no              |  1.5000315|  1.4266130|  1.5734500|
-| result.34 | no                  |       1.5| no              |  1.0246369|  0.9154209|  1.1338529|
-| result.35 | yes                 |       1.6| no              |  1.4214367|  1.3419436|  1.5009299|
-| result.36 | no                  |       1.6| no              |  0.9538750|  0.8312962|  1.0764538|
-| result.37 | yes                 |       1.7| no              |  1.4798936|  1.3988312|  1.5609560|
-| result.38 | no                  |       1.7| no              |  1.0369726|  0.9186370|  1.1553083|
-| result.39 | yes                 |       1.8| no              |  1.5330719|  1.4473517|  1.6187922|
-| result.40 | no                  |       1.8| no              |  1.0232446|  0.9000230|  1.1464662|
-| result.41 | yes                 |       1.9| no              |  1.4592049|  1.3726319|  1.5457780|
-| result.42 | no                  |       1.9| no              |  1.0629130|  0.9404191|  1.1854068|
-| result.43 | yes                 |       2.0| no              |  1.5042567|  1.4078030|  1.6007104|
-| result.44 | no                  |       2.0| no              |  1.0880088|  0.9518836|  1.2241340|
+| make\_x\_endogenous |  noise\_y| control\_for\_z |        est|         lb|        ub|
+|:--------------------|---------:|:----------------|----------:|----------:|---------:|
+| yes                 |       1.0| yes             |  1.0147593|  0.9514575|  1.078061|
+| no                  |       1.0| yes             |  1.0571585|  0.9996789|  1.114638|
+| yes                 |       1.1| yes             |  1.0240420|  0.9540567|  1.094027|
+| no                  |       1.1| yes             |  0.9660193|  0.8940830|  1.037956|
+| yes                 |       1.2| yes             |  0.9940312|  0.9191713|  1.068891|
+| no                  |       1.2| yes             |  0.9896571|  0.9185544|  1.060760|
+| yes                 |       1.3| yes             |  0.9815524|  0.8991856|  1.063919|
+| no                  |       1.3| yes             |  0.9976779|  0.9168523|  1.078504|
+| yes                 |       1.4| yes             |  1.0436102|  0.9593830|  1.127838|
+| no                  |       1.4| yes             |  1.0359416|  0.9456444|  1.126239|
+| yes                 |       1.5| yes             |  1.0053913|  0.9130450|  1.097738|
+| no                  |       1.5| yes             |  0.9544659|  0.8577986|  1.051133|
+| yes                 |       1.6| yes             |  1.0683020|  0.9717061|  1.164898|
+| no                  |       1.6| yes             |  1.0688080|  0.9651853|  1.172431|
+| yes                 |       1.7| yes             |  0.9812754|  0.8751635|  1.087387|
+| no                  |       1.7| yes             |  1.0698950|  0.9642885|  1.175501|
+| yes                 |       1.8| yes             |  1.0829369|  0.9565216|  1.209352|
+| no                  |       1.8| yes             |  1.0247010|  0.9146056|  1.134796|
+| yes                 |       1.9| yes             |  0.9988129|  0.8850319|  1.112594|
+| no                  |       1.9| yes             |  0.9955772|  0.8793228|  1.111832|
+| yes                 |       2.0| yes             |  0.9771890|  0.8549375|  1.099441|
+| no                  |       2.0| yes             |  0.9863075|  0.8533571|  1.119258|
+| yes                 |       1.0| no              |  1.4703157|  1.4143766|  1.526255|
+| no                  |       1.0| no              |  0.9780004|  0.8872568|  1.068744|
+| yes                 |       1.1| no              |  1.5179268|  1.4590656|  1.576788|
+| no                  |       1.1| no              |  0.9638972|  0.8736551|  1.054139|
+| yes                 |       1.2| no              |  1.5032631|  1.4391324|  1.567394|
+| no                  |       1.2| no              |  0.9657526|  0.8635848|  1.067921|
+| yes                 |       1.3| no              |  1.4699691|  1.4087772|  1.531161|
+| no                  |       1.3| no              |  0.9929718|  0.8908002|  1.095143|
+| yes                 |       1.4| no              |  1.5172811|  1.4492055|  1.585357|
+| no                  |       1.4| no              |  0.9931957|  0.8911233|  1.095268|
+| yes                 |       1.5| no              |  1.4572436|  1.3847207|  1.529766|
+| no                  |       1.5| no              |  0.9876473|  0.8752283|  1.100066|
+| yes                 |       1.6| no              |  1.4478777|  1.3710842|  1.524671|
+| no                  |       1.6| no              |  1.0171165|  0.8991265|  1.135106|
+| yes                 |       1.7| no              |  1.4774137|  1.3960352|  1.558792|
+| no                  |       1.7| no              |  1.0244562|  0.9087285|  1.140184|
+| yes                 |       1.8| no              |  1.4930365|  1.4105206|  1.575552|
+| no                  |       1.8| no              |  0.9635664|  0.8374554|  1.089677|
+| yes                 |       1.9| no              |  1.4734784|  1.3852992|  1.561658|
+| no                  |       1.9| no              |  1.0491949|  0.9107206|  1.187669|
+| yes                 |       2.0| no              |  1.5485379|  1.4581511|  1.638925|
+| no                  |       2.0| no              |  0.9937962|  0.8550542|  1.132538|

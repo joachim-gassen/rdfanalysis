@@ -10,13 +10,14 @@ library(rdfanalysis)
 library(knitr)
 ```
 
-# Researcher Degree of Freedom Analysis
+# Researcher Degrees of Freedom Analysis
 
 ## A package to explore and document your degrees of freedom
 
-This experimental in development package provides a set of functions 
-that support researchers to develop code so that it systematically documents
-researcher degrees of freedom. The resulting code base is self-documenting, 
+This experimental in-development package provides a set of functions 
+to develop data anylsis code that systematically documents
+researcher degrees of freedom when conducting analyses on observational data. 
+The resulting code base is self-documenting, 
 supports unit testing and power simulations based on simulated data. The 
 documented researcher degrees of freedom can be exhausted to generate a 
 distribution of outcome estimates.
@@ -103,7 +104,7 @@ est_model <- function(input = NULL, choice = NULL) {
     data = list(
       est = summary(mod)$coefficient[2,1],
       lb = confint(mod)[2,1],
-      up = confint(mod)[2,2]
+      ub = confint(mod)[2,2]
     ),
     protocol = c(input$protocol, choice)
   ))  
@@ -114,7 +115,7 @@ design <- c("sim_data", "est_model")
 
 ## Second: Display your design and verify it by testing it
 
-```{r test_design, echo=TRUE}
+```{r test_design}
 prepare_design_flow_chart(design, landscape = TRUE)
 
 test_design(design, reporter = "minimal")
@@ -122,18 +123,18 @@ test_design(design, reporter = "minimal")
 
 # Third: Run a single protocol
 
-```{r single_protocol, echo=TRUE}
+```{r single_protocol}
 sim_data(NULL, list("no", 2)) %>%
   est_model("no")
 ```
 
 # Fourth: Exhaust your research degrees of freedom
 
-```{r exhaust_rdf, exho = TRUE, include = FALSE}
+```{r exhaust_rdf, results = "hide"}
 df <- exhaust_design(design, NULL) 
 ```
 
-```{r display_rdf, echo=TRUE}
-ggplot(data = df) + geom_histogram(aes(x = est))
+```{r display_rdf}
+plot_rdf_estimates(df, est = "est", lb = "lb", ub = "ub")
 kable(df)
 ```
