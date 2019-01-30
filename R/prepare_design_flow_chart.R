@@ -69,8 +69,9 @@ prepare_design_flow_chart <- function(d, file_name = NULL, landscape = FALSE,
         layer <- c(layer, rep(row, length(c$valid_values)))
         row <- row + 1
       }  else {
-        label <- c(label, sprintf("%s\nvalid_min: %d\nvalid_max: %d",
-                                  c$name, c$valid_min, c$valid_max))
+        label <- c(label, sprintf("%s\nvalid_min: %s\nvalid_max: %s",
+                                  c$name, format(c$valid_min),
+                                  format(c$valid_max)))
         type <- c(type, "cchoice")
         layer <- c(layer, row)
         row <- row + 1
