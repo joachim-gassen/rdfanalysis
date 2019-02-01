@@ -6,66 +6,49 @@ Researcher Degrees of Freedom Analysis
 A package to explore and document your degrees of freedom
 ---------------------------------------------------------
 
-This experimental in-development package provides a set of functions to develop data anylsis code that systematically documents researcher degrees of freedom when conducting analyses on observational data. The resulting code base is self-documenting, supports unit testing and power simulations based on simulated data. The documented researcher degrees of freedom can be exhausted to generate a distribution of outcome estimates.
+This experimental in-development package provides a set of functions to develop data analysis code that systematically documents researcher degrees of freedom when conducting analyses on observational data. The resulting code base is self-documenting, supports unit testing and power simulations based on simulated data. The documented researcher degrees of freedom can be exhausted to generate a distribution of outcome estimates.
 
-### First: Define your research design by a series of functions
+To provide a quick tour we will construct a research design where an independent variable x is confounded by a co-variate z and where the only real researcher degree of freedom is whether to control for z in the regression setup. We will ignore the testing bit in this quick walk-through.
+
+### Step 1: Open a new Rstudio project in a clean directory and install the `rdfanalysis` package
 
 ``` r
-sim_data <- function(input = NULL, choice = NULL) {
-  step_description <- doc(
-    "## Simulates Data",
-    "### Content",
-    "",
-    "This step simulates some data.",
-    "The used equation is $y = x + z + \\epsilon$",
-    "with $z$ being $\\mathcal{N}(0,1)$ distributed and", 
-    "$x$ being potentially endogenous to $z$ (see choices below)."
-  )
-  choice_description <- doc(
-    "### Choice",
-    "",
-    "A list containing a character value `make_x_endogenous` and a numerical value `noise_y`.", 
-    "`make_x_endogenous` may take one of the following values:",
-    "",
-    "- `yes`: $x$ will depend on $z$",
-    "- `no`: $x$ will not depend on $z$",
-    "",
-    "`noise_y` sets the standard deviation of the error term $\\epsilon$ affecting y",
-    "and may take any value within [1, 2]"
-  )
-  choice_type <- list(
-    list(name = "make_x_endogenous", 
-         type = "character", 
-         valid_values = c("yes", "no")),
-    list(name = "noise_y", 
-         type = "double", 
-         valid_min = 1, valid_max = 2)
-  )
-  if (is.null(choice)) return(list(
-    step_description = step_description,
-    choice_description = choice_description,
-    choice_type = choice_type
-  )) else check_choice(choice, choice_type)
+devtools:intall_github("joachim-gassen/rdfanalysis")
+library(rdfanalysis)
+```
 
-  z <- rnorm(1000)
-  x <- rnorm(1000) 
-  if (choice[[1]] == "yes") x <- x + z
-  y <- x + z + rnorm(1000, sd = choice[[2]]) 
-  return(list(
-    data = data.frame(x = x, y = y, z = z),
-    protocol = choice
-  ))
+### Step 2: Write a function that simulates data
+
+``` r
+sim_data <- function(n, effect_size) {
+  z <- rnorm(n)
+  x <- rnorm(n) + z 
+  y <- effect_size*x + z + rnorm(n) 
+  data.frame(x = x, y = y, z = z)
 }
+```
 
+### Step 3: Define your research design by a series of functions
 
+Each research design consists of a series of steps. Each step becomes a function. To initialize these functions, you can use the call `define_functions()`. It creates a `code` directory in your current working directory and produces template code for each step. In this case, our design will have only one step.
+
+``` r
+design <- define_design("est_model")
+```
+
+### Step 4: Develop your code for each step
+
+Edit the resulting template file `est_model.R` in the code directory until it looks like the code below.
+
+``` r
 est_model <- function(input = NULL, choice = NULL) {
-  step_description <- doc(
+  step_description <- c(
     "## Estimate model",
     "### Content",
     "",
-    "This step estimates on OLS model based on the simulated data of the last step."
+    "This step estimates on OLS model based on simulated data."
   )
-  choice_description <- doc(
+  choice_description <- c(
     "### Choice",
     "",
     "A character value `control_for_z` that may take one of the following values:",
@@ -84,126 +67,104 @@ est_model <- function(input = NULL, choice = NULL) {
     choice_type = choice_type
   )) else check_choice(choice, choice_type)
 
+  # ___ Analysis code starts below ___
   if(choice[[1]] == "yes") 
-    mod <- lm(y ~ x + z, data = input$data)
-  else     mod <- lm(y ~ x, data = input$data)
+    mod <- lm(y ~ x + z, data = input)
+  else     mod <- lm(y ~ x, data = input)
   return(list(
     data = list(
       est = summary(mod)$coefficient[2,1],
       lb = confint(mod)[2,1],
       ub = confint(mod)[2,2]
     ),
-    protocol = c(input$protocol, choice)
+    protocol = list(choice)
   ))  
 } 
-
-design <- c("sim_data", "est_model")
 ```
 
-Second: Display your design and verify it by testing it
--------------------------------------------------------
+Step 5: Document your design and display a flow chart
+-----------------------------------------------------
+
+The below serves documentation purposes. The function `prepare_design_documentation()` generates a PDF file in your project directory that documents your code.
+
+``` r
+prepare_design_documentation(design, output_file = "my_design.pdf")
+```
+
+`prepare_design_flow_chart()` produces a quick visual of the code flow.
 
 ``` r
 prepare_design_flow_chart(design, landscape = TRUE)
 ```
 
-![](README_files/figure-markdown_github/test_design-1.png)
+![](README_files/figure-markdown_github/flow_chart-1.png)
+
+Step 6: Test your code
+======================
 
 ``` r
-test_design(design, reporter = "minimal")
+test_design(design, input = sim_data(100, 0.1), reporter = "minimal")
 ```
 
-    ## ......................................................
+    ## ........................
 
-Third: Run a single protocol
-============================
+Step 7: Run a single protocol of choices
+========================================
 
 ``` r
-sim_data(NULL, list("no", 2)) %>%
-  est_model("no")
+sim_data(100, 0.1) %>%
+  est_model("yes")
 ```
 
     ## $data
     ## $data$est
-    ## [1] 1.003213
+    ## [1] -0.01334917
     ## 
     ## $data$lb
-    ## [1] 0.8590349
+    ## [1] -0.2021778
     ## 
     ## $data$ub
-    ## [1] 1.147392
+    ## [1] 0.1754795
     ## 
     ## 
     ## $protocol
     ## $protocol[[1]]
-    ## [1] "no"
-    ## 
-    ## $protocol[[2]]
-    ## [1] 2
-    ## 
-    ## $protocol[[3]]
-    ## [1] "no"
+    ## [1] "yes"
 
-Fourth: Exhaust your researcher degrees of freedom
+Step 8: Assess the power of your analysis for a certain protocol
+================================================================
+
+``` r
+power_df <- simulate_design_power(design, protocol = list("yes"), 
+                                  input_sim_func = sim_data, 
+                                  range_n = seq(100, 1000, 100),
+                                  effect_size = 0.1)
+
+library(tidyverse)
+power_df %>%
+  group_by(n) %>%
+  summarise(power = sum(lb > 0)/n()) %>%
+  ggplot(aes(x = n, y = power)) +
+  geom_line() + 
+  theme_minimal()
+```
+
+![](README_files/figure-markdown_github/sim_power-1.png)
+
+Step 9: Exhaust your researcher degrees of freedom
 ==================================================
 
 ``` r
-df <- exhaust_design(design, NULL) 
+df <- exhaust_design(design, sim_data(100, 0.1)) 
 ```
-
-``` r
-plot_rdf_estimates(df, est = "est", lb = "lb", ub = "ub")
-```
-
-![](README_files/figure-markdown_github/display_rdf-1.png)
 
 ``` r
 kable(df)
 ```
 
-| make\_x\_endogenous |  noise\_y| control\_for\_z |        est|         lb|        ub|
-|:--------------------|---------:|:----------------|----------:|----------:|---------:|
-| yes                 |       1.0| yes             |  0.9938457|  0.9300187|  1.057673|
-| no                  |       1.0| yes             |  1.0063158|  0.9420225|  1.070609|
-| yes                 |       1.1| yes             |  1.0066282|  0.9403908|  1.072866|
-| no                  |       1.1| yes             |  1.0341385|  0.9675916|  1.100685|
-| yes                 |       1.2| yes             |  1.0298276|  0.9534443|  1.106211|
-| no                  |       1.2| yes             |  0.9495168|  0.8766786|  1.022355|
-| yes                 |       1.3| yes             |  0.9572820|  0.8775360|  1.037028|
-| no                  |       1.3| yes             |  1.0708750|  0.9948200|  1.146930|
-| yes                 |       1.4| yes             |  1.0716710|  0.9823343|  1.161008|
-| no                  |       1.4| yes             |  1.0423109|  0.9571270|  1.127495|
-| yes                 |       1.5| yes             |  0.9912420|  0.8993050|  1.083179|
-| no                  |       1.5| yes             |  0.9828939|  0.8929733|  1.072815|
-| yes                 |       1.6| yes             |  1.0186492|  0.9222817|  1.115017|
-| no                  |       1.6| yes             |  1.0166883|  0.9203140|  1.113063|
-| yes                 |       1.7| yes             |  1.0482291|  0.9435789|  1.152879|
-| no                  |       1.7| yes             |  1.0508958|  0.9431385|  1.158653|
-| yes                 |       1.8| yes             |  1.1262149|  1.0106731|  1.241757|
-| no                  |       1.8| yes             |  0.9538012|  0.8488329|  1.058769|
-| yes                 |       1.9| yes             |  0.9278975|  0.8063315|  1.049464|
-| no                  |       1.9| yes             |  0.9939829|  0.8727362|  1.115230|
-| yes                 |       2.0| yes             |  0.9844747|  0.8570688|  1.111881|
-| no                  |       2.0| yes             |  0.8940731|  0.7730708|  1.015075|
-| yes                 |       1.0| no              |  1.4705381|  1.4150559|  1.526020|
-| no                  |       1.0| no              |  1.0510046|  0.9620269|  1.139982|
-| yes                 |       1.1| no              |  1.4486965|  1.3896248|  1.507768|
-| no                  |       1.1| no              |  0.9177761|  0.8272609|  1.008291|
-| yes                 |       1.2| no              |  1.4681268|  1.4062359|  1.530018|
-| no                  |       1.2| no              |  0.9654459|  0.8705654|  1.060326|
-| yes                 |       1.3| no              |  1.4723627|  1.4067055|  1.538020|
-| no                  |       1.3| no              |  0.9157897|  0.8107788|  1.020801|
-| yes                 |       1.4| no              |  1.5112444|  1.4415575|  1.580931|
-| no                  |       1.4| no              |  0.9762966|  0.8747530|  1.077840|
-| yes                 |       1.5| no              |  1.4802517|  1.4056005|  1.554903|
-| no                  |       1.5| no              |  0.9402648|  0.8342032|  1.046326|
-| yes                 |       1.6| no              |  1.5407626|  1.4601397|  1.621385|
-| no                  |       1.6| no              |  0.9576015|  0.8427788|  1.072424|
-| yes                 |       1.7| no              |  1.4836064|  1.4038871|  1.563326|
-| no                  |       1.7| no              |  0.9085674|  0.7852228|  1.031912|
-| yes                 |       1.8| no              |  1.5953858|  1.5119380|  1.678834|
-| no                  |       1.8| no              |  1.0971184|  0.9732387|  1.220998|
-| yes                 |       1.9| no              |  1.5364045|  1.4473557|  1.625453|
-| no                  |       1.9| no              |  1.0875138|  0.9505899|  1.224438|
-| yes                 |       2.0| no              |  1.5964426|  1.5000226|  1.692863|
-| no                  |       2.0| no              |  0.9729406|  0.8315836|  1.114298|
+| control\_for\_z |        est|         lb|         ub|
+|:----------------|----------:|----------:|----------:|
+| yes             |  0.2549365|  0.0495814|  0.4602916|
+| no              |  0.6137394|  0.4332740|  0.7942047|
+
+Only two researcher degrees of freedom in this setting but you will easily get into the thousands in a real research setting. Stay tuned for a vignette that presents a use case soon.

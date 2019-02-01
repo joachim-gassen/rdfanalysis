@@ -24,10 +24,8 @@
 #'
 #' @examples
 #' \dontrun{
-#'   print("Sorry. No runable example yet.")
-#'
+#'   print("Sorry. No examples yet.")
 #' }
-#'
 #' @export
 
 simulate_design_power <- function(d, protocol,
@@ -38,7 +36,6 @@ simulate_design_power <- function(d, protocol,
   df <- foreach::foreach (i = range_n, .combine = rbind) %do% {
     foreach::foreach (r = 1:runs, .combine = rbind) %do% {
       l <- 1
-      protocol <- NULL
       if (!is.null(input_sim_params))
         input <- do.call(input_sim_func, c(i, effect_size, input_sim_params))
       else input <- do.call(input_sim_func, list(i, effect_size))

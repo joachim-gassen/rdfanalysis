@@ -6,7 +6,7 @@ Authors@R: person("Joachim", "Gassen", role = c("aut", "cre"),
     email = "gassen@wiwi.hu-berlin.de",
     comment = c(ORCID = "0000-0003-4364-2911"))
 Description: This experimental in-development package provides a set of functions 
-    to develop data anylsis code that systematically documents researcher degrees 
+    to develop data analysis code that systematically documents researcher degrees 
     of freedom when conducting analyses on observational data. 
     The resulting code base is self-documenting, supports unit testing and power
     simulations based on simulated data. The documented researcher degrees of 
@@ -18,4 +18,4 @@ Encoding: UTF-8
 LazyData: true
 Imports: DiagrammeR, DiagrammeRsvg, rsvg, dplyr, rmarkdown, testthat, foreach,
     ggplot2
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

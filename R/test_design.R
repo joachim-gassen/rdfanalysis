@@ -16,39 +16,10 @@
 #' @return The return value \code{testthat::test_file()}
 #' @details See the vignette of the package for further details.
 #' @export
-#' @examples
-#'   demo_step <- function(input = NULL, choice = NULL) {
-#'     step_description <- doc(
-#'       "## demo_step",
-#'       "### Content",
-#'       "",
-#'       "This is a demo step. It simply returns two times the value of the choice variable"
-#'     )
-#'     choice_description <- doc(
-#'       "### Choice",
-#'       "",
-#'       "`base_value`: A numerical value that needs to be within the range [0, 10]"
-#'     )
-#'     choice_type <- list(
-#'       list(name = "base_value",
-#'       type = "double",
-#'       valid_min = 0,
-#'       valid_max = 10)
-#'     )
-#'     if (is.null(choice)) return(list(
-#'       step_description = step_description,
-#'       choice_description = choice_description,
-#'       choice_type = choice_type
-#'     )) else check_choice(choice, choice_type)
-#'
-#'     return(list(
-#'       data = choice[[1]] * 2,
-#'       protocol = choice
-#'     ))
-#'   }
-#'
-#'   design <- "demo_step"
-#'  test_design(design)
+#' \dontrun{
+#'   print("Sorry. No examples yet.")
+#' }
+#' @export
 
 test_design <- function(d, input = NULL,
                         input_test_code = NULL,
@@ -56,11 +27,8 @@ test_design <- function(d, input = NULL,
   e <- testthat::test_env()
   e$d <- d
   if(!is.null(input)) {
-    if (is.function(input)) input <- input()
     e$input <- input
-    if(is.null(input_test_code))
-      e$input_test_code <- paste0("user_code/", d[1], "_test_input.R")
-    else e$input_test_code <- input_test_code
+    e$input_test_code <- input_test_code
     e$wd <- getwd()
     if(!is.null(output_test_code) &&
        (length(output_test_code) != length(d) ||

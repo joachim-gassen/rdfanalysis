@@ -36,8 +36,6 @@ Currently naively assumes a uniform distribution between lower and upper bound
 }
 \examples{
 \dontrun{
-  print("Sorry. No runable example yet.")
-
+  print("Sorry. No examples yet.")
 }
-
 }

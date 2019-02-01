@@ -11,73 +11,45 @@
 #'   steps should be included in the documentation (defaults to TRUE).
 #' @param rmd_header The character value containing the header of the rmarkdown
 #'   file that the function generates. Defaults to a PDF output header
-#' @export
 #' @examples
-#'   demo_step <- function(input = NULL, choice = NULL) {
-#'     step_description <- doc(
-#'       "## demo_step",
-#'       "### Content",
-#'       "",
-#'       "This is a demo step. It simply returns two times the value of the choice variable"
-#'     )
-#'     choice_description <- doc(
-#'       "### Choice",
-#'       "",
-#'       "`base_value`: A numerical value that needs to be within the range [0, 10]"
-#'     )
-#'     choice_type <- list(
-#'       list(name = "base_value",
-#'       type = "double",
-#'       valid_min = 0,
-#'       valid_max = 10)
-#'     )
-#'     if (is.null(choice)) return(list(
-#'       step_description = step_description,
-#'       choice_description = choice_description,
-#'       choice_type = choice_type
-#'     )) else check_choice(choice, choice_type)
-#'
-#'     return(list(
-#'       data = choice[[1]] * 2,
-#'       protocol = choice
-#'     ))
-#'   }
-#'
-#'   design <- "demo_step"
-#'   prepare_design_documentation(design, "my_design.pdf")
+#' \dontrun{
+#'   print("Sorry. No examples yet.")
+#' }
+#' @export
 
 prepare_design_documentation <-
   function(d, output_file,
            title = "Research Design",
            code = TRUE,
-           rmd_header = paste0("--- \n",
-                               sprintf("title: \"%s\"\n", title),
-                               sprintf("date: \"%s\"\n", Sys.Date()),
-                               "output: pdf_document\n",
-                               "---\n\n")) {
+           rmd_header = c("--- ",
+                          sprintf("title: \"%s\"", title),
+                          sprintf("date: \"%s\"", Sys.Date()),
+                          "output: pdf_document",
+                          "---",
+                          "")) {
     file <- tempfile(fileext = ".Rmd")
-    write(rmd_header, file)
+    file.create(file)
+    con <- file(file, "w")
+    writeLines(rmd_header, con)
     for (step in d) {
       res <- get(step)()
-      write(sprintf("# Step: %s\n\n", step), file, append = TRUE)
-      write("\n", file, append = TRUE)
-      write(res$step_description, file, append = TRUE)
-      write("\n", file, append = TRUE)
-      write(res$choice_description, file, append = TRUE)
-      write("\n\n", file, append = TRUE)
+      writeLines(sprintf("# Step: %s", step), con)
+      writeLines(c("", ""), con)
+      writeLines(res$step_description, con)
+      writeLines("", con)
+      writeLines(res$choice_description, con)
+      writeLines(c("", ""), con)
       if (code) {
-        write("### Code\n\n", file, append = TRUE)
+        write("### Code", con)
         code_text <- utils::capture.output(get(step))
-        write(sprintf("``` {r %s, eval = FALSE}\n", step), file, append = TRUE)
-        write(code_text[1], file, append = TRUE)
-        code_line = FALSE
-        for (l in 2:(length(code_text) - 1)) {
-          if(code_line) write(code_text[l], file, append = TRUE)
-          else if (trimws(code_text[l]) == "") code_line <- TRUE
-        }
-        write(sprintf("```\n\n\n", step), file, append = TRUE)
+        writeLines(sprintf("``` {r %s, eval = FALSE}\n", step), con)
+        writeLines(code_text[1], con)
+        start_code <- grep("___ Analysis code starts below ___", code_text)
+        writeLines(code_text[(start_code + 1):length(code_text)], con)
+        writeLines(c("```", "", ""), con)
       }
     }
+    close(con)
     dir <- paste0(getwd(), "/", dirname(output_file))
     rmarkdown::render(file, output_dir = dir,
                       output_file = basename(output_file))

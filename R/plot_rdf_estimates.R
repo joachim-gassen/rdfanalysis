@@ -18,10 +18,8 @@
 #'   See the vignette of the package for further details on how to implement the RDF workflow.
 #' @examples
 #' \dontrun{
-#'   print("Sorry. No runable example yet.")
-#'
+#'   print("Sorry. No examples yet.")
 #' }
-#'
 #' @export
 
 plot_rdf_estimates <- function(df, est, lb, ub, color = "blue", n = 30) {
@@ -36,5 +34,5 @@ plot_rdf_estimates <- function(df, est, lb, ub, color = "blue", n = 30) {
     ggplot2::ylab("Density") +
     ggplot2::xlab(sprintf("Density of estimates and resp. CIs (gray), %s model variants",
                  formatC(nrow(df), big.mark = ","))) +
-    ggplot2::expand_limits(x = range(density(extdf$ci)$x))
+    ggplot2::expand_limits(x = range(stats::density(extdf$ci)$x))
 }

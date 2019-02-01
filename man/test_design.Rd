@@ -33,37 +33,3 @@ Test whether design steps can be processed and produce valid output for each pos
 \details{
 See the vignette of the package for further details.
 }
-\examples{
-  demo_step <- function(input = NULL, choice = NULL) {
-    step_description <- doc(
-      "## demo_step",
-      "### Content",
-      "",
-      "This is a demo step. It simply returns two times the value of the choice variable"
-    )
-    choice_description <- doc(
-      "### Choice",
-      "",
-      "`base_value`: A numerical value that needs to be within the range [0, 10]"
-    )
-    choice_type <- list(
-      list(name = "base_value",
-      type = "double",
-      valid_min = 0,
-      valid_max = 10)
-    )
-    if (is.null(choice)) return(list(
-      step_description = step_description,
-      choice_description = choice_description,
-      choice_type = choice_type
-    )) else check_choice(choice, choice_type)
-
-    return(list(
-      data = choice[[1]] * 2,
-      protocol = choice
-    ))
-  }
-
-  design <- "demo_step"
- test_design(design)
-}

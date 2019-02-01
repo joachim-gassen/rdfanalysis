@@ -40,8 +40,6 @@ workfow.
 }
 \examples{
 \dontrun{
-  print("Sorry. No runable example yet.")
-
+  print("Sorry. No examples yet.")
 }
-
 }

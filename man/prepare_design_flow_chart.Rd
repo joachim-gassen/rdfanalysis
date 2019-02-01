@@ -5,8 +5,8 @@
 \title{Document your research design in a PDF file}
 \usage{
 prepare_design_flow_chart(d, file_name = NULL, landscape = FALSE,
-  color_step = "red", color_dchoice = "green", color_cchoice = "blue",
-  color_result = "yellow")
+  color_step = "red", color_dchoice = "green",
+  color_cchoice = "blue", color_result = "orange")
 }
 \arguments{
 \item{d}{The design vector containing the research design steps.}
@@ -32,38 +32,4 @@ the rendered diagram or, if \code{file_name} is specified, the return code from
 Uses the documentation block of each step to generate a rmarkdown based
 documentation of the research design. Output can be saved to a PDF file
 or directly viewed.
-}
-\examples{
-  demo_step <- function(input = NULL, choice = NULL) {
-    step_description <- doc(
-      "## demo_step",
-      "### Content",
-      "",
-      "This is a demo step. It simply returns two times the value of the choice variable"
-    )
-    choice_description <- doc(
-      "### Choice",
-      "",
-      "`base_value`: A numerical value that needs to be within the range [0, 10]"
-    )
-    choice_type <- list(
-      list(name = "base_value",
-      type = "double",
-      valid_min = 0,
-      valid_max = 10)
-    )
-    if (is.null(choice)) return(list(
-      step_description = step_description,
-      choice_description = choice_description,
-      choice_type = choice_type
-    )) else check_choice(choice, choice_type)
-
-    return(list(
-      data = choice[[1]] * 2,
-      protocol = choice
-    ))
-  }
-
-  design <- "demo_step"
-  prepare_design_flow_chart(design)
 }

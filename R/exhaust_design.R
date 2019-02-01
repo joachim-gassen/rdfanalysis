@@ -67,39 +67,10 @@ generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
 #' @return A data frame containing results for all feasible choice permutations.
 #' @details See the vignette of the package for further details.
 #' @export
-#' @examples
-#'   demo_step <- function(input = NULL, choice = NULL) {
-#'     step_description <- doc(
-#'       "## demo_step",
-#'       "### Content",
-#'       "",
-#'       "This is a demo step. It simply returns two times the value of the choice variable"
-#'     )
-#'     choice_description <- doc(
-#'       "### Choice",
-#'       "",
-#'       "`base_value`: A numerical value that needs to be within the range [0, 10]"
-#'     )
-#'     choice_type <- list(
-#'       list(name = "base_value",
-#'       type = "double",
-#'       valid_min = 0,
-#'       valid_max = 10)
-#'     )
-#'     if (is.null(choice)) return(list(
-#'       step_description = step_description,
-#'       choice_description = choice_description,
-#'       choice_type = choice_type
-#'     )) else check_choice(choice, choice_type)
-#'
-#'     return(list(
-#'       data = choice[[1]] * 2,
-#'       protocol = choice
-#'     ))
-#'   }
-#'
-#'   design <- "demo_step"
-#'  exhaust_design(design, NULL)
+#' \dontrun{
+#'   print("Sorry. No examples yet.")
+#' }
+#' @export
 
 exhaust_design <- function(d, start_input, weight = FALSE, est_by_cchoice = 10) {
   choice_df <- generate_choice_df(d, weight, est_by_cchoice)
