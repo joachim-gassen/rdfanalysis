@@ -1,8 +1,7 @@
-#' Document your research design in a PDF file
+#' Document your Research Design in a PDF File
 #'
 #' Uses the documentation block of each step to generate a rmarkdown based
-#' documentation of the research design. Output can be saved to a PDF file
-#' or directly viewed.
+#' documentation of your research design. Output is saved to a PDF file.
 #'
 #' @param d A character vector of the research design steps function names
 #' @param output_file The file name to store the PDF file to.

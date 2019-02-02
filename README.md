@@ -121,13 +121,13 @@ sim_data(100, 0.1) %>%
 
     ## $data
     ## $data$est
-    ## [1] -0.001063411
+    ## [1] 0.2166091
     ## 
     ## $data$lb
-    ## [1] -0.2119322
+    ## [1] 0.01899325
     ## 
     ## $data$ub
-    ## [1] 0.2098054
+    ## [1] 0.414225
     ## 
     ## 
     ## $protocol
@@ -165,7 +165,7 @@ kable(df)
 
 | control\_for\_z |        est|         lb|         ub|
 |:----------------|----------:|----------:|----------:|
-| yes             |  0.1135488|  0.0504981|  0.1765995|
-| no              |  0.5967352|  0.5426443|  0.6508260|
+| yes             |  0.1399993|  0.0788181|  0.2011806|
+| no              |  0.6467797|  0.5927678|  0.7007916|
 
 Only two researcher degrees of freedom in this setting but you will easily get into the thousands in a real research setting. Stay tuned for a vignette that presents a use case.

@@ -31,7 +31,12 @@ The return value \code{testthat::test_file()}
 Test whether design steps can be processed and produce valid output for each possible choice.
 }
 \details{
-See the vignette of the package for further details.
+If called without parameters for \code{input}, only the \code{choice_type} list structure is
+  tested for consistency. If \code{input} is provided, data steps are tested across all choices to verify
+  that they produce structually valid output without errors or warnings.
+  If \code{input_test_code} is provided this test code is used to verify \code{input}.
+  If \code{output_test_code} is provided each step's output is tested.
+  See the vignette of the package for further details.
 }
 \examples{
 \dontrun{

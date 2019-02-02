@@ -3,4 +3,6 @@
 ^README.Rmd
 ^README_files$
 ^test.R
-
+^code
+^docs
+^_pkgdown.yml

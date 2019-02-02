@@ -1,0 +1,38 @@
+template:
+  params:
+    ganalytics: UA-119053376-1
+development:
+  mode: devel
+navbar:
+  structure:
+    left:
+    - home
+    - reference
+    right: github
+  components:
+    home:
+      icon: fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    github:
+      text: Code repository
+      icon: fa-github
+      href: https://www.github.com/joachim-gassen/rdfanalysis
+reference:
+- title: Main functions
+  desc: Functions to organize the researcher degrees of freedom analyis workflow
+  contents:
+  - define_design
+  - source_design
+  - prepare_design_documentation
+  - prepare_design_flow_chart
+  - test_design
+  - simulate_design_power
+  - exhaust_design
+  - plot_rdf_estimates
+- title: Helper functions
+  desc: Functions used by the step template
+  contents:
+  - check_choice

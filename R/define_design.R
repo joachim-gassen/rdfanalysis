@@ -1,4 +1,4 @@
-#' Define research design and create code directory with step templates
+#' Define Your Research Design and Create Code Directory with Step Templates
 #'
 #' This generates a \code{code} directory in \code{rel_dir}
 #' (defaulting to current working directory). In this directory it will create

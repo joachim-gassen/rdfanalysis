@@ -2,7 +2,7 @@
 % Please edit documentation in R/source_design.R
 \name{source_design}
 \alias{source_design}
-\title{Source the R files that contain the design steps}
+\title{Source the R Files that Contain the Design Steps}
 \usage{
 source_design(d, rel_dir = "code", one_file = FALSE,
   one_file_name = "design_steps.R")

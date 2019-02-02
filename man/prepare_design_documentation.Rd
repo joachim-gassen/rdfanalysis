@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_design_documentation.R
 \name{prepare_design_documentation}
 \alias{prepare_design_documentation}
-\title{Document your research design in a PDF file}
+\title{Document your Research Design in a PDF File}
 \usage{
 prepare_design_documentation(d, output_file, title = "Research Design",
   code = TRUE, rmd_header = c("--- ", sprintf("title: \\"\%s\\"",
@@ -24,8 +24,7 @@ file that the function generates. Defaults to a PDF output header}
 }
 \description{
 Uses the documentation block of each step to generate a rmarkdown based
-documentation of the research design. Output can be saved to a PDF file
-or directly viewed.
+documentation of your research design. Output is saved to a PDF file.
 }
 \examples{
 \dontrun{

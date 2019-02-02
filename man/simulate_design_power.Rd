@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_design_power.R
 \name{simulate_design_power}
 \alias{simulate_design_power}
-\title{Test Design for Code Consistency}
+\title{Use Simulated Data to Test the Power of Your Research Design}
 \usage{
 simulate_design_power(d, protocol, input_sim_func, range_n, effect_size,
   runs = 100, input_sim_params = NULL)
@@ -30,7 +30,9 @@ A data frame containing the \code{output} of the last \code{step} of the \code{d
   along with the simulation parameters,
 }
 \description{
-Test whether design steps can be processed and produce valid output for each possible choice.
+Uses your simulation code, a vector of potential sample sizes and your
+a priori assumption of the effect size to estimate the power of your
+research design.
 }
 \details{
 The function provided via \code{input_sim_func} needs to take a sample size parameter and an

@@ -1,8 +1,8 @@
-#' Check design step choice
+#' Check Design Step Choice
 #'
-#' Checks whether a certain choice complies with a provided chpoce_type.
-#' This function should be regularly called after the documentation block
-#' of each design step whenever choice is not NULL.
+#' Checks whether a certain choice complies with a provided choice_type.
+#' This helper function is called by the step template after the documentation block
+#' when choice is not \code{NULL}.
 #'
 #' @param choice a list containing choices
 #' @param choice_type a list of lists characterizing valid choices. Needs to be specified

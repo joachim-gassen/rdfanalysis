@@ -2,7 +2,7 @@
 % Please edit documentation in R/define_design.R
 \name{define_design}
 \alias{define_design}
-\title{Define research design and create code directory with step templates}
+\title{Define Your Research Design and Create Code Directory with Step Templates}
 \usage{
 define_design(steps, rel_dir = ".", one_file = FALSE,
   one_file_name = "design_steps.R")

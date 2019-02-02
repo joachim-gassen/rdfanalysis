@@ -14,7 +14,12 @@
 #'   paths to test code files for each step's output.
 #' @param ... Are passed to \code{testthat::test_file()}
 #' @return The return value \code{testthat::test_file()}
-#' @details See the vignette of the package for further details.
+#' @details If called without parameters for \code{input}, only the \code{choice_type} list structure is
+#'   tested for consistency. If \code{input} is provided, data steps are tested across all choices to verify
+#'   that they produce structually valid output without errors or warnings.
+#'   If \code{input_test_code} is provided this test code is used to verify \code{input}.
+#'   If \code{output_test_code} is provided each step's output is tested.
+#'   See the vignette of the package for further details.
 #' @examples
 #' \dontrun{
 #'   print("Sorry. No examples yet.")

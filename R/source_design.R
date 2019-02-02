@@ -1,4 +1,4 @@
-#' Source the R files that contain the design steps
+#' Source the R Files that Contain the Design Steps
 #'
 #' This sources all code files constructed by \code{define_design()}
 #'

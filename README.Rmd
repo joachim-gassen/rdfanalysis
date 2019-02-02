@@ -4,6 +4,7 @@ author: Joachim Gassen
 ---
 
 ```{r setup, include=FALSE}
+set.seed(42)
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(rdfanalysis)
@@ -55,8 +56,12 @@ function. To initialize these functions, you can use the call `define_functions(
 It creates a `code` directory in your current working directory and produces 
 template code for each step. In this case, our design will have only one step.
 
-```{r define_design}
+```{r define_design, eval = FALSE}
 design <- define_design("est_model")
+```
+
+```{r define_design_static, include = FALSE}
+design <- c("est_model")
 ```
 
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_choice.R
 \name{check_choice}
 \alias{check_choice}
-\title{Check design step choice}
+\title{Check Design Step Choice}
 \usage{
 check_choice(choice, choice_type)
 }
@@ -13,9 +13,9 @@ check_choice(choice, choice_type)
 by the user for each design step.}
 }
 \description{
-Checks whether a certain choice complies with a provided chpoce_type.
-This function should be regularly called after the documentation block
-of each design step whenever choice is not NULL.
+Checks whether a certain choice complies with a provided choice_type.
+This helper function is called by the step template after the documentation block
+when choice is not \code{NULL}.
 }
 \examples{
   check_choice(list("my_choice"),

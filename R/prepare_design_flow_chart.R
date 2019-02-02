@@ -1,8 +1,7 @@
-#' Document your research design in a PDF file
+#' Prepare A Flow Chart of Your Research Design
 #'
-#' Uses the documentation block of each step to generate a rmarkdown based
-#' documentation of the research design. Output can be saved to a PDF file
-#' or directly viewed.
+#' Generates a \code{DiagrammeR} flow chart of your research design.
+#' Output can be saved to a file or directly viewed.
 #'
 #' @param d A character vector of the research design steps function names
 #' @param file_name A file name for an output PDF file relative to the working directory.

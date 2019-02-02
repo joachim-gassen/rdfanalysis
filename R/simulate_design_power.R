@@ -1,6 +1,8 @@
-#' Test Design for Code Consistency
+#' Use Simulated Data to Test the Power of Your Research Design
 #'
-#' Test whether design steps can be processed and produce valid output for each possible choice.
+#' Uses your simulation code, a vector of potential sample sizes and your
+#' a priori assumption of the effect size to estimate the power of your
+#' research design.
 #'
 #' @param d A character vector of the research design steps function names
 #' @param protocol A list of \code{choice}s for the \code{step}s of the \code{design}

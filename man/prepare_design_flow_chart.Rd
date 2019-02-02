@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_design_flow_chart.R
 \name{prepare_design_flow_chart}
 \alias{prepare_design_flow_chart}
-\title{Document your research design in a PDF file}
+\title{Prepare A Flow Chart of Your Research Design}
 \usage{
 prepare_design_flow_chart(d, file_name = NULL, landscape = FALSE,
   color_step = "red", color_dchoice = "green",
@@ -29,9 +29,8 @@ the rendered diagram or, if \code{file_name} is specified, the return code from
   \code{DiagrammeRsvg::export_graph()}
 }
 \description{
-Uses the documentation block of each step to generate a rmarkdown based
-documentation of the research design. Output can be saved to a PDF file
-or directly viewed.
+Generates a \code{DiagrammeR} flow chart of your research design.
+Output can be saved to a file or directly viewed.
 }
 \examples{
 \dontrun{
