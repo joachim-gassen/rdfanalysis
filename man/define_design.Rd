@@ -8,7 +8,7 @@ define_design(steps, rel_dir = ".", one_file = FALSE,
   one_file_name = "design_steps.R")
 }
 \arguments{
-\item{steps}{A character vector containing the names for the strp functions.
+\item{steps}{A character vector containing the names for the step functions.
 All members need to be valid R names.}
 
 \item{rel_dir}{A relative path to a directory in which you want to create

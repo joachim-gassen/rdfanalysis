@@ -6,7 +6,7 @@
 #' containing all step templates.
 #'
 #'
-#' @param steps A character vector containing the names for the strp functions.
+#' @param steps A character vector containing the names for the step functions.
 #'   All members need to be valid R names.
 #' @param rel_dir A relative path to a directory in which you want to create
 #'   the step templates.
@@ -33,7 +33,7 @@ define_design <- function(steps, rel_dir = ".",
   step_template <- readLines(con)
   close(con)
   code_dir <- file.path(getwd(), rel_dir, "code")
-  dir.create(code_dir, recursive = TRUE)
+  if(!dir.exists(code_dir)) dir.create(code_dir, recursive = TRUE)
   for (s in steps) {
     st <- step_template
     st[1] <- gsub("step_name", s, st[1])
@@ -47,14 +47,20 @@ define_design <- function(steps, rel_dir = ".",
     st[ret_pos + 3] <- "  ))"
     st[ret_pos + 4] <- "}"
     if (!one_file) {
-      file.create(file.path(code_dir, paste0(s, ".R")))
-      con <- file(file.path(code_dir, paste0(s, ".R")), "w")
+      file_name <- file.path(code_dir, paste0(s, ".R"))
+      if (file.exists(file_name))
+        stop(sprintf("File %s already exsits! Won't write to existing file.", file_name))
+      else file.create(file_name)
+      con <- file(file_name, "w")
       writeLines(st, con)
       close(con)
     } else {
       if (s == steps[1]) {
-        file.create(file.path(code_dir, one_file_name))
-        con <- file(file.path(code_dir, one_file_name), "w")
+        file_name <- file.path(code_dir, one_file_name)
+        if (file.exists(file_name))
+          stop(sprintf("File %s already exsits! Won't write to existing file.", file_name))
+        else file.create(file_name)
+        con <- file(file_name, "w")
       }
       writeLines(st, con)
       if (s != steps[length(steps)]) writeLines(c("", ""), con)

@@ -4,7 +4,7 @@
 #' documentation of the research design. Output can be saved to a PDF file
 #' or directly viewed.
 #'
-#' @param d The design vector containing the research design steps.
+#' @param d A character vector of the research design steps function names
 #' @param file_name A file name for an output PDF file relative to the working directory.
 #' @param landscape Do you want the flow chart to be generated horizontally instead of vertically.
 #'   Defaults to FALSE.
@@ -14,7 +14,7 @@
 #' @param color_result The fill color to indicate a result.
 #' @return the rendered diagram or, if \code{file_name} is specified, the return code from
 #'   \code{DiagrammeRsvg::export_graph()}
-#' @export
+#' @examples
 #' \dontrun{
 #'   print("Sorry. No examples yet.")
 #' }

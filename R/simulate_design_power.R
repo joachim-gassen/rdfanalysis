@@ -2,7 +2,7 @@
 #'
 #' Test whether design steps can be processed and produce valid output for each possible choice.
 #'
-#' @param d The design vector containing the research design steps.
+#' @param d A character vector of the research design steps function names
 #' @param protocol A list of \code{choice}s for the \code{step}s of the \code{design}
 #' @param input_sim_func A function that, when called, will return a simulated input to the first step
 #'   for the function. See Details section for further information.

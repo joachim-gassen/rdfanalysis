@@ -57,7 +57,7 @@ generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
 #' documented researcher degrees of freedom. Returns a data frame containing the results for all
 #' choice combinations.
 #'
-#' @param d The design vector containing the research design steps.
+#' @param d A character vector of the research design steps function names
 #' @param start_input The input data for the first step.
 #' @param weight Whether each step's choices should be weighted by their user assigned weights as
 #'   included in the \code{choice_type}. Protocols with zero weight are excluded from the analysis.
@@ -66,7 +66,7 @@ generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
 #'   spaced steps, staring at \code{valid_min} and ending at \code{valid_max}.
 #' @return A data frame containing results for all feasible choice permutations.
 #' @details See the vignette of the package for further details.
-#' @export
+#' @examples
 #' \dontrun{
 #'   print("Sorry. No examples yet.")
 #' }

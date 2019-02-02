@@ -26,25 +26,25 @@ step_name <- function(input = NULL, choice = NULL) {
     "- `[valid_value 1]`: [What this choice does]",
     "- `[valid_value n]`: [What that step does]",
     "",
-    "`[name of continous choice]` [Explain valid range for continous choice",
+    "`[name of continous choice]`: [Explain valid range for continous choice",
     "and what it does]"
   )
 
   # Specify your valid choices below. Format will be checked by test_design()
-  # consictency
+  # for consictency
 
   choice_type <- list(
     list(name = "[name of discrete choice]",
          type = "character",
          valid_values = c("[valid_value 1]", "[valid_value n]"),
          # weights are not required but they need to add ip to one if
-         # they are provided
+         # they are provided. Adjust the example below
          weights = c(0.8, 0.2)),
     list(name = "[name of continous choice]",
          type = "double",
          valid_min = 0, valid_max = 0.1,
-         # weights for contnous choice are provided by a sample of choices.
-         # Could be just one value.
+         # weights for continous choices are provided by a sample of choices.
+         # Could be just one value. Adjust the example below
          weight_sample = c(0, rep(0.01, 4), rep(0.05, 4)))
   )
 
@@ -63,13 +63,14 @@ step_name <- function(input = NULL, choice = NULL) {
   # ___ Analysis code starts below ___
 
   # Here you need to add your code.
+
   # If this is the first step of your design, you can access input data via the
   # input parameter. If it is a subsequent step, you can access input data
   # via input$data and the protocol leading to this step by input$protocol.
 
   # Make sure that you address all choices identified above.
 
-  # In the return call below, you need to replace the pöaceholder with the
+  # In the return call below, you need to replace the placeholder with the
   # variable that contains the data that you want to return as output
   # to the next step or as a result if this is the last step.
 

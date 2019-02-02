@@ -10,7 +10,7 @@ prepare_design_documentation(d, output_file, title = "Research Design",
   "---", ""))
 }
 \arguments{
-\item{d}{The design vector containing the research design steps.}
+\item{d}{A character vector of the research design steps function names}
 
 \item{output_file}{The file name to store the PDF file to.}
 

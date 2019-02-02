@@ -82,8 +82,21 @@ est_model <- function(input = NULL, choice = NULL) {
 } 
 ```
 
-Step 5: Document your design and display a flow chart
------------------------------------------------------
+### Step 5: Source your code
+
+``` r
+source_design(design)
+```
+
+### Step 6: Test your code
+
+``` r
+test_design(design, input = sim_data(100, 0.1), reporter = "minimal")
+```
+
+    ## ........................
+
+### Step 7: Document your design
 
 The below serves documentation purposes. The function `prepare_design_documentation()` generates a PDF file in your project directory that documents your code.
 
@@ -99,17 +112,7 @@ prepare_design_flow_chart(design, landscape = TRUE)
 
 ![](README_files/figure-markdown_github/flow_chart-1.png)
 
-Step 6: Test your code
-======================
-
-``` r
-test_design(design, input = sim_data(100, 0.1), reporter = "minimal")
-```
-
-    ## ........................
-
-Step 7: Run a single protocol of choices
-========================================
+### Step 8: Run a single protocol of choices
 
 ``` r
 sim_data(100, 0.1) %>%
@@ -118,21 +121,20 @@ sim_data(100, 0.1) %>%
 
     ## $data
     ## $data$est
-    ## [1] -0.01334917
+    ## [1] -0.001063411
     ## 
     ## $data$lb
-    ## [1] -0.2021778
+    ## [1] -0.2119322
     ## 
     ## $data$ub
-    ## [1] 0.1754795
+    ## [1] 0.2098054
     ## 
     ## 
     ## $protocol
     ## $protocol[[1]]
     ## [1] "yes"
 
-Step 8: Assess the power of your analysis for a certain protocol
-================================================================
+### Step 9: Assess the power of your analysis for a certain protocol
 
 ``` r
 power_df <- simulate_design_power(design, protocol = list("yes"), 
@@ -151,11 +153,10 @@ power_df %>%
 
 ![](README_files/figure-markdown_github/sim_power-1.png)
 
-Step 9: Exhaust your researcher degrees of freedom
-==================================================
+### Step 10: Exhaust your researcher degrees of freedom
 
 ``` r
-df <- exhaust_design(design, sim_data(100, 0.1)) 
+df <- exhaust_design(design, sim_data(1000, 0.1)) 
 ```
 
 ``` r
@@ -164,7 +165,7 @@ kable(df)
 
 | control\_for\_z |        est|         lb|         ub|
 |:----------------|----------:|----------:|----------:|
-| yes             |  0.2549365|  0.0495814|  0.4602916|
-| no              |  0.6137394|  0.4332740|  0.7942047|
+| yes             |  0.1135488|  0.0504981|  0.1765995|
+| no              |  0.5967352|  0.5426443|  0.6508260|
 
-Only two researcher degrees of freedom in this setting but you will easily get into the thousands in a real research setting. Stay tuned for a vignette that presents a use case soon.
+Only two researcher degrees of freedom in this setting but you will easily get into the thousands in a real research setting. Stay tuned for a vignette that presents a use case.

@@ -8,7 +8,7 @@ test_design(d, input = NULL, input_test_code = NULL,
   output_test_code = NULL, ...)
 }
 \arguments{
-\item{d}{The design vector containing the research design steps.}
+\item{d}{A character vector of the research design steps function names}
 
 \item{input}{input parameter of the first step. Can be either data (passed to first step as is)
 or a function. If it is a function, the function is called to generate the input data.
@@ -32,4 +32,9 @@ Test whether design steps can be processed and produce valid output for each pos
 }
 \details{
 See the vignette of the package for further details.
+}
+\examples{
+\dontrun{
+  print("Sorry. No examples yet.")
+}
 }

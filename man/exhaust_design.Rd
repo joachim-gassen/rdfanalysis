@@ -7,7 +7,7 @@
 exhaust_design(d, start_input, weight = FALSE, est_by_cchoice = 10)
 }
 \arguments{
-\item{d}{The design vector containing the research design steps.}
+\item{d}{A character vector of the research design steps function names}
 
 \item{start_input}{The input data for the first step.}
 
@@ -28,4 +28,9 @@ choice combinations.
 }
 \details{
 See the vignette of the package for further details.
+}
+\examples{
+\dontrun{
+  print("Sorry. No examples yet.")
+}
 }

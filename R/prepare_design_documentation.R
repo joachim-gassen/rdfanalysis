@@ -4,7 +4,7 @@
 #' documentation of the research design. Output can be saved to a PDF file
 #' or directly viewed.
 #'
-#' @param d The design vector containing the research design steps.
+#' @param d A character vector of the research design steps function names
 #' @param output_file The file name to store the PDF file to.
 #' @param title A title string.
 #' @param code A logical value indicating whether the R code of the design

@@ -9,7 +9,7 @@ prepare_design_flow_chart(d, file_name = NULL, landscape = FALSE,
   color_cchoice = "blue", color_result = "orange")
 }
 \arguments{
-\item{d}{The design vector containing the research design steps.}
+\item{d}{A character vector of the research design steps function names}
 
 \item{file_name}{A file name for an output PDF file relative to the working directory.}
 
@@ -32,4 +32,9 @@ the rendered diagram or, if \code{file_name} is specified, the return code from
 Uses the documentation block of each step to generate a rmarkdown based
 documentation of the research design. Output can be saved to a PDF file
 or directly viewed.
+}
+\examples{
+\dontrun{
+  print("Sorry. No examples yet.")
+}
 }

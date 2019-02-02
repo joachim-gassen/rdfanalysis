@@ -8,7 +8,7 @@ simulate_design_power(d, protocol, input_sim_func, range_n, effect_size,
   runs = 100, input_sim_params = NULL)
 }
 \arguments{
-\item{d}{The design vector containing the research design steps.}
+\item{d}{A character vector of the research design steps function names}
 
 \item{protocol}{A list of \code{choice}s for the \code{step}s of the \code{design}}
 

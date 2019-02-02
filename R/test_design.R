@@ -2,7 +2,7 @@
 #'
 #' Test whether design steps can be processed and produce valid output for each possible choice.
 #'
-#' @param d The design vector containing the research design steps.
+#' @param d A character vector of the research design steps function names
 #' @param input input parameter of the first step. Can be either data (passed to first step as is)
 #'   or a function. If it is a function, the function is called to generate the input data.
 #'   If you do not provide \code{input} then only \code{step_description}, \code{choice_description}
@@ -15,7 +15,7 @@
 #' @param ... Are passed to \code{testthat::test_file()}
 #' @return The return value \code{testthat::test_file()}
 #' @details See the vignette of the package for further details.
-#' @export
+#' @examples
 #' \dontrun{
 #'   print("Sorry. No examples yet.")
 #' }
