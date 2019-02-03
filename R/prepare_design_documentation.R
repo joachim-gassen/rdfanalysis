@@ -44,7 +44,9 @@ prepare_design_documentation <-
         writeLines(sprintf("``` {r %s, eval = FALSE}\n", step), con)
         writeLines(code_text[1], con)
         start_code <- grep("___ Analysis code starts below ___", code_text)
-        writeLines(code_text[(start_code + 1):length(code_text)], con)
+        user_code <- code_text[(start_code + 1):(length(code_text) -  1)]
+        user_code <- user_code[user_code != ""]
+        writeLines(user_code, con)
         writeLines(c("```", "", ""), con)
       }
     }

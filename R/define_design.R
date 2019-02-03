@@ -1,7 +1,7 @@
 #' Define Your Research Design and Create Code Directory with Step Templates
 #'
-#' This generates a \code{code} directory in \code{rel_dir}
-#' (defaulting to current working directory). In this directory it will create
+#' This generates a directory at \code{rel_dir}
+#' (defaulting to "./code"). In this directory it will create
 #' a set of files with templates for all code steps or a joint file
 #' containing all step templates.
 #'
@@ -23,7 +23,7 @@
 #' }
 #' @export
 
-define_design <- function(steps, rel_dir = ".",
+define_design <- function(steps, rel_dir = "./code",
                           one_file = FALSE, one_file_name = "design_steps.R") {
   if (!identical(make.names(steps), steps))
     stop("steps contains invalid R names")
@@ -32,39 +32,55 @@ define_design <- function(steps, rel_dir = ".",
   con <- file(file.path(pkg_app_dir, "step_template.R"), "r")
   step_template <- readLines(con)
   close(con)
-  code_dir <- file.path(getwd(), rel_dir, "code")
+  code_dir <- file.path(getwd(), rel_dir)
   if(!dir.exists(code_dir)) dir.create(code_dir, recursive = TRUE)
+  dont_write <- FALSE
   for (s in steps) {
     st <- step_template
     st[1] <- gsub("step_name", s, st[1])
-    ret_pos <- grep("# RETURN CALL HERE", st)
-    st[ret_pos] <-     "  return(list("
-    st[ret_pos + 1] <- "    data = \"[variable containing your output data structure here]\","
-    if (s == steps[1])
+    ret_pos <- grep("# RETURN BLOCK HERE", st)
+    if (s == steps[1]) {
+      st[ret_pos] <-     "  return(list("
+      st[ret_pos + 1] <- "    data = \"[variable containing your output data structure here]\","
       st[ret_pos + 2] <- "    protocol = list(choice)"
-    else
-      st[ret_pos + 2] <- "    protocol = input$protocol[[length(input$protocol) + 1]] <- choice"
-    st[ret_pos + 3] <- "  ))"
-    st[ret_pos + 4] <- "}"
+      st[ret_pos + 3] <- "  ))"
+      st[ret_pos + 4] <- "}"
+    } else {
+      st[ret_pos] <-     "  protocol <- input$protocol"
+      st[ret_pos + 1] <- "  protocol[[length(protocol) + 1]] <- choice"
+      st[ret_pos + 2] <- "  return(list("
+      st[ret_pos + 3] <- "    data = \"[variable containing your output data structure here]\","
+      st[ret_pos + 4] <- "    protocol = protocol"
+      st[ret_pos + 5] <- "  ))"
+      st[ret_pos + 6] <- "}"
+    }
     if (!one_file) {
       file_name <- file.path(code_dir, paste0(s, ".R"))
       if (file.exists(file_name))
-        stop(sprintf("File %s already exsits! Won't write to existing file.", file_name))
-      else file.create(file_name)
-      con <- file(file_name, "w")
-      writeLines(st, con)
-      close(con)
+        message(sprintf("File %s already exsits! Won't overwrite existing file.", file_name))
+      else {
+        file.create(file_name)
+        con <- file(file_name, "w")
+        writeLines(st, con)
+        close(con)
+      }
     } else {
       if (s == steps[1]) {
         file_name <- file.path(code_dir, one_file_name)
-        if (file.exists(file_name))
-          stop(sprintf("File %s already exsits! Won't write to existing file.", file_name))
-        else file.create(file_name)
-        con <- file(file_name, "w")
+        if (file.exists(file_name)) {
+          message(sprintf("File %s already exsits! Won't overwrite to existing file.", file_name))
+          dont_write <- TRUE
+        }
+        else {
+          file.create(file_name)
+          con <- file(file_name, "w")
+        }
       }
-      writeLines(st, con)
-      if (s != steps[length(steps)]) writeLines(c("", ""), con)
-      else close(con)
+      if (! dont_write) {
+        writeLines(st, con)
+        if (s != steps[length(steps)]) writeLines(c("", ""), con)
+        else close(con)
+      }
     }
   }
   steps

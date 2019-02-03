@@ -33,7 +33,7 @@ source_design <- function(d, rel_dir = "code",
       stop(sprintf("The following code files do not exist: %s",
            paste(code_files[which(!file.exists(code_files))],
                  collapse = ", ")))
-    source(code_files)
+    invisible(lapply(code_files, source))
   }
 }
 

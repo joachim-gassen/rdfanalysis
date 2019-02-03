@@ -4,7 +4,7 @@
 \alias{define_design}
 \title{Define Your Research Design and Create Code Directory with Step Templates}
 \usage{
-define_design(steps, rel_dir = ".", one_file = FALSE,
+define_design(steps, rel_dir = "./code", one_file = FALSE,
   one_file_name = "design_steps.R")
 }
 \arguments{
@@ -25,8 +25,8 @@ all step templates are stored in one file. Defaults to "design_steps.R".}
 The \code{steps} parameter.
 }
 \description{
-This generates a \code{code} directory in \code{rel_dir}
-(defaulting to current working directory). In this directory it will create
+This generates a directory at \code{rel_dir}
+(defaulting to "./code"). In this directory it will create
 a set of files with templates for all code steps or a joint file
 containing all step templates.
 }

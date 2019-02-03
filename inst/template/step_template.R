@@ -6,7 +6,7 @@ step_name <- function(input = NULL, choice = NULL) {
   # and the package.
 
   # Feel free to delete any/all comments line but leave
-  # the line containing ("___ Analysis code starts below ___") unchanged.
+  # the line containing ("Analysis code starts below") unchanged.
 
   # Provide your documentation in the two variables below.
   # They will be used by prepare_design_documentation()
@@ -70,9 +70,9 @@ step_name <- function(input = NULL, choice = NULL) {
 
   # Make sure that you address all choices identified above.
 
-  # In the return call below, you need to replace the placeholder with the
+  # In the return block below, you need to replace the placeholder with the
   # variable that contains the data that you want to return as output
   # to the next step or as a result if this is the last step.
 
-  # RETURN CALL HERE
+  # RETURN BLOCK HERE
 }
