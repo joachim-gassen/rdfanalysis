@@ -31,7 +31,9 @@ reference:
   - test_design
   - simulate_design_power
   - exhaust_design
+  - calculate_weighted_estimate
   - plot_rdf_estimates
+  - plot_rdf_estimates_by_dchoice
 - title: Helper functions
   desc: Functions used by the step template
   contents:

@@ -30,7 +30,7 @@ sim_data <- function(n, effect_size) {
 
 ### Step 3: Define your research design by a series of functions
 
-Each research design consists of a series of steps. Each step becomes a function. To initialize these functions, you can use the call `define_functions()`. It creates a `code` directory in your current working directory and produces template code for each step. In this case, our design will have only one step.
+Each research design consists of a series of steps. Each step becomes a function. To initialize these functions, you can use the call `define_design()`. It creates a `code` directory in your current working directory and produces template code for each step. In this case, our design will have only one step.
 
 ``` r
 design <- define_design("est_model")

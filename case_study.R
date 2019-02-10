@@ -29,14 +29,18 @@ sim_data <- function(countries = 75, es = 0.5, years = 15) {
 
   for (yr in (2016 - years + 1):2016) {
     if (yr == 2016 - years + 1) df$gdp_capita[df$year == yr] <- base_gdp_capita
-    else df$gdp_capita[df$year == yr] <- df$gdp_capita[df$year == yr - 1] * (1 + rnorm(countries, 0.02, 0.02))
+    else df$gdp_capita[df$year == yr] <- pmax(df$gdp_capita[df$year == yr - 1] +
+                                            rnorm(countries, 0, 0.01 * sd_gdp_capita), 100) *
+        (1 + rnorm(countries, 0.02, 0.02))
   }
-  df$resdevelop_gdp <- pmax(rep(base_rd_gdp, years) + 0.1 * (log(df$gdp_capita) - mean(log(df$gdp_capita))) + rnorm(n, 0.10, 0.05), 0)
+  df$resdevelop_gdp <- pmax(rep(base_rd_gdp, years) +
+                              0.1 * (log(df$gdp_capita) - mean(log(df$gdp_capita))) +
+                              rnorm(n, 0.10, 0.05), 0)
   df$unemployment <- pmax(rep(base_unemp, years) - 0.2 * (log(df$gdp_capita) - mean(log(df$gdp_capita))) + rnorm(n, 0.2, 0.2), 0)
   df$lifeexpectancy <- rep(base_le, years) + df$resdevelop_gdp - 0.5 * df$unemployment +
     es * (log(df$gdp_capita) - mean(log(df$gdp_capita))) + rnorm(n, 0.5, 0.5)
 
-  df
+  df[, c("country", "year", "lifeexpectancy", "gdp_capita", "resdevelop_gdp", "unemployment")]
 }
 
 
@@ -78,7 +82,18 @@ power_df <- simulate_design_power(design, protocol = list("yes", "full",
                                                           list("ctryyear", "ctryyear")),
                                   input_sim_func = sim_data,
                                   range_n = seq(30, 100, 10),
-                                  effect_size = 0.1)
+                                  effect_size = 0.5)
+
+power_df %>%
+  group_by(n) %>%
+  summarise(mn_est = mean(est),
+            ci = qt(0.975, df=n() - 1)*sd(est)/sqrt(n())) %>%
+  ggplot(aes(x = n)) +
+  geom_line(aes(y = 0.5), color = "red", lty = "dashed") +
+  geom_pointrange(aes(y = mn_est, ymin = mn_est - ci, ymax = mn_est + ci))+
+  theme_minimal()  +
+  xlab("Sample size parameter n") +
+  ylab("Simulated mean estimate (+/- confidence interval)")
 
 power_df %>%
   group_by(n) %>%
@@ -87,5 +102,24 @@ power_df %>%
   geom_line() +
   theme_minimal()
 
-df <- exhaust_design(design, sim_data(1000, 0.1))
-```
+smpl <- read_data()
+result <- smpl %>%
+  define_vars("yes") %>%
+  select_vars("full") %>%
+  outlier_treatment(list("win", 0.01)) %>%
+  est_model(list("ctryyear", "ctryyear"))
+
+summary(result$mod)
+
+dfw <- exhaust_design(design, smpl, weight = TRUE)
+calculate_weighted_estimate(dfw, "est", "lb", "ub")
+
+df <- exhaust_design(design, smpl)
+
+plot_rdf_estimates(df, "est", "lb", "ub")
+plot_rdf_estimates_by_dchoice(df, "est", "log_gdp_capita", color = NA, fill = "red")
+df %>% filter(log_gdp_capita == "yes") -> df_log
+plot_rdf_estimates_by_dchoice(df_log, "est", "feffect", color = NA, fill = "red")
+df_log %>% filter(idvs == "full") -> df_log_full
+plot_rdf_estimates_by_dchoice(df_log_full, "est", "feffect", color = NA, fill = "red")
+

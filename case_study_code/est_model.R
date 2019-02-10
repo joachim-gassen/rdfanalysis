@@ -36,7 +36,7 @@ est_model <- function(input = NULL, choice = NULL) {
   # ___ Analysis code starts below ___
 
   f <- paste0("lifeexpectancy ~ ",
-              paste(colnames(input$data)[3:(length(input$data) - 1)], collapse = " + "))
+              paste(colnames(input$data)[4:length(input$data)], collapse = " + "))
 
   if (choice[[1]] == "country" || choice[[1]] == "year") f <- paste0(f, "| ", choice[[1]])
   else if (choice[[1]] == "ctryyear") f <- paste0(f, " | country + year")
@@ -52,15 +52,16 @@ est_model <- function(input = NULL, choice = NULL) {
   mod <- lfe::felm(form, input$data)
 
   l <- list(
-    est = mod$coefficients[row.names(mod$coefficients) == 'gdp_capita'] - 1,
-    lb = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 1] - 1,
-    ub = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 2] - 1
+    est = mod$coefficients[row.names(mod$coefficients) == 'gdp_capita'],
+    lb = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 1],
+    ub = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 2]
   )
 
   protocol <- input$protocol
   protocol[[length(protocol) + 1]] <-  choice
   return(list(
     data = l,
-    protocol = protocol
+    protocol = protocol,
+    model = mod
   ))
 }

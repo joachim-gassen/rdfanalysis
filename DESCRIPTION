@@ -17,5 +17,5 @@ BugReports: https://github.com/joachim-gassen/rdfanalysis/issues
 Encoding: UTF-8
 LazyData: true
 Imports: DiagrammeR, DiagrammeRsvg, rsvg, dplyr, rmarkdown, testthat, foreach,
-    ggplot2
+    ggplot2, ggridges
 RoxygenNote: 6.1.1
