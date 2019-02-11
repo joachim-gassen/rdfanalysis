@@ -7,8 +7,8 @@ read_data <- function(input = NULL, choice = NULL) {
   read.csv("https://joachim-gassen.github.io/data/wb_condensed.csv") %>%
     select(country, year,
            lifeexpectancy, gdp_capita,
-           resdevelop_gdp, unemployment) %>%
-    na.omit()
+           resdevelop_gdp, unemployment) # %>%
+#    na.omit()
 }
 
 
@@ -77,19 +77,21 @@ sim_data() %>%
   est_model(list("ctryyear", "ctryyear"))
 
 
+exp_effect_size = 1
+
 power_df <- simulate_design_power(design, protocol = list("yes", "full",
                                                           list("win", 0.01),
                                                           list("ctryyear", "ctryyear")),
                                   input_sim_func = sim_data,
                                   range_n = seq(30, 100, 10),
-                                  effect_size = 0.5)
+                                  effect_size = exp_effect_size)
 
 power_df %>%
   group_by(n) %>%
   summarise(mn_est = mean(est),
             ci = qt(0.975, df=n() - 1)*sd(est)/sqrt(n())) %>%
   ggplot(aes(x = n)) +
-  geom_line(aes(y = 0.5), color = "red", lty = "dashed") +
+  geom_line(aes(y = exp_effect_size), color = "red", lty = "dashed") +
   geom_pointrange(aes(y = mn_est, ymin = mn_est - ci, ymax = mn_est + ci))+
   theme_minimal()  +
   xlab("Sample size parameter n") +
@@ -105,7 +107,7 @@ power_df %>%
 smpl <- read_data()
 result <- smpl %>%
   define_vars("yes") %>%
-  select_vars("full") %>%
+  select_vars("gdp_only") %>%
   outlier_treatment(list("win", 0.01)) %>%
   est_model(list("ctryyear", "ctryyear"))
 
@@ -116,10 +118,13 @@ calculate_weighted_estimate(dfw, "est", "lb", "ub")
 
 df <- exhaust_design(design, smpl)
 
-plot_rdf_estimates(df, "est", "lb", "ub")
-plot_rdf_estimates_by_dchoice(df, "est", "log_gdp_capita", color = NA, fill = "red")
+plot_rdf_estimate_density(df, "est", "lb", "ub")
+plot_rdf_ridges_by_dchoice(df, "est", "log_gdp_capita", color = NA, fill = "red")
 df %>% filter(log_gdp_capita == "yes") -> df_log
-plot_rdf_estimates_by_dchoice(df_log, "est", "feffect", color = NA, fill = "red")
-df_log %>% filter(idvs == "full") -> df_log_full
-plot_rdf_estimates_by_dchoice(df_log_full, "est", "feffect", color = NA, fill = "red")
+plot_rdf_ridges_by_dchoice(df_log, "est", "feffect", color = NA, fill = "red")
+plot_rdf_ridges_by_dchoice(df_log, "est", "idvs", color = NA, fill = "red")
+df_log %>% filter(feffect == "ctryyear",
+                  cluster == "country",
+                  outlier_tment_style == "win") -> df_effect
+plot_rdf_estimates_by_choice(df_effect, "est", "lb", "ub", "idvs", "outlier_cutoff", width = 0.8)
 

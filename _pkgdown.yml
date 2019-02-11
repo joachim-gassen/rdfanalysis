@@ -2,7 +2,7 @@ template:
   params:
     ganalytics: UA-119053376-1
 development:
-  mode: devel
+  mode: auto
 navbar:
   structure:
     left:
@@ -32,8 +32,9 @@ reference:
   - simulate_design_power
   - exhaust_design
   - calculate_weighted_estimate
-  - plot_rdf_estimates
-  - plot_rdf_estimates_by_dchoice
+  - plot_rdf_estimate_density
+  - plot_rdf_estimates_by_choice
+  - plot_rdf_ridges_by_dchoice
 - title: Helper functions
   desc: Functions used by the step template
   contents:

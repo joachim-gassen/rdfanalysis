@@ -1,4 +1,4 @@
-#' Plot Estimate by Discrete Choice
+#' Plot Estimate Ridge Lines by Discrete Choice
 #'
 #' Visualizes the variance of an estimate conditional on a selected discrete choice.
 #'
@@ -16,7 +16,7 @@
 #' }
 #' @export
 
-plot_rdf_estimates_by_dchoice <- function(df, est, dchoice, ...) {
+plot_rdf_ridges_by_dchoice <- function(df, est, dchoice, ...) {
   ggplot2::ggplot(df, ggplot2::aes_string(x = est, y = dchoice,
                                           group = dchoice)) +
     ggridges::geom_density_ridges(...) +

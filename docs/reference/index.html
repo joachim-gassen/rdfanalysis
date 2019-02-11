@@ -44,6 +44,16 @@
 <![endif]-->
 
 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119053376-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-119053376-1');
+</script>
+
   </head>
 
   <body>
@@ -60,7 +70,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rdfanalysis</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
       </span>
     </div>
 
@@ -78,7 +88,13 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://www.github.com/joachim-gassen/rdfanalysis">
+    <span class="fa fa-github"></span>
+     
+    Code repository
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -105,17 +121,11 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
+          <h2 id="section-main-functions" class="hasAnchor"><a href="#section-main-functions" class="anchor"></a>Main functions</h2>
+          <p class="section-desc"><p>Functions to organize the researcher degrees of freedom analyis workflow</p></p>
         </th>
       </tr>
       <tr>
-        
-        <td>
-          <p><code><a href="check_choice.html">check_choice()</a></code> </p>
-        </td>
-        <td><p>Check Design Step Choice</p></td>
-      </tr><tr>
         
         <td>
           <p><code><a href="define_design.html">define_design()</a></code> </p>
@@ -124,15 +134,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="exhaust_design.html">exhaust_design()</a></code> </p>
+          <p><code><a href="source_design.html">source_design()</a></code> </p>
         </td>
-        <td><p>Exhaust all Researcher Degrees of Freedom</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_rdf_estimates.html">plot_rdf_estimates()</a></code> </p>
-        </td>
-        <td><p>Plot Researcher Degrees of Freedom Estimates</p></td>
+        <td><p>Source the R Files that Contain the Design Steps</p></td>
       </tr><tr>
         
         <td>
@@ -148,21 +152,59 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="test_design.html">test_design()</a></code> </p>
+        </td>
+        <td><p>Test Design for Code Consistency</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="simulate_design_power.html">simulate_design_power()</a></code> </p>
         </td>
         <td><p>Use Simulated Data to Test the Power of Your Research Design</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="source_design.html">source_design()</a></code> </p>
+          <p><code><a href="exhaust_design.html">exhaust_design()</a></code> </p>
         </td>
-        <td><p>Source the R Files that Contain the Design Steps</p></td>
+        <td><p>Exhaust all Researcher Degrees of Freedom</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="test_design.html">test_design()</a></code> </p>
+          <p><code><a href="calculate_weighted_estimate.html">calculate_weighted_estimate()</a></code> </p>
         </td>
-        <td><p>Test Design for Code Consistency</p></td>
+        <td><p>Calculate Weighted Estimate</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot_rdf_estimate_density.html">plot_rdf_estimate_density()</a></code> </p>
+        </td>
+        <td><p>Plot Researcher Degrees of Freedom Estimates' Density</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot_rdf_estimates_by_choice.html">plot_rdf_estimates_by_choice()</a></code> </p>
+        </td>
+        <td><p>Plot Estimates by Choice</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot_rdf_ridges_by_dchoice.html">plot_rdf_ridges_by_dchoice()</a></code> </p>
+        </td>
+        <td><p>Plot Estimate Ridge Lines by Discrete Choice</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-helper-functions" class="hasAnchor"><a href="#section-helper-functions" class="anchor"></a>Helper functions</h2>
+          <p class="section-desc"><p>Functions used by the step template</p></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="check_choice.html">check_choice()</a></code> </p>
+        </td>
+        <td><p>Check Design Step Choice</p></td>
       </tr>
     </tbody>
     </table>
@@ -171,7 +213,8 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#section-main-functions">Main functions</a></li>
+      <li><a href="#section-helper-functions">Helper functions</a></li>
     </ul>
   </div>
 </div>
