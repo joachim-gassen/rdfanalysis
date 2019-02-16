@@ -7,7 +7,11 @@
 #'   that you want to plot.
 #' @param dchoice A character value to indicate the discrete choice that you want to partition
 #'   your estimate ridgelines on.
-#' @param ... Additional parameters that are being passed on to \code{ggridges::geom_density_redges()}
+#' @param hist Set to true if you want histogram ridges instead of densities. This is
+#'   more informative about the exact range of coefficient but does not look as nice.
+#'   Sets \code{stat = "binline"} in the \code{\link[ggridges]{geom_density_ridges}} call.
+#'   Experiment with parameter \code{scale < 1} to avoid overlapping histograms.
+#' @param ... Additional parameters that are being passed on to  \code{\link[ggridges]{geom_density_ridges}}
 #' @return A \code{ggplot} object containing the plot.
 #' @details See the vignette of the package for further details on how to implement the RDF workflow.
 #' @examples
@@ -16,9 +20,11 @@
 #' }
 #' @export
 
-plot_rdf_ridges_by_dchoice <- function(df, est, dchoice, ...) {
+plot_rdf_ridges_by_dchoice <- function(df, est, dchoice, hist = FALSE, ...) {
+  parms <- list(...)
+  if (hist) parms['stat'] <- "binline"
   ggplot2::ggplot(df, ggplot2::aes_string(x = est, y = dchoice,
                                           group = dchoice)) +
-    ggridges::geom_density_ridges(...) +
+    do.call(ggridges::geom_density_ridges, parms) +
     ggridges::theme_ridges()
 }

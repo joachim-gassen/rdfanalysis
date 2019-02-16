@@ -7,8 +7,8 @@ read_data <- function(input = NULL, choice = NULL) {
   read.csv("https://joachim-gassen.github.io/data/wb_condensed.csv") %>%
     select(country, year,
            lifeexpectancy, gdp_capita,
-           resdevelop_gdp, unemployment) # %>%
-#    na.omit()
+           resdevelop_gdp, unemployment)  %>%
+    na.omit()
 }
 
 
@@ -119,12 +119,19 @@ calculate_weighted_estimate(dfw, "est", "lb", "ub")
 df <- exhaust_design(design, smpl)
 
 plot_rdf_estimate_density(df, "est", "lb", "ub")
-plot_rdf_ridges_by_dchoice(df, "est", "log_gdp_capita", color = NA, fill = "red")
+plot_rdf_ridges_by_dchoice(df, "est", "log_gdp_capita", color = NA, fill = "red", hist = TRUE)
 df %>% filter(log_gdp_capita == "yes") -> df_log
 plot_rdf_ridges_by_dchoice(df_log, "est", "feffect", color = NA, fill = "red")
 plot_rdf_ridges_by_dchoice(df_log, "est", "idvs", color = NA, fill = "red")
 df_log %>% filter(feffect == "ctryyear",
                   cluster == "country",
                   outlier_tment_style == "win") -> df_effect
-plot_rdf_estimates_by_choice(df_effect, "est", "lb", "ub", "idvs", "outlier_cutoff", width = 0.8)
+plot_rdf_estimates_by_choice(df_effect, "est", "lb", "ub", "idvs", color = "outlier_cutoff", order = "outlier_cutoff", width = 0.8)
+
+df_log %>% filter(feffect == "ctryyear",
+                  cluster == "country" | cluster == "none",
+                  outlier_tment_style == "win") -> df_effect_cl
+plot_rdf_estimates_by_choice(df_effect_cl, "est", "lb", "ub", "idvs", color = "outlier_cutoff", order = "cluster", width = 0.8)
+
+plot_rdf_estimates_by_choice(df_log, "est", "lb", "ub", "idvs", color = "outlier_tment_style", order = "feffect", width = 0.8)
 

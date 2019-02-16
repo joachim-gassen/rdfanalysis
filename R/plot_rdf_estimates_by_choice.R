@@ -12,8 +12,10 @@
 #'   the upper bound of the estimate.
 #' @param dchoice A character value to indicate the discrete choice that you want to partition
 #'   your estimates on.
-#' @param cchoice A character value to indicate the continous choice for the coloring of the
-#'   point ranges.
+#' @param color A character value to indicate a choice for the coloring of the
+#'   point ranges. Can be continous or discrete.
+#' @param order A character value to indicate a choice for ordering the
+#'   point ranges. If \code{NULL} (the default), the point ranges will be ordered by estimate magnitude.
 #' @param width The \code{width} parameter for \code{\link[ggplot2]{position_dodge2}}
 #'   to spread out the point ranges within the discrete choice area.
 #' @return A \code{ggplot} object containing the plot.
@@ -25,26 +27,33 @@
 #' @export
 
 plot_rdf_estimates_by_choice <- function(df, est, lb, ub,
-                                         dchoice, cchoice = NULL,
+                                         dchoice, color = NULL,
+                                         order = NULL,
                                          width = 1) {
-  df <- df %>%
-    dplyr::arrange_(dchoice, est)
+  if (is.null(order)) df <- df %>% dplyr::arrange_(dchoice, est)
+  else df <- df %>% dplyr::arrange_(dchoice, order, est)
 
-  if(!is.null(cchoice)) {
-    ggplot2::ggplot(df, ggplot2::aes_string(x = dchoice,
-                                            group = dchoice,
-                                            color = cchoice)) +
-      ggplot2::geom_pointrange(ggplot2::aes_string(y = est, ymin = lb, ymax = ub),
-                               position = ggplot2::position_dodge2(width = width)) +
-      ggplot2::theme_minimal() +
-      ggplot2::xlab(sprintf("Discrete Choice: %s", dchoice)) +
-      ggplot2::ylab("Estimate and confidence interval")
+  if (order != color) x <- order else x <- dchoice
+
+  if (is.null(color)) {
+    params_ggplot <- list(df, ggplot2::aes_string(x = x, group = x))
   } else {
-    ggplot2::ggplot(df, ggplot2::aes_string(x = dchoice, group = dchoice)) +
-      ggplot2::geom_pointrange(ggplot2::aes_string(y = est, ymin = lb, ymax = ub),
-                               position = ggplot2::position_dodge2(width = width)) +
-      ggplot2::theme_minimal() +
-      ggplot2::xlab(sprintf("Discrete Choice: %s", dchoice)) +
-      ggplot2::ylab("Estimate and confidence interval")
+    params_ggplot <- list(df, ggplot2::aes_string(x = x,
+                                                  group = x,
+                                                  color = color))
   }
+
+  p <- do.call(ggplot2::ggplot, params_ggplot) +
+    ggplot2::geom_pointrange(ggplot2::aes_string(y = est, ymin = lb, ymax = ub),
+                             position = ggplot2::position_dodge2(width = width)) +
+    ggplot2::theme_minimal() +
+    ggplot2::ylab("Estimate and confidence interval")
+  if (order != color) {
+    p <- p +  ggplot2::facet_grid(stats::as.formula(paste("~", dchoice)), scales="free_x", switch = "x") +
+      ggplot2::theme(strip.placement = "outside") +
+      ggplot2::xlab("Discrete Choices")
+  } else {
+    p <- p +  ggplot2::xlab(sprintf("Discrete Choice: %s", dchoice))
+  }
+  p
 }
