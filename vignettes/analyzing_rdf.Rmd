@@ -1,0 +1,46 @@
+---
+title: "Analyzing Researchers Degrees of Freedom: A Case Study"
+author: "Joachim Gassen"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+The idea of the in-development `rdfanalysis` package is to provide a coding environment that allows researchers to systematically document and analyze the degrees of freedom in their research designs. The notion "researcher degrees of freedom" has been introduced by [Simmons et al., (Psyc Science, 2011)](https://journals.sagepub.com/doi/pdf/10.1177/0956797611417632). In their own words (p. 1359): 
+
+> The culprit is a construct we refer to as *researcher degrees of freedom*.
+> In the course of collecting and analyzing data,
+> researchers have many decisions to make: Should more data
+> be collected? Should some observations be excluded? Which
+> conditions should be combined and which ones compared?
+> Which control variables should be considered? 
+> Should specific measures be combined or transformed or both?
+
+This vignette will use a case to guide you through the process of how to use the package for an analysis that make its inherent researcher degrees of freedom transparent.
+The outcome of this activity will be similar to the multiverse analysis approach suggested by [Steeger et al. (Persp on Psych Sci 2016)](https://journals.sagepub.com/doi/abs/10.1177/1745691616658637).
+
+## The Case
+
+As case I assess the impact of real Gross Domestic Product (GDP) per capita on life expectancy. This association has become known as the [Preston Curve](https://en.wikipedia.org/wiki/Preston_curve) ([Preston, Pop Studies, 1975](https://www.tandfonline.com/doi/abs/10.1080/00324728.1975.10410201)). While the analysis it not meant to contribute to the question whether there is a causal link between these two constructs, I design the analysis such that identifying assumptions for such a causal interpretation of its findings are explicit.
+
+## Step 1: Define your research design by a series of functions
+
+Each research design can be understood by a series of functions where each function reads the output of the previous function and produces output for the next function.
+The first function reads or generates data, the last function generates results. In principle, the `rdfanalysis` package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals.
+
+## To be continued ...
+
+This is work in process. Come back for more ;-)
+
