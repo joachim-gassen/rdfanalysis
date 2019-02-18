@@ -12,7 +12,10 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE
 )
 ```
 
@@ -37,8 +40,402 @@ As case I assess the impact of real Gross Domestic Product (GDP) per capita on l
 
 ## Step 1: Define your research design by a series of functions
 
-Each research design can be understood by a series of functions where each function reads the output of the previous function and produces output for the next function.
+Every research design can be implemented as a series of functions where each function reads the output of the previous function and produces output for the next function.
 The first function reads or generates data, the last function generates results. In principle, the `rdfanalysis` package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals.
+
+To assess the impact of GDP per capita on life expectancy, our case design follows the following steps
+
+- Read data
+- Define variables
+- Select variables for model
+- Treat extreme observations
+- Estimate model
+
+Each step will be implemented via a function. To set up such a functional structure, you use the command `define_design()`. This function creates a series of function templates in a directory of your choice. Existing files are not over-written. You can choose whether you want your functions all in one R file or whether you want to go with separtate files. I am going with seperate files here.
+
+``` {r define_design, eval = FALSE}
+library(rdfanalysis)
+library(ExPanDaR)
+
+design <- define_design(steps = c("read_data", 
+                                  "define_vars", 
+                                  "select_vars", 
+                                  "treat_extreme_obs", 
+                                  "est_model"),
+                        rel_dir = "case_study_code")
+```
+
+## Step 2: Implement design steps
+
+When you take a look at the newly created directory, you will see a set of R files. Each file contains a template like this:
+
+``` {r template}
+read_data <- function(input = NULL, choice = NULL) {
+  # This is a template for a design step
+  # to be used by the rdfanalysis package
+  # See https://joachim-gassen.github.io/rdfanalysis
+  # for further information on how to use this template
+  # and the package.
+
+  # Feel free to delete any/all comments line but leave
+  # the line containing ("Analysis code starts below") unchanged.
+
+  # Provide your documentation in the two variables below.
+  # They will be used by prepare_design_documentation()
+
+  step_description <- c(
+    "## [Step Title]",
+    "### Content",
+    "",
+    "[Explain what the step does]"
+  )
+  choice_description <- c(
+    "### Choice",
+    "",
+    "`[name of discrete choice]`: A character value containing one of the",
+    "following values:",
+    "",
+    "- `[valid_value 1]`: [What this choice does]",
+    "- `[valid_value n]`: [What that step does]",
+    "",
+    "`[name of continous choice]`: [Explain valid range for continous choice",
+    "and what it does]"
+  )
+
+  # Specify your valid choices below. Format will be checked by test_design()
+  # for consictency
+
+  choice_type <- list(
+    list(name = "[name of discrete choice]",
+         type = "character",
+         valid_values = c("[valid_value 1]", "[valid_value n]"),
+         # weights are not required but they need to add ip to one if
+         # they are provided. Adjust the example below
+         weights = c(0.8, 0.2)),
+    list(name = "[name of continous choice]",
+         type = "double",
+         valid_min = 0, valid_max = 0.1,
+         # weights for continous choices are provided by a sample of choices.
+         # Could be just one value. Adjust the example below
+         weight_sample = c(0, rep(0.01, 4), rep(0.05, 4)))
+  )
+
+  # You should not need to change anything in this code section below
+
+  if (is.null(choice)) return(list(
+    step_description = step_description,
+    choice_description = choice_description,
+    choice_type = choice_type
+  )) else check_choice(choice, choice_type)
+
+  # Leave the following comment untouched. It is being used by
+  # prepare_design_documentation to identify the part of the steps
+  # that should be included in the documentation.
+
+  # ___ Analysis code starts below ___
+
+  # Here you need to add your code.
+
+  # If this is the first step of your design, you can access input data via the
+  # input parameter. If it is a subsequent step, you can access input data
+  # via input$data and the protocol leading to this step by input$protocol.
+
+  # Make sure that you address all choices identified above.
+
+  # In the return block below, you need to replace the placeholder with the
+  # variable that contains the data that you want to return as output
+  # to the next step or as a result if this is the last step.
+
+  return(list(
+    data = "[variable containing your output data structure here]",
+    protocol = list(choice)
+  ))
+}
+```
+
+The task is now to implement the code for each step. To do so, you should first set `step_description` and `choice_description`. Each variable takes a vector of strings that will be concatenated to RMarkdown code. Use these variables to explain what the steps does and which choices it contains. Each choice establishes a researcher degree of freedom.
+
+As an example: When we import the raw data, we can decide whether we require each country-year observation to have non-missing data for all variables. To implement this discrete choice, you document it in `choice_description` and specify it in `choice_type`. The `weight` parameter can be used to provide the choice (or weighting of choices) that you *a priori* assume to be supported by theory. The final function `read_data()` is provided below. It simply reads a csv file containing data, limits the sample to the required variables and deletes cases with missing data if the choice `na.omit` is set to `"yes"`.
+
+``` {r read_data}
+read_data <- function(input = NULL, choice = NULL) {
+  step_description <- c(
+    "## Read data",
+    "### Content",
+    "",
+    "Reads country year world bank data CSV file and generates raw samples"
+  )
+  choice_description <- c(
+    "### Choice",
+    "",
+    "`na.omit`: A character value containing one of the",
+    "following values:",
+    "",
+    "- `yes`: All observations with missing data are excluded",
+    "- `no`: All observations with missing data are included",
+  )
+
+  # Specify your valid choices below. Format will be checked by test_design()
+  # for consictency
+
+  choice_type <- list(
+    list(name = "na.omit",
+         type = "character",
+         valid_values = c("yes", "no"),
+         weights = c(1, 0)),
+  )
+  if (is.null(choice)) return(list(
+    step_description = step_description,
+    choice_description = choice_description,
+    choice_type = choice_type
+  )) else check_choice(choice, choice_type)
+  # ___ Analysis code starts below ___
+
+  df <- read_csv(input) %>%
+    select(country, year,
+           lifeexpectancy, gdp_capita,
+           resdevelop_gdp, unemployment) 
+  
+  if(choice == "yes") df <- df %>%
+    na.omit()
+
+  return(list(
+    data = df,
+    protocol = list(choice)
+  ))
+}
+```
+
+For the other steps you follow this approach. For our case study, I implement the following choices:
+
+- `define_vars()`: `log_gdp_capita` determines whether the main variable of interest is used in logged specification or not.
+- `select_vars()`: `idvs` identifies the independent variables that you want to include in the regression model
+- `treat_extreme_obs()`: `outlier_tment_style` indicates whether you want to use truncating or winsorizing to limit the influence of extreme observations. `outlier_cutoff` holds the percentile cutoff. It can be within the range [0, 0.1] (0 to 10 %).
+- `est_model()`: `feffects` reports which fixed effects are used (none, country, year or both) and `cluster` indicates how the standard errors should be clustered (not, by country, by year, or two-way by country and year).
+
+All these choices are rather standard choices in research designs based on observational data. Taken together and assuming that you want to generate outlier cases for each percentile from 0 to 10, they generate $2 * 2 * 4 * 2 * 11 * 4 * 4 = 5632$ researcher degrees of freedom! 
+
+Below you will find all four functions. Copy and paste them into the template files to generate your research design.
+
+``` {r functions, eval = FALSE}
+define_vars <- function(input = NULL, choice = NULL) {
+  step_description <- c(
+    "## Define the variables to be used in the analysis",
+    "### Content",
+    "",
+    "Based on the raw data, define the measures to be used in the analysis"
+  )
+  choice_description <- c(
+    "### Choice",
+    "",
+    "`log_gdp_capita`: A character value containing one of the",
+    "following values:",
+    "",
+    "- `yes`: Take the natural logarithm",
+    "- `no`: Use as in (USD value)"
+  )
+  choice_type <- list(
+    list(name = "log_gdp_capita",
+         type = "character",
+         valid_values = c("yes", "no"),
+         # weights are not required but they need to add ip to one if
+         # they are provided. Adjust the example below
+         weights = c(1, 0))
+  )
+  if (is.null(choice)) return(list(
+    step_description = step_description,
+    choice_description = choice_description,
+    choice_type = choice_type
+  )) else check_choice(choice, choice_type)
+  # ___ Analysis code starts below ___
+  
+  df <- input$data
+  
+  if (choice == "yes")
+    df$gdp_capita <- log(df$gdp_capita)
+  
+  protocol <- input$protocol
+  protocol[[length(protocol) + 1]] <- choice
+  
+  return(list(
+    data = df,
+    protocol = list(choice)
+  ))
+}
+
+
+select_vars <- function(input = NULL, choice = NULL) {
+  step_description <- c(
+    "## Identify the variables for analysis",
+    "### Content",
+    "",
+    "Select the variables that you want to use in the regression analysis."
+  )
+  choice_description <- c(
+    "### Choice",
+    "",
+    "`idvs`: A character value containing one of the",
+    "following values:",
+    "",
+    "- `gdp_only`: GDP per capita only",
+    "- `gdp_rd`: GDP per capita and research and development over GDP",
+    "- `gdp_ue`: GDP per capita and unemployment",
+    "- `full`: Full model including all three variables"
+  )
+  choice_type <- list(
+    list(name = "idvs",
+         type = "character",
+         valid_values = c("gdp_only", "gdp_rd", "gdp_ue", "full"),
+         weights = c(0, 0, 0, 1))
+    )
+  if (is.null(choice)) return(list(
+    step_description = step_description,
+    choice_description = choice_description,
+    choice_type = choice_type
+  )) else check_choice(choice, choice_type)
+  # ___ Analysis code starts below ___
+
+  df <- switch (choice[[1]],
+    "gdp_only" = input$data %>% select(-resdevelop_gdp, -unemployment),
+    "gdp_rd" = input$data %>% select(-unemployment),
+    "gdp_ue" = input$data %>% select(-resdevelop_gdp),
+    "full" = input$data
+  )
+
+  protocol <- input$protocol
+  protocol[[length(protocol) + 1]] <-  choice
+  return(list(
+    data = df,
+    protocol = protocol
+  ))
+}
+
+treat_extreme_obs <- function(input = NULL, choice = NULL) {
+  step_description <- c(
+    "## Select the type of outlier treatment",
+    "### Content",
+    "",
+    "Select how you want to treat extreme observations. They can be winsorized or truncated",
+    "to a given percentile of the data."
+  )
+  choice_description <- c(
+    "### Choice",
+    "",
+    "A list containing a character value `outlier_tment_style` and a numerical value `outlier_cutoff`.",
+    "`outlier_tment_style` may take one of the following values:",
+    "",
+    "- `win`: Winsorization",
+    "- `trunc`: Truncation",
+    "",
+    "`outlier_cutoff` sets the cut-off percentile for the outlier treatment",
+    "and may take any value within [0, 0.10]"
+  )
+  choice_type <- list(
+    list(name = "outlier_tment_style",
+         type = "character",
+         valid_values = c("win", "trunc"),
+         weights = c(0.5, 0.5, 0, 0)),
+    list(name = "outlier_cutoff",
+         type = "double",
+         valid_min = 0, valid_max = 0.1,
+         weight_sample = c(0, 0, rep(0.01, 4), rep(0.05, 4)))
+  )
+  if (is.null(choice)) return(list(
+    step_description = step_description,
+    choice_description = choice_description,
+    choice_type = choice_type
+  )) else check_choice(choice, choice_type)
+  # ___ Analysis code starts below ___
+
+  if (choice[[2]] == 0) return(
+    list(
+      data = input$data,
+      protocol = input$protocol[[length(input$protocol) + 1]] <- choice
+    ))
+  switch(choice[[1]],
+         "win" = input$data %>%
+           treat_outliers(percentile = choice[[2]]) -> df,
+         "trunc" = input$data %>%
+           treat_outliers(percentile = choice[[2]],
+                          truncate = TRUE) -> df)
+
+  protocol <- input$protocol
+  protocol[[length(protocol) + 1]] <-  choice
+  return(list(
+    data = df,
+    protocol = protocol
+  ))
+}
+
+est_model <- function(input = NULL, choice = NULL) {
+  step_description <- c(
+    "## Estimates the model",
+    "### Content",
+    "",
+    "Uses a multiple regression setup to generate an estimate and",
+    "a confidence interval for the effect of GDP per capita on life",
+    "expectancy"
+  )
+  choice_description <- c(
+    "### Choice",
+    "",
+    "A list containing two character values: `cluster` and `feffect`.",
+    "`cluster` defines the clsutering of standard errors and",
+    "`feffect` defines the fixed effect structure of the model.",
+    "Each value may take one of the following values:",
+    "",
+    "- `none`, `ctry`, `year` or `ctryyear`"
+  )
+  choice_type <- list(
+    list(name = "feffect",
+         type = "character",
+         valid_values = c("none", "country", "year", "ctryyear"),
+         weights = c(0, 0, 0, 1)),
+    list(name = "cluster",
+         type = "character",
+         valid_values = c("none", "country", "year", "ctryyear"),
+         weights = c(0, 0, 0, 1))
+  )
+  if (is.null(choice)) return(list(
+    step_description = step_description,
+    choice_description = choice_description,
+    choice_type = choice_type
+  )) else check_choice(choice, choice_type)
+
+  # ___ Analysis code starts below ___
+
+  f <- paste0("lifeexpectancy ~ ",
+              paste(colnames(input$data)[4:length(input$data)], collapse = " + "))
+
+  if (choice[[1]] == "country" || choice[[1]] == "year") f <- paste0(f, "| ", choice[[1]])
+  else if (choice[[1]] == "ctryyear") f <- paste0(f, " | country + year")
+
+  if (choice[[2]] == "none") form <- as.formula(f)
+  else if (choice[[1]] == "none") f <- paste0(f, " | 0 ")
+
+  if (choice[[2]] == "country" || choice[[2]] == "year") f <- paste0(f, "| 0 | ", choice[[2]])
+  else f <- paste0(f, "| 0 | country + year ")
+
+  if (choice[[2]] != "none") form <- as.formula(f)
+
+  mod <- lfe::felm(form, input$data)
+
+  l <- list(
+    est = mod$coefficients[row.names(mod$coefficients) == 'gdp_capita'],
+    lb = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 1],
+    ub = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 2]
+  )
+
+  protocol <- input$protocol
+  protocol[[length(protocol) + 1]] <-  choice
+  return(list(
+    data = l,
+    protocol = protocol,
+    model = mod
+  ))
+}
+```
+
 
 ## To be continued ...
 
