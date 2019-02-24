@@ -22,7 +22,7 @@ treat_extreme_obs <- function(input = NULL, choice = NULL) {
     list(name = "outlier_tment_style",
          type = "character",
          valid_values = c("win", "trunc"),
-         weights = c(0.5, 0.5, 0, 0)),
+         weights = c(0.5, 0.5)),
     list(name = "outlier_cutoff",
          type = "double",
          valid_min = 0, valid_max = 0.1,

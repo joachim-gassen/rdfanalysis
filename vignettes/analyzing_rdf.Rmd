@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   cache = TRUE
 )
+set.seed(42)
 ```
 
 ## Introduction
@@ -53,8 +54,9 @@ To assess the impact of GDP per capita on life expectancy, our case design follo
 
 Each step will be implemented via a function. To set up such a functional structure, you use the command `define_design()`. This function creates a series of function templates in a directory of your choice. Existing files are not over-written. You can choose whether you want your functions all in one R file or whether you want to go with separtate files. I am going with seperate files here.
 
-``` {r define_design, eval = FALSE}
+``` {r define_design, results = "hide"}
 library(rdfanalysis)
+library(tidyverse)
 library(ExPanDaR)
 
 design <- define_design(steps = c("read_data", 
@@ -172,7 +174,7 @@ read_data <- function(input = NULL, choice = NULL) {
     "following values:",
     "",
     "- `yes`: All observations with missing data are excluded",
-    "- `no`: All observations with missing data are included",
+    "- `no`: All observations with missing data are included"
   )
 
   # Specify your valid choices below. Format will be checked by test_design()
@@ -182,7 +184,7 @@ read_data <- function(input = NULL, choice = NULL) {
     list(name = "na.omit",
          type = "character",
          valid_values = c("yes", "no"),
-         weights = c(1, 0)),
+         weights = c(1, 0))
   )
   if (is.null(choice)) return(list(
     step_description = step_description,
@@ -191,7 +193,7 @@ read_data <- function(input = NULL, choice = NULL) {
   )) else check_choice(choice, choice_type)
   # ___ Analysis code starts below ___
 
-  df <- read_csv(input) %>%
+  df <- read_csv(input, col_types = cols()) %>%
     select(country, year,
            lifeexpectancy, gdp_capita,
            resdevelop_gdp, unemployment) 
@@ -213,7 +215,7 @@ For the other steps you follow this approach. For our case study, I implement th
 - `treat_extreme_obs()`: `outlier_tment_style` indicates whether you want to use truncating or winsorizing to limit the influence of extreme observations. `outlier_cutoff` holds the percentile cutoff. It can be within the range [0, 0.1] (0 to 10 %).
 - `est_model()`: `feffects` reports which fixed effects are used (none, country, year or both) and `cluster` indicates how the standard errors should be clustered (not, by country, by year, or two-way by country and year).
 
-All these choices are rather standard choices in research designs based on observational data. Taken together and assuming that you want to generate outlier cases for each percentile from 0 to 10, they generate $2 * 2 * 4 * 2 * 11 * 4 * 4 = 5632$ researcher degrees of freedom! 
+All these choices are rather standard choices in research designs based on observational data. Taken together and assuming that you want to generate outlier cases for each percentile from 0 to 10, they generate $2 * 2 * 4 * 2 * 11 * 4 * 4 = 5,632$ researcher degrees of freedom! 
 
 Below you will find all four functions. Copy and paste them into the template files to generate your research design.
 
@@ -334,7 +336,7 @@ treat_extreme_obs <- function(input = NULL, choice = NULL) {
     list(name = "outlier_tment_style",
          type = "character",
          valid_values = c("win", "trunc"),
-         weights = c(0.5, 0.5, 0, 0)),
+         weights = c(0.5, 0.5),
     list(name = "outlier_cutoff",
          type = "double",
          valid_min = 0, valid_max = 0.1,
@@ -436,6 +438,140 @@ est_model <- function(input = NULL, choice = NULL) {
 }
 ```
 
+## Step 3: Source, test and document design
+
+After implementing the design you need to source it. In addition, you can test the design code for input parameter consistency at this stage.
+
+``` {r source_design}
+source_design(design, rel_dir = "case_study_code")
+test_design(design, reporter = "minimal")
+```
+
+Next, the command `prepare_design_documentation()` produces a PDF document based on 
+the `step_description` and `choice_description` that you provided for each step. By default,
+it also includes the "pay load" code for each design step.
+
+In addition, the command `prepare_design_flow_chart()` produces a visualization of your design steps and of their choices.
+
+``` {r vis_design_steps, fig.width = 8, fig.height = 12, fig.align = "center"}
+prepare_design_flow_chart(design)
+```
+
+## Step 4 (optional but encouraged): Simulate data for additional testing and power analysis
+
+While not strictly necessary, a very useful next step is to simulate your raw data. Simulating your data early in the project can be very helpful for various reasons:
+
+* It allows you to test your design steps without requiring you to work with your real data, which would strictly speaking constitute a breach of the "don't mix exploration with inference" rule.
+* You can simulate your expected effect and verify that your design identifies it correctly.
+* You can assess the power of your design.
+
+To demonstrate these steps, I use a very quick'n'dirty simulation approach. 
+It creates a country year panel and simulates data which is roughly comparable 
+to real data and in terms of magnitides. It returns a filr path to a temporary
+CSV file containing the data.
+
+```{r simulation code}
+sim_data <- function(countries = 75, es = 1, years = 15) {
+  n <- countries * years
+  df <- expand.grid(country = as.factor(1:countries), 
+                    year = as.ordered((2016 - years + 1):2016))
+
+  mm_gdp_capita <- 18000
+  sd_gdp_capita <- 20000
+  location <- log(mm_gdp_capita^2 / sqrt(sd_gdp_capita^2 + mm_gdp_capita^2))
+  shape <- sqrt(log(1 + (sd_gdp_capita^2 / mm_gdp_capita^2)))
+
+  base_gdp_capita <- rlnorm(countries, location, shape)
+  base_unemp <- rbeta(countries, 2, 20)*100
+  base_rd_gdp <- rbeta(countries, 1.5, 150)*100
+  base_le <- rnorm(countries, 70, 10)
+  base_le[base_le > 70] <- 70 + 0.6 * (base_le[base_le > 70] - 70)
+
+  for (yr in (2016 - years + 1):2016) {
+    if (yr == 2016 - years + 1) df$gdp_capita[df$year == yr] <- base_gdp_capita
+    else df$gdp_capita[df$year == yr] <- pmax(df$gdp_capita[df$year == yr - 1] +
+                                            rnorm(countries, 0, 0.01 * sd_gdp_capita), 100) *
+        (1 + rnorm(countries, 0.02, 0.02))
+  }
+  df$resdevelop_gdp <- pmax(rep(base_rd_gdp, years) +
+                              0.1 * (log(df$gdp_capita) - mean(log(df$gdp_capita))) +
+                              rnorm(n, 0.10, 0.05), 0)
+  df$unemployment <- pmax(rep(base_unemp, years) - 
+                            0.2 * (log(df$gdp_capita) - 
+                                     mean(log(df$gdp_capita))) + 
+                            rnorm(n, 0.2, 0.2), 0)
+  df$lifeexpectancy <- rep(base_le, years) + 
+    df$resdevelop_gdp - 
+    0.5 * df$unemployment +
+    es * (log(df$gdp_capita) - mean(log(df$gdp_capita))) + 
+    rnorm(n, 0, 5)
+
+  df <- df[, c("country", "year", "lifeexpectancy", 
+               "gdp_capita", "resdevelop_gdp", "unemployment")]
+  tfile <- tempfile("simdata", fileext = c(".csv"))
+  write_csv(df, tfile)
+  tfile
+}
+```
+
+Using this code we can now test whether our design steps are able to process the data.
+
+```{r test_code}
+test_design(design, input = sim_data(), reporter = "minimal")
+```
+
+This looks good. Now let's see whether the design generates an effect estimate which is consistent with the effect of 1.0 that we simulated. For that, ee pick the protocol that is consistent with the simulation, meaning that
+
+- we use the log transformed value of `gdp_capita` as the independent variable,
+- use the full model since we incorporated effects of endogenous `unemployment` and `resdeevlop_gdp`
+- and we do not treat outliers.
+
+We use the function `simulate_design_power()` for this step. This function runs a provided protocol on simulated data, with specified sample and effect size. The sample size is given in cross-sectional units here. The function returns a data frame containing the results for each simulation run. The histogram of the point estimates allows us to assess the consistency of our design.
+
+``` {r check_design_consist, fig.align = "center"}
+power_df <- simulate_design_power(design, protocol = list(na_omit = "no", 
+                                                          log_gdp_capita = "yes", 
+                                                          idvs = "full",
+                                                          list(
+                                                            outlier_tment_style = "win",
+                                                            outlier_cutoff = 0
+                                                          ),
+                                                          list(
+                                                            fecffect = "ctryyear",
+                                                            cluster = "country"
+                                                          )), 
+                                  input_sim_func = sim_data, 
+                                  range_n = 75,
+                                  effect_size = 10.0)
+
+ggplot(power_df, aes(x = est)) + geom_density(color = NA, fill = "lightblue")
+```
+
+This looks. OK. Now: How about the power. Let us assume that we exect a 10% increase in GDP per capita to increase life expectancy by a year. How likely is that we will observe this effect in the data? The coefficient for the log transformed independent variable in that case would be $1 / ln(1.1) \approx `r round(1/log(1.1), 2)`$. Let's see whether we have enough power to detect such an effect.
+
+``` {r check_power, fig.align = "center"}
+power_df <- simulate_design_power(design, protocol = list(na_omit = "no", 
+                                                          log_gdp_capita = "yes", 
+                                                          idvs = "full",
+                                                          list(
+                                                            outlier_tment_style = "win",
+                                                            outlier_cutoff = 0
+                                                          ),
+                                                          list(
+                                                            fecffect = "ctryyear",
+                                                            cluster = "country"
+                                                          )), 
+                                  input_sim_func = sim_data, 
+                                  range_n = seq(10, 100, 10),
+                                  effect_size = 1/log(1.1))
+
+ggplot(power_df, aes(x = n, y = est)) + geom_point(color = "lightblue", position = position_dodge(width = 0.5))
+
+power_df %>%
+  group_by(n) %>%
+  summarize(power = sum(lb > 0)/n()) %>%
+  ggplot(aes(x = n, y = power)) + geom_line(color = "lightblue", size = 2)
+```
 
 ## To be continued ...
 

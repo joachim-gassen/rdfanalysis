@@ -12,7 +12,7 @@ read_data <- function(input = NULL, choice = NULL) {
     "following values:",
     "",
     "- `yes`: All observations with missing data are excluded",
-    "- `no`: All observations with missing data are included",
+    "- `no`: All observations with missing data are included"
   )
 
   # Specify your valid choices below. Format will be checked by test_design()
@@ -22,7 +22,7 @@ read_data <- function(input = NULL, choice = NULL) {
     list(name = "na.omit",
          type = "character",
          valid_values = c("yes", "no"),
-         weights = c(1, 0)),
+         weights = c(1, 0))
   )
   if (is.null(choice)) return(list(
     step_description = step_description,
@@ -31,7 +31,7 @@ read_data <- function(input = NULL, choice = NULL) {
   )) else check_choice(choice, choice_type)
   # ___ Analysis code starts below ___
 
-  df <- read_csv(input) %>%
+  df <- read_csv(input, col_types = cols()) %>%
     select(country, year,
            lifeexpectancy, gdp_capita,
            resdevelop_gdp, unemployment)
