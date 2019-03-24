@@ -5,7 +5,7 @@ step_name <- function(input = NULL, choice = NULL) {
   # for further information on how to use this template
   # and the package.
 
-  # Feel free to delete any/all comments line but leave
+  # Feel free to delete any/all lines containing comments but leave
   # the line containing ("Analysis code starts below") unchanged.
 
   # Provide your documentation in the two variables below.
@@ -24,20 +24,20 @@ step_name <- function(input = NULL, choice = NULL) {
     "following values:",
     "",
     "- `[valid_value 1]`: [What this choice does]",
-    "- `[valid_value n]`: [What that step does]",
+    "- `[valid_value n]`: [What that choice does]",
     "",
     "`[name of continous choice]`: [Explain valid range for continous choice",
     "and what it does]"
   )
 
   # Specify your valid choices below. Format will be checked by test_design()
-  # for consictency
+  # for consistency
 
   choice_type <- list(
     list(name = "[name of discrete choice]",
          type = "character",
          valid_values = c("[valid_value 1]", "[valid_value n]"),
-         # weights are not required but they need to add ip to one if
+         # weights are not required but they need to add up to one if
          # they are provided. Adjust the example below
          weights = c(0.8, 0.2)),
     list(name = "[name of continous choice]",
@@ -48,7 +48,7 @@ step_name <- function(input = NULL, choice = NULL) {
          weight_sample = c(0, rep(0.01, 4), rep(0.05, 4)))
   )
 
-  # You should not need to change anything in this code section below
+  # You should not need to change anything in the following code section
 
   if (is.null(choice)) return(list(
     step_description = step_description,
@@ -57,7 +57,7 @@ step_name <- function(input = NULL, choice = NULL) {
   )) else check_choice(choice, choice_type)
 
   # Leave the following comment untouched. It is being used by
-  # prepare_design_documentation to identify the part of the steps
+  # prepare_design_documentation() to identify the part of the step
   # that should be included in the documentation.
 
   # ___ Analysis code starts below ___
