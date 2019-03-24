@@ -58,6 +58,7 @@ Each step will be implemented via a function. To set up such a functional struct
 library(rdfanalysis)
 library(tidyverse)
 library(ExPanDaR)
+library(knitr)
 
 design <- define_design(steps = c("read_data", 
                                   "define_vars", 
@@ -72,14 +73,14 @@ design <- define_design(steps = c("read_data",
 When you take a look at the newly created directory, you will see a set of R files. Each file contains a template like this:
 
 ``` {r template}
-read_data <- function(input = NULL, choice = NULL) {
+step_name <- function(input = NULL, choice = NULL) {
   # This is a template for a design step
   # to be used by the rdfanalysis package
   # See https://joachim-gassen.github.io/rdfanalysis
   # for further information on how to use this template
   # and the package.
 
-  # Feel free to delete any/all comments line but leave
+  # Feel free to delete any/all lines containing comments but leave
   # the line containing ("Analysis code starts below") unchanged.
 
   # Provide your documentation in the two variables below.
@@ -98,20 +99,20 @@ read_data <- function(input = NULL, choice = NULL) {
     "following values:",
     "",
     "- `[valid_value 1]`: [What this choice does]",
-    "- `[valid_value n]`: [What that step does]",
+    "- `[valid_value n]`: [What that choice does]",
     "",
     "`[name of continous choice]`: [Explain valid range for continous choice",
     "and what it does]"
   )
 
   # Specify your valid choices below. Format will be checked by test_design()
-  # for consictency
+  # for consistency
 
   choice_type <- list(
     list(name = "[name of discrete choice]",
          type = "character",
          valid_values = c("[valid_value 1]", "[valid_value n]"),
-         # weights are not required but they need to add ip to one if
+         # weights are not required but they need to add up to one if
          # they are provided. Adjust the example below
          weights = c(0.8, 0.2)),
     list(name = "[name of continous choice]",
@@ -122,7 +123,7 @@ read_data <- function(input = NULL, choice = NULL) {
          weight_sample = c(0, rep(0.01, 4), rep(0.05, 4)))
   )
 
-  # You should not need to change anything in this code section below
+  # You should not need to change anything in the following code section
 
   if (is.null(choice)) return(list(
     step_description = step_description,
@@ -131,7 +132,7 @@ read_data <- function(input = NULL, choice = NULL) {
   )) else check_choice(choice, choice_type)
 
   # Leave the following comment untouched. It is being used by
-  # prepare_design_documentation to identify the part of the steps
+  # prepare_design_documentation() to identify the part of the step
   # that should be included in the documentation.
 
   # ___ Analysis code starts below ___
@@ -165,7 +166,7 @@ read_data <- function(input = NULL, choice = NULL) {
     "## Read data",
     "### Content",
     "",
-    "Reads country year world bank data CSV file and generates raw samples"
+    "Reads country year world bank data CSV file and generates raw sample"
   )
   choice_description <- c(
     "### Choice",
@@ -176,9 +177,6 @@ read_data <- function(input = NULL, choice = NULL) {
     "- `yes`: All observations with missing data are excluded",
     "- `no`: All observations with missing data are included"
   )
-
-  # Specify your valid choices below. Format will be checked by test_design()
-  # for consictency
 
   choice_type <- list(
     list(name = "na.omit",
@@ -225,7 +223,7 @@ define_vars <- function(input = NULL, choice = NULL) {
     "## Define the variables to be used in the analysis",
     "### Content",
     "",
-    "Based on the raw data, define the measures to be used in the analysis"
+    "Based on the raw data, define the measures to be used in the analysis."
   )
   choice_description <- c(
     "### Choice",
@@ -240,8 +238,6 @@ define_vars <- function(input = NULL, choice = NULL) {
     list(name = "log_gdp_capita",
          type = "character",
          valid_values = c("yes", "no"),
-         # weights are not required but they need to add ip to one if
-         # they are provided. Adjust the example below
          weights = c(1, 0))
   )
   if (is.null(choice)) return(list(
@@ -376,13 +372,13 @@ est_model <- function(input = NULL, choice = NULL) {
     "",
     "Uses a multiple regression setup to generate an estimate and",
     "a confidence interval for the effect of GDP per capita on life",
-    "expectancy"
+    "expectancy."
   )
   choice_description <- c(
     "### Choice",
     "",
     "A list containing two character values: `cluster` and `feffect`.",
-    "`cluster` defines the clsutering of standard errors and",
+    "`cluster` defines the clustering of standard errors and",
     "`feffect` defines the fixed effect structure of the model.",
     "Each value may take one of the following values:",
     "",
@@ -466,9 +462,10 @@ While not strictly necessary, a very useful next step is to simulate your raw da
 * You can assess the power of your design.
 
 To demonstrate these steps, I use a very quick'n'dirty simulation approach. 
-It creates a country year panel and simulates data which is roughly comparable 
-to real data and in terms of magnitides. It returns a filr path to a temporary
-CSV file containing the data.
+It creates a country year panel and simulates data that are roughly comparable 
+to real data. Using the natural log of `gdp_capita` as cause,
+It applies an effect of magnitude `es` on `life_expectancy` and
+returns a path to a temporary CSV file containing the data.
 
 ```{r simulation code}
 sim_data <- function(countries = 75, es = 1, years = 15) {
@@ -520,10 +517,10 @@ Using this code we can now test whether our design steps are able to process the
 test_design(design, input = sim_data(), reporter = "minimal")
 ```
 
-This looks good. Now let's see whether the design generates an effect estimate which is consistent with the effect of 1.0 that we simulated. For that, ee pick the protocol that is consistent with the simulation, meaning that
+This looks good. Now let's see whether the design generates an effect estimate that is consistent with the effect of 10 that we simulated. For that, we pick the protocol that is consistent with the simulation, meaning that
 
 - we use the log transformed value of `gdp_capita` as the independent variable,
-- use the full model since we incorporated effects of endogenous `unemployment` and `resdeevlop_gdp`
+- use the full model since `sim_data()` incorporated effects of `unemployment` and `resdevelop_gdp`
 - and we do not treat outliers.
 
 We use the function `simulate_design_power()` for this step. This function runs a provided protocol on simulated data, with specified sample and effect size. The sample size is given in cross-sectional units here. The function returns a data frame containing the results for each simulation run. The histogram of the point estimates allows us to assess the consistency of our design.
@@ -547,9 +544,9 @@ power_df <- simulate_design_power(design, protocol = list(na_omit = "no",
 ggplot(power_df, aes(x = est)) + geom_density(color = NA, fill = "lightblue")
 ```
 
-This looks. OK. Now: How about the power. Let us assume that we exect a 10% increase in GDP per capita to increase life expectancy by a year. How likely is that we will observe this effect in the data? The coefficient for the log transformed independent variable in that case would be $1 / ln(1.1) \approx `r round(1/log(1.1), 2)`$. Let's see whether we have enough power to detect such an effect.
+This looks OK. Now: How about the power? Let us assume that we exect a 10% increase in GDP per capita to increase life expectancy by a year. How likely is that we will observe this effect in the data? The coefficient for the log transformed independent variable in that case would be $1 / ln(1.1) \approx `r round(1/log(1.1), 2)`$. Let's see whether we have enough power to detect such an effect.
 
-``` {r check_power, fig.align = "center"}
+``` {r check_power, fig.align = "center", cache = TRUE}
 power_df <- simulate_design_power(design, protocol = list(na_omit = "no", 
                                                           log_gdp_capita = "yes", 
                                                           idvs = "full",
@@ -566,12 +563,118 @@ power_df <- simulate_design_power(design, protocol = list(na_omit = "no",
                                   effect_size = 1/log(1.1))
 
 ggplot(power_df, aes(x = n, y = est)) + geom_point(color = "lightblue", position = position_dodge(width = 0.5))
+```
 
+As `n`, the number of cross-sectional units (countries) in our simulation, increases, the distribution of our point estimates for our simulated effect narrows and centers on the simulated effect size. This is good. What is the number of countries that are needed, assuming 15 observations per country, to reach a power of $0.8$?
+
+```{r power_graph, fig.align = "center"}
 power_df %>%
   group_by(n) %>%
   summarize(power = sum(lb > 0)/n()) %>%
   ggplot(aes(x = n, y = power)) + geom_line(color = "lightblue", size = 2)
 ```
+
+Roughly 30 countries, yielding 450 observations. The world bank data will have more observations than that. So, power will not be an issue in our analysis.
+
+We have now verified that our design succeeds in identifying a simulated effect without bias and sufficient power. Time to run it on real data.
+
+## Step 5: Estimating the effect
+
+As we provided weights for each design step choice, we can now estimate the effect by applying these weights on our design. This is done by first running `exhaust_design(..., weight = TRUE)` based on the actual data and by then using the return value from this function call as input to `calculate_weighted_estimate()`.
+
+``` {r estimate_weighted_effect}
+
+weighted_ests <- exhaust_design(design, "https://joachim-gassen.github.io/data/wb_condensed.csv",
+                                weight = TRUE)
+calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")
+```
+
+We can also assess the results per protocol. 
+
+``` {r table_weighted_results}
+kable(weighted_ests)
+```
+
+The estimated effect sizes are much smaller than simulated and significant at the conventional level of $5 \%$ in two out of six cases. You can also run a single protocol to analyze the full model results.
+
+``` {r single_protocol}
+res <-
+  read_data("https://joachim-gassen.github.io/data/wb_condensed.csv", "yes") %>%
+  define_vars("yes") %>%
+  select_vars("full") %>%
+  treat_extreme_obs(list("win", 0.01)) %>%
+  est_model(list("ctryyear", "ctryyear"))
+
+summary(res$model)
+```
+
+Based on the selected model one would conclude that the additional explanatory power of our independent variables in explaining life expecvtancy is not overwhelming once one allows for country and year fixed effects.
+
+How robust is our effect estimate across our documented researcher degrees of freedom? Time to exhaust our design across all available design choices.
+
+
+## Step 6: Assessing the robustness of the effect
+
+We will now exhaust all design choices and estimate our effect for each feasible combination of choices. As these combine to $5,632$ protocols, running the code below will take a while. This is why we load the data that is generated by the commented lines from the disk.
+
+``` {r exhaust_design}
+# ests <- exhaust_design(design, "https://joachim-gassen.github.io/data/wb_condensed.csv")
+# save(ests, file = "case_study_ests.RData")
+
+load("case_study_ests.RData")
+```
+
+`plot_rdf_estimate_density()` provides a quick visual of the range of estimates across all researcher degrees of freedom. 
+
+``` {r estimate_density, fig.width = 8, fig.height = 6, fig.align = "center"}
+plot_rdf_estimate_density(ests, "est", "lb", "ub", color = "lightblue")
+```
+
+It becomes apparent that the estimated effect of GDP per capita varies widely across different research protocols. To explore this variation, we next display coefficients relative to discrete choices. We start with the specification of the main variable of interest. To be able to assess the precise range of our estimates, we use histogram-based ridge lines instead of densities.
+
+``` {r estimate_density_by_log_gdp_capita, fig.width = 8, fig.height = 6, fig.align = "center"}
+plot_rdf_ridges_by_dchoice(ests, "est", "log_gdp_capita", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
+```
+
+Not surprisingly, whether or not we use a logged version of the independent variable has a substantial effect on the estimated coefficients. Specifications using a non-logged independent variable are mostly centured around zero. Given that the association of `gdp_capita` and `lifeexpectancy` documented by the Preston curve is highly non-linear and that theoretically it seems reasonable to assume that percentage change and not absolute change in GDP per capita drive changes in life expectancy, we will now focus on specifications that use the log variant of the independent variable. 
+
+``` {r estimate_density_by_feffect, fig.width = 8, fig.height = 6, fig.align = "center"}
+log_ests <- ests %>%
+  filter(log_gdp_capita == "yes")
+
+plot_rdf_ridges_by_dchoice(log_ests, "est", "feffect", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
+```
+
+The influence of the applied fixed effect structure on the coefficient of interest is striking. A rigid set of country and year fixed effets controls for unobserved time-invariant cross-sectional heterogeneity and for unobserved cross-sectionally-invariant time trends. The former can be explained by, e.g., regional determinants like climate influencing life expectancy and the latter by developments in medical services and other social aspects that materialize across time and are constant across countries. As both are likely to be influential on theoretical grounds, we limit the analysis now on protocols that employ country and firm fixed effects and that use the natural log of GDP per capita as the main variable of interest. Also, we limit the analysis to models that estimate confidence intervals based on two-way clustered standard errors for the same reason.
+
+``` {r estimate_density_by_idvs, fig.width = 8, fig.height = 6, fig.align = "center"}
+rel_ests <- log_ests %>%
+  filter(feffect == "ctryyear" & 
+           cluster == "ctryyear")
+
+plot_rdf_ridges_by_dchoice(rel_ests, "est", "idvs", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
+```
+
+Hmm... While most of the protocols generate an estimate roughly in the range [0.5, 1.5], there are some estimates that are consistently larger. Are those driven by the sample selection step?
+
+``` {r estimate_density_by_idvs_na, fig.width = 8, fig.height = 6, fig.align = "center"}
+rel_ests %>%
+  filter(na.omit == "yes") %>%
+  plot_rdf_ridges_by_dchoice("est", "idvs", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
+```
+
+To some extent. When the outlier treatment is being applied on a smaller sample it seems to drive the coefficient higher. Other then that the control variables seem to have little influence on the main coefficient. 
+
+Finally, let's have a look at the outlier treatment.
+
+``` {r estimate_density_by_outlier, fig.width = 8, fig.height = 6, fig.align = "center"}
+rel_ests %>%
+  filter(na.omit == "yes",
+         idvs == "full") %>%
+  plot_rdf_estimates_by_choice("est", "lb", "ub", "outlier_tment_style", 
+                               color = "outlier_cutoff", order = "outlier_cutoff", width = 0.8)
+```
+
 
 ## To be continued ...
 
