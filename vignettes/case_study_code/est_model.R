@@ -5,13 +5,13 @@ est_model <- function(input = NULL, choice = NULL) {
     "",
     "Uses a multiple regression setup to generate an estimate and",
     "a confidence interval for the effect of GDP per capita on life",
-    "expectancy"
+    "expectancy."
   )
   choice_description <- c(
     "### Choice",
     "",
     "A list containing two character values: `cluster` and `feffect`.",
-    "`cluster` defines the clsutering of standard errors and",
+    "`cluster` defines the clustering of standard errors and",
     "`feffect` defines the fixed effect structure of the model.",
     "Each value may take one of the following values:",
     "",
@@ -50,14 +50,22 @@ est_model <- function(input = NULL, choice = NULL) {
   if (choice[[2]] != "none") form <- as.formula(f)
 
   mod <- lfe::felm(form, input$data)
+  protocol <- input$protocol
 
+  if (protocol[[4]][[1]] == "level-level")
+    mult <- log(1.1)*mean(input$data$gdp_capita, na.rm = TRUE)
+  else if (protocol[[4]][[1]] == "level-log")
+    mult <- log(1.1)
+  else if (protocol[[4]][[1]] == "log-level")
+    mult <- log(1.1)*mean(input$data$gdp_capita, na.rm = TRUE) *
+    mean(exp(input$data$lifeexpectancy), na.rm = TRUE)
+  else mult <- log(1.1)*mean(exp(input$data$lifeexpectancy), na.rm = TRUE)
   l <- list(
-    est = mod$coefficients[row.names(mod$coefficients) == 'gdp_capita'],
-    lb = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 1],
-    ub = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 2]
+    est = mod$coefficients[row.names(mod$coefficients) == 'gdp_capita'] * mult,
+    lb = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 1] * mult,
+    ub = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 2] * mult
   )
 
-  protocol <- input$protocol
   protocol[[length(protocol) + 1]] <-  choice
   return(list(
     data = l,

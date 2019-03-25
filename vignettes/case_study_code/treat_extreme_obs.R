@@ -35,17 +35,30 @@ treat_extreme_obs <- function(input = NULL, choice = NULL) {
   )) else check_choice(choice, choice_type)
   # ___ Analysis code starts below ___
 
-  if (choice[[2]] == 0) return(
-    list(
+  if (choice[[2]] == 0) {
+    protocol <- input$protocol
+    protocol[[length(protocol) + 1]] <-  choice
+    return(list(
       data = input$data,
-      protocol = input$protocol[[length(input$protocol) + 1]] <- choice
+      protocol = protocol
     ))
+  }
+
   switch(choice[[1]],
-         "win" = input$data %>%
-           treat_outliers(percentile = choice[[2]]) -> df,
-         "trunc" = input$data %>%
-           treat_outliers(percentile = choice[[2]],
-                          truncate = TRUE) -> df)
+         "win" = {
+           df <- input$data
+           df[, 3:ncol(df)] <-
+             treat_outliers(df[, 3:ncol(df)], percentile = choice[[2]])
+           df
+         },
+         "trunc" = {
+           df <- input$data
+           df[, 3:ncol(df)] <-
+             treat_outliers(df[, 3:ncol(df)],
+                            percentile = choice[[2]],
+                            truncate = TRUE)
+           df
+         })
 
   protocol <- input$protocol
   protocol[[length(protocol) + 1]] <-  choice
@@ -54,6 +67,3 @@ treat_extreme_obs <- function(input = NULL, choice = NULL) {
     protocol = protocol
   ))
 }
-
-
-

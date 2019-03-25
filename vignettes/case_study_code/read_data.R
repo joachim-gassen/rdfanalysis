@@ -3,7 +3,7 @@ read_data <- function(input = NULL, choice = NULL) {
     "## Read data",
     "### Content",
     "",
-    "Reads country year world bank data CSV file and generates raw samples"
+    "Reads country year world bank data CSV file and generates raw sample"
   )
   choice_description <- c(
     "### Choice",
@@ -14,9 +14,6 @@ read_data <- function(input = NULL, choice = NULL) {
     "- `yes`: All observations with missing data are excluded",
     "- `no`: All observations with missing data are included"
   )
-
-  # Specify your valid choices below. Format will be checked by test_design()
-  # for consictency
 
   choice_type <- list(
     list(name = "na.omit",
@@ -32,6 +29,7 @@ read_data <- function(input = NULL, choice = NULL) {
   # ___ Analysis code starts below ___
 
   df <- read_csv(input, col_types = cols()) %>%
+    mutate_at(c("country", "year"), as.factor) %>%
     select(country, year,
            lifeexpectancy, gdp_capita,
            resdevelop_gdp, unemployment)
