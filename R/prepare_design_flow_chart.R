@@ -20,8 +20,8 @@
 #' @export
 
 prepare_design_flow_chart <- function(d, file_name = NULL, landscape = FALSE,
-                                      color_step = "red", color_dchoice = "green",
-                                      color_cchoice = "blue", color_result = "orange") {
+                                      color_step = "skyblue2", color_dchoice = "skyblue3",
+                                      color_cchoice = "skyblue4", color_result = "slategray") {
   label <- c()
   type <- c()
   layer <- c()

@@ -4,8 +4,8 @@ est_model <- function(input = NULL, choice = NULL) {
     "### Content",
     "",
     "Uses a multiple regression setup to generate an estimate and",
-    "a confidence interval for the effect of GDP per capita on life",
-    "expectancy."
+    "a confidence interval for the effect of a 10 % increase in GDP per capita",
+    "on life expectancy in years."
   )
   choice_description <- c(
     "### Choice",

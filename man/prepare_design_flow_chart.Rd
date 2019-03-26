@@ -5,8 +5,8 @@
 \title{Prepare A Flow Chart of Your Research Design}
 \usage{
 prepare_design_flow_chart(d, file_name = NULL, landscape = FALSE,
-  color_step = "red", color_dchoice = "green",
-  color_cchoice = "blue", color_result = "orange")
+  color_step = "skyblue2", color_dchoice = "skyblue3",
+  color_cchoice = "skyblue4", color_result = "slategray")
 }
 \arguments{
 \item{d}{A character vector of the research design steps function names}

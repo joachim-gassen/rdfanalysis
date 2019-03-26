@@ -17,14 +17,14 @@ specify_model <- function(input = NULL, choice = NULL) {
     "untransformed independent variables",
     "- `level-log`: Use untransformed dependent and",
     "log-transformed independent variables",
-    "- `log-log`: Use log-transformed dependent and log-independent variables"
+    "- `log-log`: Use log-transformed dependent and independent variables"
   )
   choice_type <- list(
     list(name = "model_type",
          type = "character",
          valid_values = c("level-level", "log-level",
                           "level-log", "log-log"),
-         weights = c(0, 0, 1, 0))
+         weights = c(0, 0, 0.5, 0.5))
   )
   if (is.null(choice)) return(list(
     step_description = step_description,

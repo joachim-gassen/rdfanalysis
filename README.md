@@ -6,9 +6,11 @@ Researcher Degrees of Freedom Analysis
 A package to explore and document your degrees of freedom
 ---------------------------------------------------------
 
-This experimental in-development package provides a set of functions to develop data analysis code that systematically documents researcher degrees of freedom when conducting analyses on observational data. The resulting code base is self-documenting, supports unit testing and power simulations based on simulated data. The documented researcher degrees of freedom can be exhausted to generate a distribution of outcome estimates.
+This in-development package provides a coding infrastructure that allows researchers to systematically document and explore their researcher degrees of freedom when conducting analyses on observational data. The resulting code base is self-documenting, supports unit testing and power simulations based on simulated data. The documented researcher degrees of freedom can be exhausted to generate a distribution of outcome estimates.
 
-To provide a quick tour we will construct a research design where an independent variable x is confounded by a co-variate z and where the only real researcher degree of freedom is whether to control for z in the regression setup. We will ignore the testing bit in this quick walk-through.
+To provide a quick tour we will construct a research design where an independent variable x is confounded by a co-variate z and where the only researcher degree of freedom is whether to control for z in the regression setup. We will ignore the testing bit in this quick walk-through.
+
+For a more in-depth introduction into the package, please refer to the [vignette included in the documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).
 
 ### Step 1: Open a new Rstudio project in a clean directory and install the `rdfanalysis` package
 
@@ -168,4 +170,4 @@ kable(df)
 | yes             |  0.1399993|  0.0788181|  0.2011806|
 | no              |  0.6467797|  0.5927678|  0.7007916|
 
-Only two researcher degrees of freedom in this setting but you will easily get into the thousands in a real research setting. Stay tuned for a vignette that presents a use case.
+Only two researcher degrees of freedom in this setting but you will easily get into the thousands in a real research setting. For a real-life case study on how to use `rdfanalysis`, please refer to the [vignette included in the documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).

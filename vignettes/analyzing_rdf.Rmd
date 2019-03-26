@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   warning = FALSE,
   message = FALSE,
-  cache = TRUE
+  cache = FALSE
 )
 ```
 
@@ -46,7 +46,7 @@ While the analysis it not meant to contribute to the question whether there is a
 
 Every research design can be implemented as a series of functions where each function receives the output of the previous function as a parameter and produces output for the next function.
 
-The first function reads or generates data, the last function generates results. In principle, the `rdfanalysis` package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals. In our case, it is the one $95 \%$ confidence interval for the GDP per capita coefficient, provided by three variables:
+The first function reads or generates data, the last function generates results. In principle, the `rdfanalysis` package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals. In our case, it is the 95 % confidence interval for the effect of a 10 % GDP per capita increase on life expectancy in years, provided by three variables:
 - the estimate (`est`)
 - a lower bound (`lb`) and
 - an upper bound (`ub`).
@@ -54,18 +54,21 @@ The first function reads or generates data, the last function generates results.
 To assess the impact of GDP per capita on life expectancy, our case design follows the following steps
 
 - Read data
-- Define variables
 - Select variables for model
 - Treat extreme observations
+- Specify model
 - Estimate model
 
-Each step will be implemented by a function. To set up such a functional structure, you use the command `define_design()`. This function creates a series of function templates in a directory of your choice. Existing files are not over-written. You can choose whether you want your functions all in one R file or whether you want to generate separtate files. I am going with separate files here.
+Each step will be implemented by a function. To set up such a functional structure, you use the command `define_design()`. This function creates a series of function templates in a directory of your choice. Existing files are not over-written. You can choose whether you want your functions all in one R file or whether you want to generate separate files. I am going with separate files here.
 
-``` {r define_design, results = "hide"}
+``` {r setup_design, results = "hide"}
 library(rdfanalysis)
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(readr)
 library(ExPanDaR)
 library(knitr)
+library(testthat)
 
 design <- define_design(steps = c("read_data", 
                                   "select_vars", 
@@ -164,9 +167,9 @@ step_name <- function(input = NULL, choice = NULL) {
 }
 ```
 
-The task is now to implement the code for each step. To do so, you should first set `step_description` and `choice_description`. Each variable takes a vector of strings that will be concatenated to RMarkdown code. Use these variables to explain what the steps does and which choices it contains. Each choice establishes a researcher degree of freedom.
+The task is now to implement the code for each step. To do so, you should first set `step_description` and `choice_description`. Each variable takes a vector of strings that will be concatenated to R Markdown code. Use these variables to explain what the steps does and which choices it contains. Each choice establishes a researcher degree of freedom.
 
-As an example: When we import the raw data, we can decide whether we require each country-year observation to have non-missing data for all potential variables. To implement this discrete choice, you document it in `choice_description` and specify it in `choice_type`. The `weight` parameter can be used to provide the choice (or weighting of choices) that you *a priori* assume to be supported by theory. The final function `read_data()` is provided below. It simply reads a csv file containing data, limits the sample to the required variables and deletes cases with missing data if the choice `na.omit` is set to `"yes"`.
+As an example: When we import the raw data, we can decide whether we require each country-year observation to have non-missing data for all potential variables. To implement this discrete choice, you document it in `choice_description` and specify it in `choice_type`. The `weight` parameter can be used to provide the choice (or weighting of choices) that you *a priori* assume to be supported by theory. The final function `read_data()` is provided below. It simply reads a CSV file containing data, limits the sample to the required variables and deletes cases with missing data if the choice `na.omit` is set to `"yes"`.
 
 ``` {r read_data, eval = FALSE}
 read_data <- function(input = NULL, choice = NULL) {
@@ -220,11 +223,11 @@ For the other steps you follow this approach. For our case study, I implement th
 - `select_vars()`: `idvs` identifies the independent variables that you want to include in the regression model
 - `treat_extreme_obs()`: `outlier_tment_style` indicates whether you want to use truncating or winsorizing to limit the influence of extreme observations. `outlier_cutoff` holds the percentile cutoff. It can be within the range [0, 0.1] (0 to 10 %).
 - `specify_model()`: `model_type` determines whether the model should be estimated as level-level, log-level, level-log or log-log specification.
-- `est_model()`: `feffects` reports which fixed effects are used (none, country, year or both) and `cluster` indicates how the standard errors should be clustered (not, by country, by year, or two-way by country and year).
+- `est_model()`: estimates the main effect of interest. To make the estimates comparable across the different model specifications the model coefficients are transformed so that each report the life expectancy effect in years of a 10 % increase in GDP per capita. The choice `feffects` determines which fixed effects are used (none, country, year or both) and `cluster` indicates how the standard errors should be clustered (not, by country, by year, or two-way by country and year).
 
 All these choices are rather standard choices in research designs based on observational data. Taken together and assuming that you want to generate outlier cases for each percentile from 0 to 10, they generate $2 * 4 * 2 * 11 * 4 * 4 * 4 = 11,264$ researcher degrees of freedom! 
 
-Below you will find all four functions. Copy and paste them into the template files to generate your research design.
+Below you find all four functions. Copy and paste them into the template files to generate your research design.
 
 ``` {r functions, eval = FALSE}
 select_vars <- function(input = NULL, choice = NULL) {
@@ -250,7 +253,7 @@ select_vars <- function(input = NULL, choice = NULL) {
          type = "character",
          valid_values = c("gdp_only", "gdp_rd", "gdp_ue", "full"),
          weights = c(0, 0, 0, 1))
-    )
+  )
   if (is.null(choice)) return(list(
     step_description = step_description,
     choice_description = choice_description,
@@ -259,10 +262,10 @@ select_vars <- function(input = NULL, choice = NULL) {
   # ___ Analysis code starts below ___
 
   df <- switch (choice[[1]],
-    "gdp_only" = input$data %>% select(-resdevelop_gdp, -unemployment),
-    "gdp_rd" = input$data %>% select(-unemployment),
-    "gdp_ue" = input$data %>% select(-resdevelop_gdp),
-    "full" = input$data
+                "gdp_only" = input$data %>% select(-resdevelop_gdp, -unemployment),
+                "gdp_rd" = input$data %>% select(-unemployment),
+                "gdp_ue" = input$data %>% select(-resdevelop_gdp),
+                "full" = input$data
   )
 
   protocol <- input$protocol
@@ -272,6 +275,7 @@ select_vars <- function(input = NULL, choice = NULL) {
     protocol = protocol
   ))
 }
+
 
 treat_extreme_obs <- function(input = NULL, choice = NULL) {
   step_description <- c(
@@ -318,7 +322,7 @@ treat_extreme_obs <- function(input = NULL, choice = NULL) {
       protocol = protocol
     ))
   }
-  
+
   switch(choice[[1]],
          "win" = {
            df <- input$data
@@ -334,7 +338,7 @@ treat_extreme_obs <- function(input = NULL, choice = NULL) {
                             truncate = TRUE)
            df
          })
-  
+
   protocol <- input$protocol
   protocol[[length(protocol) + 1]] <-  choice
   return(list(
@@ -342,6 +346,7 @@ treat_extreme_obs <- function(input = NULL, choice = NULL) {
     protocol = protocol
   ))
 }
+
 
 specify_model <- function(input = NULL, choice = NULL) {
   step_description <- c(
@@ -358,18 +363,18 @@ specify_model <- function(input = NULL, choice = NULL) {
     "following values:",
     "",
     "- `level-level`: Use untransformed dependent and independent variables",
-    "- `log-level`: Use log-transformed dependent and", 
+    "- `log-level`: Use log-transformed dependent and",
     "untransformed independent variables",
     "- `level-log`: Use untransformed dependent and",
     "log-transformed independent variables",
-    "- `log-log`: Use log-transformed dependent and log-independent variables"
+    "- `log-log`: Use log-transformed dependent and independent variables"
   )
   choice_type <- list(
     list(name = "model_type",
          type = "character",
-         valid_values = c("level-level", "log-level", 
+         valid_values = c("level-level", "log-level",
                           "level-log", "log-log"),
-         weights = c(0, 0, 1, 0))
+         weights = c(0, 0, 0.5, 0.5))
   )
   if (is.null(choice)) return(list(
     step_description = step_description,
@@ -377,14 +382,14 @@ specify_model <- function(input = NULL, choice = NULL) {
     choice_type = choice_type
   )) else check_choice(choice, choice_type)
   # ___ Analysis code starts below ___
-  
+
   df <- input$data
-  
+
   if (choice == "log-level" | choice == "log-log")
     df$lifeexpectancy <- log(df$lifeexpectancy)
   if (choice == "level-log" | choice == "log-log")
-    df[, 4:ncol(df)] <- log(df[, 4:ncol(df)])
-  
+    df[,4:ncol(df)] <- log(df[,4:ncol(df)])
+
   protocol <- input$protocol
   protocol[[length(protocol) + 1]] <- choice
 
@@ -394,14 +399,15 @@ specify_model <- function(input = NULL, choice = NULL) {
   ))
 }
 
+
 est_model <- function(input = NULL, choice = NULL) {
   step_description <- c(
     "## Estimates the model",
     "### Content",
     "",
     "Uses a multiple regression setup to generate an estimate and",
-    "a confidence interval for the effect of GDP per capita on life",
-    "expectancy."
+    "a confidence interval for the effect of a 10 % increase in GDP per capita",
+    "on life expectancy in years."
   )
   choice_description <- c(
     "### Choice",
@@ -461,7 +467,7 @@ est_model <- function(input = NULL, choice = NULL) {
     lb = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 1] * mult,
     ub = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 2] * mult
   )
-  
+
   protocol[[length(protocol) + 1]] <-  choice
   return(list(
     data = l,
@@ -474,18 +480,22 @@ est_model <- function(input = NULL, choice = NULL) {
 
 ## Step 3: Source, test and document design
 
-After implementing the design, you need to source it. In addition, you can test the design code for input parameter consistency at this stage.
+After implementing the design, you need to source it. In addition, you can test the design code for input parameter consistency at this stage. This test will verify that each step provides a step description, a choice description and the valid choice types to the user when called without input parameter. If weights are provided, the test verifies that the weights add up to one and are within the valid choice range.
 
 ``` {r source_design}
 source_design(design, rel_dir = "case_study_code")
 test_design(design, reporter = "minimal")
 ```
 
-Next, the command `prepare_design_documentation()` produces a PDF document based on 
+The test does not complain. Next, the command `prepare_design_documentation()` produces a PDF document based on 
 the `step_description` and `choice_description` that you provided for each step. By default,
 it also includes the "pay load" code for each design step.
 
 In addition, the command `prepare_design_flow_chart()` produces a visualization of your design steps and of their choices.
+
+```{r prepare_pdf_doc, eval = FALSE}
+prepare_design_documentation(design, "preston_curve_design.pdf")
+```
 
 ``` {r vis_design_steps, fig.width = 8, fig.height = 12, fig.align = "center"}
 prepare_design_flow_chart(design)
@@ -504,10 +514,10 @@ To demonstrate these steps, I use a very quick'n'dirty simulation approach.
 It creates a country year panel and simulates data that are roughly comparable 
 to real data. It uses the following level-log setup:
 
-$lifeexpectancy = \beta_0 + es\log(gdp\_capita) + 10\log(resdevelop_gdp) + 5log(unemployment) + \epsilon$
+$lifeexpectancy = \beta_0 + \frac{es}{\log(1.1)}\log(gdp\_capita) + 10\log(resdevelop\_gdp) + 5log(unemployment) + \epsilon$
 
 with $\beta_0$ being based on country-level base-lines that are adjusted for sample means of the independent variables.
-The effect `es` of ` log(gdp_capita)` on `life_expectancy` is our main coefficient of interest. Like the `read_data()` function, `sim_data()` returns a path to a temporary CSV file containing the simulated data.
+The effect `es` of a 10 % increase of `log(gdp_capita)` on `lifeexpectancy` in years is our main variable of interest. Like the `read_data()` function, `sim_data()` returns a path to a temporary CSV file containing the simulated data.
 
 ```{r simulation code}
 sim_data <- function(countries = 75, es = 1, years = 15) {
@@ -529,7 +539,7 @@ sim_data <- function(countries = 75, es = 1, years = 15) {
   for (yr in (2016 - years + 1):2016) {
     if (yr == 2016 - years + 1) df$gdp_capita[df$year == yr] <- base_gdp_capita
     else df$gdp_capita[df$year == yr] <- pmax(df$gdp_capita[df$year == yr - 1] +
-                                            rnorm(countries, 0, 0.01 * sd_gdp_capita), 100) *
+        rnorm(countries, 0, 0.01 * sd_gdp_capita), 100) *
         (1 + rnorm(countries, 0.02, 0.02))
   }
   df$resdevelop_gdp <- pmax(rep(base_rd_gdp, years) +
@@ -542,10 +552,10 @@ sim_data <- function(countries = 75, es = 1, years = 15) {
   df$lifeexpectancy <- rep(base_le, years) - 
     10 * mean(log(df$resdevelop_gdp)) + 
     5 * mean(log(df$unemployment)) -
-    es * mean(log(df$gdp_capita)) +
+    (es/log(1.1)) * mean(log(df$gdp_capita)) +
     10 * log(df$resdevelop_gdp) -  
     5 * log(df$unemployment) +
-    es * log(df$gdp_capita) + 
+    (es/log(1.1)) * log(df$gdp_capita) + 
     rnorm(n, 0, 5)
 
   df$lifeexpectancy <- pmax(df$lifeexpectancy, 30)
@@ -557,18 +567,18 @@ sim_data <- function(countries = 75, es = 1, years = 15) {
 }
 ```
 
-Using this code we can now test whether our design steps are able to process the data.
+Using this code we can now test whether our design steps are able to process the data. This tests whether based on our simulated data each step is able to run with each feasible choice, producing output and creating no warnings or errors.
 
 ```{r test_code}
 test_design(design, input = sim_data(), reporter = "minimal")
 ```
 
-This looks good. Now let's see whether the design generates an effect estimate that is consistent with the effect of 10 that we simulated. For that, we pick the protocol that is consistent with the simulation, meaning that
+This looks good. Now let's see whether the design generates an effect estimate that is consistent with the effect of 1 year that we simulated. For that, we pick the protocol that is consistent with the simulation, meaning that
 
 - We use the full model since `sim_data()` incorporated effects of `unemployment` and `resdevelop_gdp`,
 - we do not treat outliers,
 - we use the level-log model specification,
-- and we include country and year firm effects and also cluster our standard errors by these dimensions.
+- and we include country and year fixed effects and also cluster our standard errors by country and year.
 
 We use the function `simulate_design_power()` for this step. This function runs a provided protocol on simulated data, with specified sample and effect size. The sample size is given in cross-sectional units here. The function returns a data frame containing the results for each simulation run. The histogram of the point estimates allows us to assess the consistency of our design.
 
@@ -583,19 +593,19 @@ power_df <-
                                         ),
                                         model_type = "level-log",
                                         list(
-                                          fecffect = "country",
-                                          cluster = "country"
+                                          fecffect = "ctryyear",
+                                          cluster = "ctryyear"
                                         )), 
                         input_sim_func = sim_data, 
                         range_n = 150,
-                        effect_size = 1/log(1.1))
+                        effect_size = 1)
 
 ggplot(power_df, aes(x = est)) + 
   geom_density(color = NA, fill = "lightblue") +
   theme_minimal()
 ```
 
-This looks OK. Now: How about the power? Let us assume that we exect a 10% increase in GDP per capita to increase life expectancy by a year. How likely is that we will observe this effect in the data? The coefficient for the log transformed independent variable in that case would be $1 / ln(1.1) \approx `r round(1/log(1.1), 2)`$. Let's see whether we have enough power to detect such an effect.
+This looks OK. Now: How about the power? We continue to assume that a 10% increase in GDP per capita increases life expectancy by a year. How likely is that we will be able observe this effect in the data? Let's see whether we have enough power to detect such an effect.
 
 ``` {r check_power, fig.align = "center"}
 power_df <- 
@@ -613,17 +623,18 @@ power_df <-
                                         )), 
                         input_sim_func = sim_data, 
                         range_n = seq(10, 100, 10),
-                        effect_size = 1/log(1.1))
+                        effect_size = 1)
 
 ggplot(power_df, aes(x = n, y = est)) + 
   geom_point(color = "lightblue", position = position_dodge(width = 0.5)) +
   theme_minimal()
 ```
 
-As `n`, the number of cross-sectional units (countries) in our simulation, increases, the distribution of our point estimates for our simulated effect narrows and centers on the simulated effect size. This is good. What is the number of countries that are needed, assuming 15 observations per country, to reach a power of $0.8$?
+As `n`, the number of cross-sectional units (countries) in our simulation, increases, the distribution of our point estimates for our simulated effect narrows and centers on the simulated effect size of one year. This is good. What is the number of countries that are needed, assuming 15 observations per country, to reach a power of $0.8$?
 
 ```{r power_graph, fig.align = "center"}
 power_df %>%
+  na.omit() %>%
   group_by(n) %>%
   summarize(power = sum(lb > 0)/n()) %>%
   ggplot(aes(x = n, y = power)) + geom_line(color = "lightblue", size = 2) +
@@ -632,27 +643,29 @@ power_df %>%
 
 Roughly 40 countries, yielding 600 observations. The world bank data will have more observations than that. So, power will not be an issue in our analysis.
 
-We have now verified that our design succeeds in identifying a simulated effect without bias and sufficient power. Time to run it on real data.
+We have now verified that our design is capable to identify a simulated effect without bias and with sufficient power. Time to run it on real data.
+
 
 ## Step 5: Estimating the effect
 
-As we provided weights for each design step choice, we can now estimate the effect by applying these weights on our design. This is done by first running `exhaust_design(..., weight = TRUE)` based on the actual data and by then using the return value from this function call as input to `calculate_weighted_estimate()`.
+As we provided weights for each design step choice, we can now estimate the effect by applying these weights on our design. This is done by first running `exhaust_design(..., weight = TRUE)` on the actual data and by then using the returned protocol estimates from this function call as input to `calculate_weighted_estimate()`.
 
 ``` {r exhaust_weighted_ests, results = "hide"}
 weighted_ests <- exhaust_design(design, "https://joachim-gassen.github.io/data/wb_condensed.csv",
                                 weight = TRUE)
 ```
 ``` {r estimate_weighted_effect}
-calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")
+weighted_eff <- calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")
+kable(as.data.frame(weighted_eff), digits = 3)
 ```
 
-We can also assess the results per protocol. 
+The estimated weighted effect size of `r round(weighted_eff$est, 3)` is much smaller than our simulated effect of one year. We can also assess the results for each of the twelve protocols with non-zero weights. 
 
 ``` {r table_weighted_results}
-kable(weighted_ests)
+kable(weighted_ests, digits = 3)
 ```
 
-The estimated effect sizes are much smaller than simulated and significant at the conventional level of $5 \%$ in two out of six cases. You can also run a single protocol to analyze the full model results.
+The protocol estimates are significant at the conventional 95 % level for four out of twelve protocols. You can also run a single protocol to analyze its full model results.
 
 ``` {r single_protocol}
 res <-
@@ -665,50 +678,46 @@ res <-
 summary(res$model)
 ```
 
-Based on the selected model one would conclude that the additional explanatory power of our independent variables in explaining life expectancy is not overwhelming once one allows for country and year fixed effects. Based on our weighted estimate, a $10 \%$ increase in GDP per capita would be associated with $`r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$est, 3)` \log(1.1) \approx `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$est * log(1.1), 2)`$ years change in life expectancy.   
+Note that, while the implemented design returns an estimate of the life expectancy effect in years of a 10 % increase in GDP per capita, the documented model estimates of a level-log specification have to be transformed to produce that estimate. Based on the selected model, a 10 % increase in GDP per capita would be associated with $`r round(res$model$coefficients[1], 3)` \log(1.1) \approx `r round(round(res$model$coefficients[1], 3) * log(1.1), 3)`$ years change in life expectancy. Overall, one can conclude that the additional explanatory power of our independent variables in explaining life expectancy are not overwhelming once one allows for country and year fixed effects.
 
-How robust is our effect estimate across our documented researcher degrees of freedom? Time to exhaust our design across all available design choices.
+How robust is our weighted effect estimate across our documented researcher degrees of freedom? Time to exhaust our design across all available design choices.
 
 
 ## Step 6: Assessing the robustness of the effect
 
-We will now exhaust all design choices and estimate our effect for each feasible combination of choices. As these combine to $11,264$ protocols, running the code below will take a while. This is why we load the data that is generated by the commented lines from the disk.
+We will now exhaust all design choices and estimate our effect for each feasible protocol. As these combine to 11,264 protocols, running the code below will take a while. This is why we load the data that is generated by the commented lines from the disk.
 
 ``` {r exhaust_design, results = "hide"}
-ests <- exhaust_design(design,
-                       "https://joachim-gassen.github.io/data/wb_condensed.csv")
-save(ests, file = "case_study_ests.RData")
+# ests <- exhaust_design(design,
+#                       "https://joachim-gassen.github.io/data/wb_condensed.csv")
+# save(ests, file = "case_study_ests.RData")
 
-# load("case_study_ests.RData")
+load("case_study_ests.RData")
 ```
 
-The coefficients will vary in magnitude by model specification. Thus, we first display coefficients relative to model type. To be able to assess the precise range of our estimates, we use histogram-based ridge lines instead of densities.
+Let's see how the estimates distribute across our researcher degrees of freedom.
+
+``` {r estimate_density, fig.width = 7, fig.height = 6, fig.align = "center"}
+plot_rdf_estimate_density(ests, "est", "lb", "ub", color = "lightblue") +
+  theme_minimal()
+```
+
+Quite a range of estimates. How do the coefficients vary by model specification? To be able to assess the precise range of our estimates, we now use histogram-based ridge lines instead of densities.
 
 ``` {r estimate_density_by_model_type, fig.width = 7, fig.height = 6, fig.align = "center"}
 plot_rdf_ridges_by_dchoice(ests, "est", "model_type", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
 ```
 
-Not surprisingy, the magnitude of the "level-log" coefficients are much larger than the other coefficients. Let's vizualise the coefficients independently by type with different scales.
-
-``` {r estimate_density_by_model_type_sep, fig.width = 7, fig.height = 4, fig.align = "center"}
-ggplot(ests, aes(x = est)) +
-  geom_histogram(fill = "lightblue", color = NA) +
-  facet_grid(cols = vars(model_type), scales = "free") +
-  theme_minimal() + 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
-```
-
-
-In line with the overall shape of the Preston curve, the specifications with untransformed independent variables generate estimates closer to zero than the ones with log-transformed independent variables. For the following, we will concentrate on the level-log specification that we hypothesized.  
+In line with the overall shape of the Preston curve, the specifications with untransformed (level) independent variables generate estimates closer to zero than the ones with log-transformed independent variables. For the following, we will concentrate on the specifications with log-transformed independent variables that we hypothesized.  
 
 ``` {r estimate_density_by_feffect, fig.width = 7, fig.height = 6, fig.align = "center"}
 log_ests <- ests %>%
-  filter(model_type == "level-log")
+  filter(model_type == "level-log" | model_type == "log-log")
 
 plot_rdf_ridges_by_dchoice(log_ests, "est", "feffect", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
 ```
 
-The influence of the applied fixed effect structure on the coefficient of interest is striking. A rigid set of country and year fixed effets controls for unobserved time-invariant cross-sectional heterogeneity and for unobserved cross-sectionally-invariant time trends. The former can be explained by, e.g., regional determinants like climate influencing life expectancy and the latter by developments in medical services and other social aspects that materialize across time and are constant across countries. As both are likely to be influential on theoretical grounds, we limit the analysis now on protocols that employ country and firm fixed effects and that use the natural log of GDP per capita as the main variable of interest. Also, we limit the analysis to models that estimate confidence intervals based on two-way clustered standard errors for the same reason.
+The influence of the applied fixed effect structure on the coefficient of interest is striking. A set of country and year fixed effects controls for unobserved time-invariant cross-sectional heterogeneity and for unobserved cross-sectionally-invariant time trends. The former can be explained by, e.g., regional determinants like climate influencing life expectancy and the latter by developments in medical services and other social aspects that materialize across time and are constant across countries. As both are likely to be influential on theoretical grounds, we limit the analysis now on protocols that employ country and firm fixed effects and that use log-transformed independent variables. Also, we limit the analysis to models that estimate confidence intervals based on two-way clustered standard errors.
 
 ``` {r estimate_density_by_idvs, fig.width = 7, fig.height = 6, fig.align = "center"}
 rel_ests <- log_ests %>%
@@ -718,7 +727,7 @@ rel_ests <- log_ests %>%
 plot_rdf_ridges_by_dchoice(rel_ests, "est", "idvs", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
 ```
 
-Hmm... While most of the protocols generate an estimate roughly in the range [0.5, 1.5], there are some estimates that are consistently larger. Are those driven by the sample selection step?
+Hmm... While most of the protocols generate an estimate roughly in the range of 0.0 to 0.2 years, there are some estimates that are consistently larger. Are those driven by the sample selection step?
 
 ``` {r estimate_density_by_idvs_na, fig.width = 7, fig.height = 6, fig.align = "center"}
 rel_ests %>%
@@ -735,14 +744,16 @@ rel_ests %>%
   filter(na.omit == "yes",
          idvs == "full") %>%
   plot_rdf_estimates_by_choice("est", "lb", "ub", "outlier_tment_style", 
-                               color = "outlier_cutoff", order = "outlier_cutoff", width = 0.8)
+                               color = "model_type", order = "outlier_cutoff", width = 0.8)
 ```
+
+The estimates are ordered by outlier treatment style and within that, by the magnitude of the outlier cutoff. Interestingly, deleting outliers by truncating has little effect on the estimate while limiting them to narrower percentile cutoffs tends to increase the estimate.
 
 
 ## Summing up
 
 Using the `rdfanalysis` package, we are able to systematically explore the 16,232 degrees of freedom that we identified in a supposedly straight-forward panel data analysis of observational data. 
 
-Allowing for time-invariant country-level unobservables and country-invariant unobservables affetcing the time-series, we estimate that effect of a 10 % increase of GDP per capita to be in the area of `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$lb * log(1.1), 2)` to `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$ub * log(1.1), 2)` years. Assuming that no other unobservables or reverse causality affects our findings, this coefficient can be causally interpretated.
+Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$lb, 2)` to `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$ub, 2)` years. Assuming that no other unobservables or reverse causality affect our findings, this coefficient can be causally interpreted.
 
-As can be seen from rsearcher degrees of freedom exploration, our estimate is only one of many feasible estimates. In particular, the country-year fixed effet structure has a dampening effect on the analysis. Building on the level-log specification, if one would only include country-fixed effects a by 10 % increase in GDP could be associated with an increase of up to `r round(max(log_ests$ub) * log(1.1), 2)` years. On the other hand, if one uses a level-level estimation ...
+As can be assessed by the researcher degrees of freedom exploration, our estimate is only one of many feasible estimates. In particular, the country-year fixed effect structure has a dampening effect on the analysis. When relaxing this assumption the feasible range of estimates ranges from a lower bound of `r round(min(ests$lb), 2)` to an upper bound of `r round(max(ests$ub), 2)` years.
