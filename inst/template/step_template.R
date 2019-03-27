@@ -26,7 +26,7 @@ step_name <- function(input = NULL, choice = NULL) {
     "- `[valid_value 1]`: [What this choice does]",
     "- `[valid_value n]`: [What that choice does]",
     "",
-    "`[name of continous choice]`: [Explain valid range for continous choice",
+    "`[name of continuous choice]`: [Explain valid range for continuous choice",
     "and what it does]"
   )
 
@@ -40,10 +40,10 @@ step_name <- function(input = NULL, choice = NULL) {
          # weights are not required but they need to add up to one if
          # they are provided. Adjust the example below
          weights = c(0.8, 0.2)),
-    list(name = "[name of continous choice]",
+    list(name = "[name of continuous choice]",
          type = "double",
          valid_min = 0, valid_max = 0.1,
-         # weights for continous choices are provided by a sample of choices.
+         # weights for continuous choices are provided by a sample of choices.
          # Could be just one value. Adjust the example below
          weight_sample = c(0, rep(0.01, 4), rep(0.05, 4)))
   )

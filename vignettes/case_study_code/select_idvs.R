@@ -1,4 +1,4 @@
-select_vars <- function(input = NULL, choice = NULL) {
+select_idvs <- function(input = NULL, choice = NULL) {
   step_description <- c(
     "## Identify the variables for analysis",
     "### Content",

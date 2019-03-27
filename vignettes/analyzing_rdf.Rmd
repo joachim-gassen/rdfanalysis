@@ -46,7 +46,9 @@ While the analysis it not meant to contribute to the question whether there is a
 
 Every research design can be implemented as a series of functions where each function receives the output of the previous function as a parameter and produces output for the next function.
 
-The first function reads or generates data, the last function generates results. In principle, the `rdfanalysis` package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals. In our case, it is the 95 % confidence interval for the effect of a 10 % GDP per capita increase on life expectancy in years, provided by three variables:
+In the terminology of the `rdfanalysis` package, each function is called a "design step". It comes with "choices" that can be either discrete or continuous in nature. The choices are what generate researcher degrees of freedom. A set of made choices across all steps of a design constitutes a "research protocol". The total number of feasible research protocols equals the researcher degrees of freedom of a research design.
+
+In our case and in most designs, the first step reads or generates data, and the last step generates results. In principle, the `rdfanalysis` package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals. In our case, it is the 95 % confidence interval for the effect of a 10 % GDP per capita increase on life expectancy in years, provided by three variables:
 - the estimate (`est`)
 - a lower bound (`lb`) and
 - an upper bound (`ub`).
@@ -54,7 +56,7 @@ The first function reads or generates data, the last function generates results.
 To assess the impact of GDP per capita on life expectancy, our case design follows the following steps
 
 - Read data
-- Select variables for model
+- Select independent variables for model
 - Treat extreme observations
 - Specify model
 - Estimate model
@@ -71,7 +73,7 @@ library(knitr)
 library(testthat)
 
 design <- define_design(steps = c("read_data", 
-                                  "select_vars", 
+                                  "select_idvs", 
                                   "treat_extreme_obs", 
                                   "specify_model", 
                                   "est_model"),
@@ -112,7 +114,7 @@ step_name <- function(input = NULL, choice = NULL) {
     "- `[valid_value 1]`: [What this choice does]",
     "- `[valid_value n]`: [What that choice does]",
     "",
-    "`[name of continous choice]`: [Explain valid range for continous choice",
+    "`[name of continuous choice]`: [Explain valid range for continuous choice",
     "and what it does]"
   )
 
@@ -126,10 +128,10 @@ step_name <- function(input = NULL, choice = NULL) {
          # weights are not required but they need to add up to one if
          # they are provided. Adjust the example below
          weights = c(0.8, 0.2)),
-    list(name = "[name of continous choice]",
+    list(name = "[name of continuous choice]",
          type = "double",
          valid_min = 0, valid_max = 0.1,
-         # weights for continous choices are provided by a sample of choices.
+         # weights for continuous choices are provided by a sample of choices.
          # Could be just one value. Adjust the example below
          weight_sample = c(0, rep(0.01, 4), rep(0.05, 4)))
   )
@@ -167,9 +169,9 @@ step_name <- function(input = NULL, choice = NULL) {
 }
 ```
 
-The task is now to implement the code for each step. To do so, you should first set `step_description` and `choice_description`. Each variable takes a vector of strings that will be concatenated to R Markdown code. Use these variables to explain what the steps does and which choices it contains. Each choice establishes a researcher degree of freedom.
+The task is now to implement the code for each step. To do so, you should first set `step_description` and `choice_description`. Each variable takes a vector of strings that will be concatenated to R Markdown code to provide the code documentation (see `prepare_design_documentation()` below). Use these variables to explain what the step does and which choices it contains.
 
-As an example: When we import the raw data, we can decide whether we require each country-year observation to have non-missing data for all potential variables. To implement this discrete choice, you document it in `choice_description` and specify it in `choice_type`. The `weight` parameter can be used to provide the choice (or weighting of choices) that you *a priori* assume to be supported by theory. The final function `read_data()` is provided below. It simply reads a CSV file containing data, limits the sample to the required variables and deletes cases with missing data if the choice `na.omit` is set to `"yes"`.
+Let's apply this to our first design step `read_data()`. When we import the raw data, we can decide whether we require each country-year observation to have non-missing data for all potential variables. To implement this discrete choice, you document it in `choice_description` and specify it in `choice_type`. The `weight` parameter can be used to provide the choice (or weighting of choices) that you *a priori* assume to be supported by theory. The final function `read_data()` is provided below. It simply reads a CSV file containing data, limits the sample to the required variables and deletes cases with missing data if the choice `na.omit` is set to `"yes"`.
 
 ``` {r read_data, eval = FALSE}
 read_data <- function(input = NULL, choice = NULL) {
@@ -218,19 +220,19 @@ read_data <- function(input = NULL, choice = NULL) {
 }
 ```
 
-For the other steps you follow this approach. For our case study, I implement the following choices:
+For the other steps you follow the same approach. For our case study, I implement the following choices:
 
-- `select_vars()`: `idvs` identifies the independent variables that you want to include in the regression model
-- `treat_extreme_obs()`: `outlier_tment_style` indicates whether you want to use truncating or winsorizing to limit the influence of extreme observations. `outlier_cutoff` holds the percentile cutoff. It can be within the range [0, 0.1] (0 to 10 %).
-- `specify_model()`: `model_type` determines whether the model should be estimated as level-level, log-level, level-log or log-log specification.
-- `est_model()`: estimates the main effect of interest. To make the estimates comparable across the different model specifications the model coefficients are transformed so that each report the life expectancy effect in years of a 10 % increase in GDP per capita. The choice `feffects` determines which fixed effects are used (none, country, year or both) and `cluster` indicates how the standard errors should be clustered (not, by country, by year, or two-way by country and year).
+- `select_idvs()`: selects the independent variables that we want to include in our regression model. `idvs` names these variables.
+- `treat_extreme_obs()`: treats extreme observations that otherwise tend to be highly influential for regression outcomes. `outlier_tment_style` indicates whether you want to use truncating or winsorizing. `outlier_cutoff` holds the percentile cutoff. It can be within the range [0, 0.1] (0 to 10 %, with 0 indicating no outlier treatment).
+- `specify_model()`: provides the specification of the regression model. `model_type` determines whether the model will be estimated as level-level, log-level, level-log or log-log specification.
+- `est_model()`: estimates the main effect of interest. To make the estimates comparable across the different model specifications the model coefficients are transformed so that each estimates the life expectancy effect in years of a 10 % increase in GDP per capita. The choice `feffects` determines which fixed effects are used (none, country, year or both) and `cluster` indicates how the standard errors should be clustered (not, by country, by year, or two-way by country and year).
 
 All these choices are rather standard choices in research designs based on observational data. Taken together and assuming that you want to generate outlier cases for each percentile from 0 to 10, they generate $2 * 4 * 2 * 11 * 4 * 4 * 4 = 11,264$ researcher degrees of freedom! 
 
 Below you find all four functions. Copy and paste them into the template files to generate your research design.
 
 ``` {r functions, eval = FALSE}
-select_vars <- function(input = NULL, choice = NULL) {
+select_idvs <- function(input = NULL, choice = NULL) {
   step_description <- c(
     "## Identify the variables for analysis",
     "### Content",
@@ -580,7 +582,7 @@ This looks good. Now let's see whether the design generates an effect estimate t
 - we use the level-log model specification,
 - and we include country and year fixed effects and also cluster our standard errors by country and year.
 
-We use the function `simulate_design_power()` for this step. This function runs a provided protocol on simulated data, with specified sample and effect size. The sample size is given in cross-sectional units here. The function returns a data frame containing the results for each simulation run. The histogram of the point estimates allows us to assess the consistency of our design.
+We use the function `simulate_design_power()` for this step. This function runs a provided protocol on simulated data, with specified sample and effect size. The sample size is given in cross-sectional units here. The function returns a data frame containing the results for each simulation run. The density of the point estimates allows us to assess the consistency of our design.
 
 ``` {r check_design_consist, fig.align = "center"}
 power_df <- 
@@ -641,7 +643,7 @@ power_df %>%
   theme_minimal()
 ```
 
-Roughly 40 countries, yielding 600 observations. The world bank data will have more observations than that. So, power will not be an issue in our analysis.
+Roughly 40 countries, yielding 600 observations. The world bank data will have more observations than that. So, power will not be an issue in our analysis, at least not if the effect size is comparable to the one we assumed.
 
 We have now verified that our design is capable to identify a simulated effect without bias and with sufficient power. Time to run it on real data.
 
@@ -670,7 +672,7 @@ The protocol estimates are significant at the conventional 95 % level for four o
 ``` {r single_protocol}
 res <-
   read_data("https://joachim-gassen.github.io/data/wb_condensed.csv", "yes") %>%
-  select_vars("full") %>%
+  select_idvs("full") %>%
   treat_extreme_obs(list("win", 0.01)) %>%
   specify_model("level-log") %>%
   est_model(list("ctryyear", "ctryyear"))
