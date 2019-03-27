@@ -5,11 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Analyzing Researchers Degrees of Freedom: A Case Study • rdfanalysis</title>
+<title>Analyzing Researcher Degrees of Freedom:<br>
+A Case Study • rdfanalysis</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Analyzing Researchers Degrees of Freedom: A Case Study">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Analyzing Researcher Degrees of Freedom:&lt;br /&gt;
+A Case Study">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -59,7 +61,8 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/analyzing_rdf.html">Analyzing Researchers Degrees of Freedom: A Case Study</a>
+      <a href="../articles/analyzing_rdf.html">Analyzing Researcher Degrees of Freedom:  
+A Case Study</a>
     </li>
   </ul>
 </li>
@@ -85,7 +88,8 @@
 <script src="analyzing_rdf_files/grViz-binding-1.0.0/grViz.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Analyzing Researchers Degrees of Freedom: A Case Study</h1>
+      <h1>Analyzing Researcher Degrees of Freedom:<br>
+A Case Study</h1>
                         <h4 class="author">Joachim Gassen</h4>
             
             <h4 class="date">2019-03-27</h4>
@@ -109,12 +113,17 @@
 <div id="the-case" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-case" class="anchor"></a>The Case</h2>
-<p>As case we assess the impact of real Gross Domestic Product (GDP) per capita on life expectancy. This association has become known as the <a href="https://en.wikipedia.org/wiki/Preston_curve">Preston Curve</a> (<a href="https://www.tandfonline.com/doi/abs/10.1080/00324728.1975.10410201">Preston, Pop Studies, 1975</a>). We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the World Bank.</p>
-<p>While the analysis it not meant to contribute to the question whether there is a causal link between these two constructs, I design the analysis such that identifying assumptions for such a causal interpretation of its findings are explicit.</p>
+<p>As case we assess the impact of real Gross Domestic Product (GDP) per capita on life expectancy. This association has become known as the <a href="https://en.wikipedia.org/wiki/Preston_curve">Preston Curve</a> (<a href="https://www.tandfonline.com/doi/abs/10.1080/00324728.1975.10410201">Preston, Pop Studies, 1975</a>).</p>
+<center>
+<div class="figure">
+<img src="preston_1975_p235.png" alt="Preston (1975): The Changing Relation between Mortality and level of Economic Development, Population Studies (29): 235." width="672"><p class="caption">Preston (1975): The Changing Relation between Mortality and level of Economic Development, Population Studies (29): 235.</p>
 </div>
-<div id="step-1-define-your-research-design-by-a-series-of-functions" class="section level2">
+</center>
+<p>We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the World Bank. While the analysis it not meant to contribute to the question whether there is a causal link between these two constructs, I design the analysis such that identifying assumptions for such a causal interpretation of its findings are explicit.</p>
+</div>
+<div id="step-1-define-research-design-by-a-series-of-functions" class="section level2">
 <h2 class="hasAnchor">
-<a href="#step-1-define-your-research-design-by-a-series-of-functions" class="anchor"></a>Step 1: Define your research design by a series of functions</h2>
+<a href="#step-1-define-research-design-by-a-series-of-functions" class="anchor"></a>Step 1: Define research design by a series of functions</h2>
 <p>Every research design can be implemented as a series of functions where each function receives the output of the previous function as a parameter and produces output for the next function.</p>
 <p>In the terminology of the <code>rdfanalysis</code> package, each function is called a “design step”. It comes with “choices” that can be either discrete or continuous in nature. The choices are what generate researcher degrees of freedom. A set of made choices across all steps of a design constitutes a “research protocol”. The total number of feasible research protocols equals the researcher degrees of freedom of a research design.</p>
 <p>In our case and in most designs, the first step reads or generates data, and the last step generates results. In principle, the <code>rdfanalysis</code> package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals. In our case, it is the 95 % confidence interval for the effect of a 10 % GDP per capita increase on life expectancy in years, provided by three variables: - the estimate (<code>est</code>) - a lower bound (<code>lb</code>) and - an upper bound (<code>ub</code>).</p>
@@ -668,9 +677,9 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <p>Roughly 40 countries, yielding 600 observations. The world bank data will have more observations than that. So, power will not be an issue in our analysis, at least not if the effect size is comparable to the one we assumed.</p>
 <p>We have now verified that our design is capable to identify a simulated effect without bias and with sufficient power. Time to run it on real data.</p>
 </div>
-<div id="step-5-estimating-the-effect" class="section level2">
+<div id="step-5-estimate-effect" class="section level2">
 <h2 class="hasAnchor">
-<a href="#step-5-estimating-the-effect" class="anchor"></a>Step 5: Estimating the effect</h2>
+<a href="#step-5-estimate-effect" class="anchor"></a>Step 5: Estimate effect</h2>
 <p>As we provided weights for each design step choice, we can now estimate the effect by applying these weights on our design. This is done by first running <code><a href="../reference/exhaust_design.html">exhaust_design(..., weight = TRUE)</a></code> on the actual data and by then using the returned protocol estimates from this function call as input to <code><a href="../reference/calculate_weighted_estimate.html">calculate_weighted_estimate()</a></code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">weighted_ests &lt;-<span class="st"> </span><span class="kw"><a href="../reference/exhaust_design.html">exhaust_design</a></span>(design, <span class="st">"https://joachim-gassen.github.io/data/wb_condensed.csv"</span>,
                                 <span class="dt">weight =</span> <span class="ot">TRUE</span>)</code></pre></div>
@@ -898,9 +907,9 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <p>Note that, while the implemented design returns an estimate of the life expectancy effect in years of a 10 % increase in GDP per capita, the documented model estimates of a level-log specification have to be transformed to produce that estimate. Based on the selected model, a 10 % increase in GDP per capita would be associated with <span class="math inline">\(0.705 \log(1.1) \approx 0.067\)</span> years change in life expectancy. Overall, one can conclude that the additional explanatory power of our independent variables in explaining life expectancy are not overwhelming once one allows for country and year fixed effects.</p>
 <p>How robust is our weighted effect estimate across our documented researcher degrees of freedom? Time to exhaust our design across all available design choices.</p>
 </div>
-<div id="step-6-assessing-the-robustness-of-the-effect" class="section level2">
+<div id="step-6-assess-robustness-of-effect" class="section level2">
 <h2 class="hasAnchor">
-<a href="#step-6-assessing-the-robustness-of-the-effect" class="anchor"></a>Step 6: Assessing the robustness of the effect</h2>
+<a href="#step-6-assess-robustness-of-effect" class="anchor"></a>Step 6: Assess robustness of effect</h2>
 <p>We will now exhaust all design choices and estimate our effect for each feasible protocol. As these combine to 11,264 protocols, running the code below will take a while. This is why we load the data that is generated by the commented lines from the disk.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ests &lt;- exhaust_design(design,</span>
 <span class="co">#                       "https://joachim-gassen.github.io/data/wb_condensed.csv")</span>
@@ -945,9 +954,12 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <div id="summing-up" class="section level2">
 <h2 class="hasAnchor">
 <a href="#summing-up" class="anchor"></a>Summing up</h2>
-<p>Using the <code>rdfanalysis</code> package, we are able to systematically explore the 16,232 degrees of freedom that we identified in a supposedly straight-forward panel data analysis of observational data.</p>
+<p>Using the <code>rdfanalysis</code> package, we are able to systematically explore the 11,264 degrees of freedom that we identified in a supposedly straight-forward panel data analysis of observational data.</p>
 <p>Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of 0 to 0.17 years. Assuming that no other unobservables or reverse causality affect our findings, this coefficient can be causally interpreted.</p>
 <p>As can be assessed by the researcher degrees of freedom exploration, our estimate is only one of many feasible estimates. In particular, the country-year fixed effect structure has a dampening effect on the analysis. When relaxing this assumption the feasible range of estimates ranges from a lower bound of -0.35 to an upper bound of 0.95 years.</p>
+<p>It is impressive to see the number of researcher degrees of freedom that even such a simple research design like the one at hand implies. My hope is that the <code>rdfanalysis</code> package might motivate researchers to think more deeply about their choice set and to explore and document their findings more transparently.</p>
+<p>If you have remarks about this vignette or the package, I would love to hear from you. Feel free to reach out via <a href="mailto:gassen@wiwi.hu-berlin.de">email</a> or <a href="https://twitter.com/JoachimGassen">twitter</a>.</p>
+<p>Enjoy!</p>
 </div>
   </div>
 
@@ -958,12 +970,12 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#introduction">Introduction</a></li>
       <li><a href="#the-case">The Case</a></li>
-      <li><a href="#step-1-define-your-research-design-by-a-series-of-functions">Step 1: Define your research design by a series of functions</a></li>
+      <li><a href="#step-1-define-research-design-by-a-series-of-functions">Step 1: Define research design by a series of functions</a></li>
       <li><a href="#step-2-implement-design-steps">Step 2: Implement design steps</a></li>
       <li><a href="#step-3-source-test-and-document-design">Step 3: Source, test and document design</a></li>
       <li><a href="#step-4-optional-but-encouraged-simulate-data-for-additional-testing-and-power-analysis">Step 4 (optional but encouraged): Simulate data for additional testing and power analysis</a></li>
-      <li><a href="#step-5-estimating-the-effect">Step 5: Estimating the effect</a></li>
-      <li><a href="#step-6-assessing-the-robustness-of-the-effect">Step 6: Assessing the robustness of the effect</a></li>
+      <li><a href="#step-5-estimate-effect">Step 5: Estimate effect</a></li>
+      <li><a href="#step-6-assess-robustness-of-effect">Step 6: Assess robustness of effect</a></li>
       <li><a href="#summing-up">Summing up</a></li>
       </ul>
 </div>
