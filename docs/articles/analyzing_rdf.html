@@ -84,7 +84,7 @@ A Case Study</a>
 <!--/.navbar -->
 
       
-      </header><script src="analyzing_rdf_files/htmlwidgets-1.3/htmlwidgets.js"></script><script src="analyzing_rdf_files/viz-1.8.2/viz.js"></script><link href="analyzing_rdf_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+      </header><script src="analyzing_rdf_files/htmlwidgets-1.3/htmlwidgets.js"></script><script src="analyzing_rdf_files/viz-0.3/viz.js"></script><link href="analyzing_rdf_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
 <script src="analyzing_rdf_files/grViz-binding-1.0.0/grViz.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -119,7 +119,7 @@ A Case Study</h1>
 <img src="preston_1975_p235.png" alt="Preston (1975): The Changing Relation between Mortality and level of Economic Development, Population Studies (29): 235." width="672"><p class="caption">Preston (1975): The Changing Relation between Mortality and level of Economic Development, Population Studies (29): 235.</p>
 </div>
 </center>
-<p>We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the <a href="https://data.worldbank.org">World Bank</a> (GDP per capita, life expectancy at birth and unemployment rates), and the <a href="http://dataexplorer.wittgensteincentre.org/wcde-v2/">Wittgenstein Center</a> for mean years of schooling received by country inhabitants being 15 years or older. As the schooling data is available at 5 year intervals only, I interpolate the years in-between to keep the data at annual frequency (another research degree of freedom, I know …).</p>
+<p>We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the <a href="https://data.worldbank.org">World Bank</a> (GDP per capita, life expectancy at birth and unemployment rates), and the <a href="http://dataexplorer.wittgensteincentre.org/wcde-v2/">Wittgenstein Center</a> for mean years of schooling received by country inhabitants being 15 years or older. As the schooling data is available at 5 year intervals only, I interpolate the years in-between linearly to keep the data at annual frequency (another research degree of freedom, I know …). If you want to explore the data underlying the case, <a href="https://jgassen.shinyapps.io/expand_rdfanalysis">click here</a> to access an interactive data exploration tool based on my <a href="https://joachim-gassen.github.io/ExPanDaR">ExPanDaR package</a>. With this tool, you can also re-generate most protocols that we study below by hand.</p>
 <p>While the analysis it not meant to contribute to the question whether there is a causal link between GDP per capita and life expectancy (see <a href="https://doi.org/10.1111/padr.12141">Lutz and Kebede, Pop and Dev Review 2018</a> for a recent discussion), I design the analysis such that identifying assumptions for such a causal interpretation of its findings are explicit.</p>
 </div>
 <div id="step-1-define-research-design-by-a-series-of-functions" class="section level2">
@@ -274,9 +274,9 @@ design &lt;-<span class="st"> </span><span class="kw"><a href="../reference/defi
   )) <span class="cf">else</span> <span class="kw"><a href="../reference/check_choice.html">check_choice</a></span>(choice, choice_type)
   <span class="co"># ___ Analysis code starts below ___</span>
 
-  df &lt;-<span class="st"> </span><span class="kw"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span>(input, <span class="dt">col_types =</span> <span class="kw"><a href="https://readr.tidyverse.org/reference/cols.html">cols</a></span>()) <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_at</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"country"</span>, <span class="st">"year"</span>), as.factor) <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(country, year,
+  df &lt;-<span class="st"> </span><span class="kw">read_csv</span>(input, <span class="dt">col_types =</span> <span class="kw">cols</span>()) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate_at</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"country"</span>, <span class="st">"year"</span>), as.factor) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">select</span>(country, year,
            lifeexpectancy, gdp_capita,
            mn_yrs_school, unemployment)
 
@@ -333,9 +333,9 @@ design &lt;-<span class="st"> </span><span class="kw"><a href="../reference/defi
   <span class="co"># ___ Analysis code starts below ___</span>
 
   df &lt;-<span class="st"> </span><span class="cf">switch</span> (choice[[<span class="dv">1</span>]],
-                <span class="st">"gdp_only"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>mn_yrs_school, <span class="op">-</span>unemployment),
-                <span class="st">"gdp_school"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>unemployment),
-                <span class="st">"gdp_ue"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>mn_yrs_school),
+                <span class="st">"gdp_only"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>mn_yrs_school, <span class="op">-</span>unemployment),
+                <span class="st">"gdp_school"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>unemployment),
+                <span class="st">"gdp_ue"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>mn_yrs_school),
                 <span class="st">"full"</span> =<span class="st"> </span>input<span class="op">$</span>data
   )
 
@@ -398,13 +398,13 @@ treat_extreme_obs &lt;-<span class="st"> </span><span class="cf">function</span>
          <span class="st">"win"</span> =<span class="st"> </span>{
            df &lt;-<span class="st"> </span>input<span class="op">$</span>data
            df[, <span class="dv">3</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(df)] &lt;-
-<span class="st">             </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ExPanDaR/topics/treat_outliers">treat_outliers</a></span>(df[, <span class="dv">3</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(df)], <span class="dt">percentile =</span> choice[[<span class="dv">2</span>]])
+<span class="st">             </span><span class="kw">treat_outliers</span>(df[, <span class="dv">3</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(df)], <span class="dt">percentile =</span> choice[[<span class="dv">2</span>]])
            df
          },
          <span class="st">"trunc"</span> =<span class="st"> </span>{
            df &lt;-<span class="st"> </span>input<span class="op">$</span>data
            df[, <span class="dv">3</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(df)] &lt;-
-<span class="st">             </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ExPanDaR/topics/treat_outliers">treat_outliers</a></span>(df[, <span class="dv">3</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(df)],
+<span class="st">             </span><span class="kw">treat_outliers</span>(df[, <span class="dv">3</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(df)],
                             <span class="dt">percentile =</span> choice[[<span class="dv">2</span>]],
                             <span class="dt">truncate =</span> <span class="ot">TRUE</span>)
            df
@@ -615,7 +615,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
   df &lt;-<span class="st"> </span>df[, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"lifeexpectancy"</span>, 
                <span class="st">"gdp_capita"</span>, <span class="st">"mn_yrs_school"</span>, <span class="st">"unemployment"</span>)]
   tfile &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/tempfile">tempfile</a></span>(<span class="st">"simdata"</span>, <span class="dt">fileext =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">".csv"</span>))
-  <span class="kw"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span>(df, tfile)
+  <span class="kw">write_csv</span>(df, tfile)
   tfile
 }</code></pre></div>
 <p>Using this code we can now test whether our design steps are able to process the data. This tests whether based on our simulated data each step is able to run with each feasible choice, producing output and creating no warnings or errors.</p>
@@ -646,9 +646,9 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
                         <span class="dt">range_n =</span> <span class="dv">150</span>,
                         <span class="dt">effect_size =</span> <span class="dv">1</span>)
 
-<span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(power_df, <span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> est)) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_density">geom_density</a></span>(<span class="dt">color =</span> <span class="ot">NA</span>, <span class="dt">fill =</span> <span class="st">"lightblue"</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>()</code></pre></div>
+<span class="kw">ggplot</span>(power_df, <span class="kw">aes</span>(<span class="dt">x =</span> est)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">color =</span> <span class="ot">NA</span>, <span class="dt">fill =</span> <span class="st">"lightblue"</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_minimal</span>()</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/check_design_consist-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>This looks OK. Now: How about the power? We continue to assume that a 10% increase in GDP per capita increases life expectancy by a year. How likely is that we will be able observe this effect in the data? Let’s see whether we have enough power to detect such an effect.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">power_df &lt;-<span class="st"> </span>
@@ -668,17 +668,17 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
                         <span class="dt">range_n =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="dv">10</span>, <span class="dv">100</span>, <span class="dv">10</span>),
                         <span class="dt">effect_size =</span> <span class="dv">1</span>)
 
-<span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(power_df, <span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> n, <span class="dt">y =</span> est)) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_point">geom_point</a></span>(<span class="dt">color =</span> <span class="st">"lightblue"</span>, <span class="dt">position =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/position_dodge">position_dodge</a></span>(<span class="dt">width =</span> <span class="fl">0.5</span>)) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>()</code></pre></div>
+<span class="kw">ggplot</span>(power_df, <span class="kw">aes</span>(<span class="dt">x =</span> n, <span class="dt">y =</span> est)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">color =</span> <span class="st">"lightblue"</span>, <span class="dt">position =</span> <span class="kw">position_dodge</span>(<span class="dt">width =</span> <span class="fl">0.5</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_minimal</span>()</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/check_power-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>As <code>n</code>, the number of cross-sectional units (countries) in our simulation, increases, the distribution of our point estimates for our simulated effect narrows and centers on the simulated effect size of one year. This is good. What is the number of countries that are needed, assuming 15 observations per country, to reach a power of <span class="math inline">\(0.8\)</span>?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">power_df <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/na.fail">na.omit</a></span>() <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(n) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(<span class="dt">power =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(lb <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)<span class="op">/</span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/n.html">n</a></span>()) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> n, <span class="dt">y =</span> power)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="dt">color =</span> <span class="st">"lightblue"</span>, <span class="dt">size =</span> <span class="dv">2</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>()</code></pre></div>
+<span class="st">  </span><span class="kw">group_by</span>(n) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">power =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(lb <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)<span class="op">/</span><span class="kw">n</span>()) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> n, <span class="dt">y =</span> power)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">color =</span> <span class="st">"lightblue"</span>, <span class="dt">size =</span> <span class="dv">2</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_minimal</span>()</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/power_graph-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>Roughly 40 countries, yielding 600 observations. The world bank data will have more observations than that. So, power will not be an issue in our analysis, at least not if the effect size is comparable to the one we assumed.</p>
 <p>We have now verified that our design is capable to identify a simulated effect without bias and with sufficient power. Time to run it on real data.</p>
@@ -690,7 +690,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">weighted_ests &lt;-<span class="st"> </span><span class="kw"><a href="../reference/exhaust_design.html">exhaust_design</a></span>(design, <span class="st">"https://joachim-gassen.github.io/data/wb_new.csv"</span>,
                                 <span class="dt">weight =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">weighted_eff &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calculate_weighted_estimate.html">calculate_weighted_estimate</a></span>(weighted_ests, <span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(weighted_eff), <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
+<span class="kw">kable</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(weighted_eff), <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">est</th>
@@ -706,7 +706,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 </tr></tbody>
 </table>
 <p>The estimated weighted effect size of 0.112 is much smaller than our simulated effect of one year. We can also assess the results for each of the twelve protocols with non-zero weights.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(weighted_ests, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">kable</span>(weighted_ests, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">na.omit</th>
@@ -924,32 +924,32 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/load">load</a></span>(<span class="st">"case_study_ests.RData"</span>)</code></pre></div>
 <p>Let’s see how the estimates distribute across our researcher degrees of freedom.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/plot_rdf_estimate_density.html">plot_rdf_estimate_density</a></span>(ests, <span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>, <span class="dt">color =</span> <span class="st">"lightblue"</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>()</code></pre></div>
+<span class="st">  </span><span class="kw">theme_minimal</span>()</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/estimate_density-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>Quite a range of estimates. How do the coefficients vary by model specification? To be able to assess the precise range of our estimates, we now use histogram-based ridge lines instead of densities.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/plot_rdf_ridges_by_dchoice.html">plot_rdf_ridges_by_dchoice</a></span>(ests, <span class="st">"est"</span>, <span class="st">"model_type"</span>, <span class="dt">hist =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="fl">0.9</span>, <span class="dt">fill =</span> <span class="st">"lightblue"</span>, <span class="dt">color =</span> <span class="ot">NA</span>)</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/estimate_density_by_model_type-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>In line with the overall shape of the Preston curve, the specifications with untransformed (level) independent variables generate estimates closer to zero than the ones with log-transformed independent variables. For the following, we will concentrate on the specifications with log-transformed independent variables that we hypothesized.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log_ests &lt;-<span class="st"> </span>ests <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(model_type <span class="op">==</span><span class="st"> "level-log"</span> <span class="op">|</span><span class="st"> </span>model_type <span class="op">==</span><span class="st"> "log-log"</span>)
+<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/filter">filter</a></span>(model_type <span class="op">==</span><span class="st"> "level-log"</span> <span class="op">|</span><span class="st"> </span>model_type <span class="op">==</span><span class="st"> "log-log"</span>)
 
 <span class="kw"><a href="../reference/plot_rdf_ridges_by_dchoice.html">plot_rdf_ridges_by_dchoice</a></span>(log_ests, <span class="st">"est"</span>, <span class="st">"feffect"</span>, <span class="dt">hist =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="fl">0.9</span>, <span class="dt">fill =</span> <span class="st">"lightblue"</span>, <span class="dt">color =</span> <span class="ot">NA</span>)</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/estimate_density_by_feffect-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>The influence of the applied fixed effect structure on the coefficient of interest is striking. A set of country and year fixed effects controls for unobserved time-invariant cross-sectional heterogeneity and for unobserved cross-sectionally-invariant time trends. The former can be explained by, e.g., regional determinants like climate influencing life expectancy and the latter by developments in medical services and other social aspects that materialize across time and are constant across countries. As both are likely to be influential on theoretical grounds, we limit the analysis now on protocols that employ country and firm fixed effects and that use log-transformed independent variables. Also, we limit the analysis to models that estimate confidence intervals based on two-way clustered standard errors.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rel_ests &lt;-<span class="st"> </span>log_ests <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(feffect <span class="op">==</span><span class="st"> "ctryyear"</span> <span class="op">&amp;</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/filter">filter</a></span>(feffect <span class="op">==</span><span class="st"> "ctryyear"</span> <span class="op">&amp;</span><span class="st"> </span>
 <span class="st">           </span>cluster <span class="op">==</span><span class="st"> "ctryyear"</span>)
 
 <span class="kw"><a href="../reference/plot_rdf_ridges_by_dchoice.html">plot_rdf_ridges_by_dchoice</a></span>(rel_ests, <span class="st">"est"</span>, <span class="st">"idvs"</span>, <span class="dt">hist =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="fl">0.9</span>, <span class="dt">fill =</span> <span class="st">"lightblue"</span>, <span class="dt">color =</span> <span class="ot">NA</span>)</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/estimate_density_by_idvs-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>Hmm… While most of the protocols generate an estimate roughly in the range of 0.05 to 0.15 years, some of the univariate estimates are smaller and even below zero. Let’s focus on them for a second and see whether they are driven by sample selection.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rel_ests <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(idvs <span class="op">==</span><span class="st"> "gdp_only"</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/filter">filter</a></span>(idvs <span class="op">==</span><span class="st"> "gdp_only"</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/plot_rdf_ridges_by_dchoice.html">plot_rdf_ridges_by_dchoice</a></span>(<span class="st">"est"</span>, <span class="st">"na.omit"</span>, <span class="dt">hist =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="fl">0.9</span>, <span class="dt">fill =</span> <span class="st">"lightblue"</span>, <span class="dt">color =</span> <span class="ot">NA</span>)</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/estimate_density_by_idvs_na-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>Yes, this seems to be the case. When assessed univariately on the largest possible sample, the range of estimates becomes considerably larger. Is this driven by extreme observations?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rel_ests <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(idvs <span class="op">==</span><span class="st"> "gdp_only"</span>,
+<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/filter">filter</a></span>(idvs <span class="op">==</span><span class="st"> "gdp_only"</span>,
          na.omit <span class="op">==</span><span class="st"> "no"</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="../reference/plot_rdf_estimates_by_choice.html">plot_rdf_estimates_by_choice</a></span>(<span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>, <span class="st">"outlier_tment_style"</span>, 
                                <span class="dt">color =</span> <span class="st">"model_type"</span>, <span class="dt">order =</span> <span class="st">"outlier_cutoff"</span>, <span class="dt">width =</span> <span class="fl">0.008</span>)</code></pre></div>
@@ -957,7 +957,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <p>This seems to be the case. In general, the stricter the outlier treatment, the larger the estimate. In addition, the univariate level-log specifications are generating larger and slightly narrower estimates compared to the univariate log-log specification, consistent with a percentage increase in GDP rather being associated with an absolute increase in life expectancy than a relative one. This seems reasonable because of diminishing rates of returns to wealth.</p>
 <p>Our last test will focus on the multivariate analyses that just use schooling as additional control, since including unemployment reduces the sample size while contributing little to the explanatory power of the model.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rel_ests <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(na.omit <span class="op">==</span><span class="st"> "no"</span>,
+<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/filter">filter</a></span>(na.omit <span class="op">==</span><span class="st"> "no"</span>,
          idvs <span class="op">==</span><span class="st"> "gdp_school"</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/plot_rdf_estimates_by_choice.html">plot_rdf_estimates_by_choice</a></span>(<span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>, <span class="st">"outlier_tment_style"</span>, 
                                <span class="dt">color =</span> <span class="st">"model_type"</span>, <span class="dt">order =</span> <span class="st">"outlier_cutoff"</span>, <span class="dt">width =</span> <span class="fl">0.008</span>)</code></pre></div>
@@ -979,6 +979,60 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <p>If you have remarks about this vignette or the package, I would love to hear from you. Feel free to reach out via <a href="mailto:gassen@wiwi.hu-berlin.de">email</a> or <a href="https://twitter.com/JoachimGassen">twitter</a>.</p>
 <p>Enjoy!</p>
 </div>
+<div id="appendix" class="section level2">
+<h2 class="hasAnchor">
+<a href="#appendix" class="anchor"></a>Appendix</h2>
+<p>Below you find the code to run the data in the ExPanD shiny web app for extensive interactive exploration. You can re-generate most protocols from above and more. An online version is accessible <a href="https://jgassen.shinyapps.io/expand_rdfanalysis">here</a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ExPanDaR)
+
+df_all &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">"https://joachim-gassen.github.io/data/wb_new.csv"</span>, <span class="dt">col_types =</span> <span class="kw">cols</span>()) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate_at</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"country"</span>, <span class="st">"year"</span>), as.factor) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate_at</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"lifeexpectancy"</span>, <span class="st">"gdp_capita"</span>,
+           <span class="st">"mn_yrs_school"</span>, <span class="st">"unemployment"</span>), <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">ln =</span> log)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(country, region, year, 
+         gdp_capita, lifeexpectancy,
+         mn_yrs_school, unemployment,
+         gdp_capita_ln, lifeexpectancy_ln, 
+         mn_yrs_school_ln, unemployment_ln) 
+
+df_na.omit &lt;-<span class="st"> </span>df_all <span class="op">%&gt;%</span><span class="st"> </span>na.omit
+
+wb_var_def &lt;-<span class="st"> </span>worldbank_var_def <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">slice</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">19</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(worldbank_data_def, <span class="dt">by =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"var_def"</span> =<span class="st"> "var_name"</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>var_def) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">rename</span>(<span class="dt">var_def =</span> var_def.y,
+         <span class="dt">type =</span> type.x) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(var_name, var_def, type, can_be_na) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">add_row</span>(<span class="dt">var_name =</span> <span class="st">"mn_yrs_school"</span>, <span class="dt">var_def =</span> <span class="st">"Mean number of years spent in school, age group 15+. Source: Wittgenstein Centre for Demography and Global Human Capital (2018). Wittgenstein Centre Data Explorer Version 2.0. Data between five year intervals are based on linear interpolation."</span>, 
+          <span class="dt">type =</span> <span class="st">"numeric"</span>, <span class="dt">can_be_na =</span> <span class="dv">1</span>, <span class="dt">.after =</span> <span class="dv">5</span>)
+
+<span class="cf">for</span> (var <span class="cf">in</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gdp_capita"</span>, <span class="st">"lifeexpectancy"</span>, <span class="st">"mn_yrs_school"</span>, <span class="st">"unemployment"</span>)) {
+  wb_var_def &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(wb_var_def,
+                      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(var, <span class="st">"_ln"</span>), <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(<span class="st">"Log-transformed version of"</span>, var), <span class="st">"numeric"</span>, <span class="dv">1</span>))
+}
+
+abstract &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(<span class="st">"This interactive display is part of the &lt;a href=https://joachim-gassen.github.io/rdfanalysis&gt;"</span>,
+                  <span class="st">"R package rdfanalysis&lt;/a&gt;."</span>,
+                  <span class="st">"The package provides researchers with a coding framework that supports"</span>,
+                  <span class="st">"formal documentation and systematic exploration of"</span>,
+                  <span class="st">"the researcher degrees of freedom that are inherent in research designs.&lt;p&gt;"</span>,
+                  <span class="st">"This display provides data from the World Bank and the Wittgenstein Centre"</span>,
+                  <span class="st">"to assess the impact of real Gross Domestic Product (GDP) per capita on life expectancy."</span>,
+                  <span class="st">"This association has become known as the Preston Curve.&lt;p&gt;"</span>,
+                  <span class="st">"You can choose below whether you want to examine a sample with or without missing observations."</span>, 
+                  <span class="st">"Hover over the variable names in the descriptive table to learn more about the variable"</span>,
+                  <span class="st">"definitions and use the various displays to explore the data.&lt;p&gt;"</span>,
+                  <span class="st">"Joachim Gassen - &lt;a href=mailto:gassen@wiwi.hu-berlin.de&gt;gassen@wiwi.hu-berlin.de&lt;/a&gt; - March 2019"</span>)
+
+
+<span class="kw">ExPanD</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(df_all, df_na.omit), 
+       <span class="dt">df_name =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"All observations"</span>, <span class="st">"Observations with NAs omitted"</span>),
+       <span class="dt">df_def =</span> wb_var_def,
+       <span class="dt">title =</span> <span class="st">"Explore the Perston Curve"</span>,
+       <span class="dt">abstract =</span> abstract)</code></pre></div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -995,6 +1049,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
       <li><a href="#step-5-estimate-effect">Step 5: Estimate effect</a></li>
       <li><a href="#step-6-assess-robustness-of-effect">Step 6: Assess robustness of effect</a></li>
       <li><a href="#summing-up">Summing up</a></li>
+      <li><a href="#appendix">Appendix</a></li>
       </ul>
 </div>
       </div>
