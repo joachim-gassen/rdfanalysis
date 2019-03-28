@@ -32,7 +32,7 @@ read_data <- function(input = NULL, choice = NULL) {
     mutate_at(c("country", "year"), as.factor) %>%
     select(country, year,
            lifeexpectancy, gdp_capita,
-           resdevelop_gdp, unemployment)
+           mn_yrs_school, unemployment)
 
   if(choice == "yes") df <- df %>%
     na.omit()

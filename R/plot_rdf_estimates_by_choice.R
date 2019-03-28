@@ -33,27 +33,25 @@ plot_rdf_estimates_by_choice <- function(df, est, lb, ub,
   if (is.null(order)) df <- df %>% dplyr::arrange_(dchoice, est)
   else df <- df %>% dplyr::arrange_(dchoice, order, est)
 
-  if (order != color) x <- order else x <- dchoice
+  if (is.null(order)) x <- est else x <- order
 
   if (is.null(color)) {
-    params_ggplot <- list(df, ggplot2::aes_string(x = x, group = x))
-  } else {
-    params_ggplot <- list(df, ggplot2::aes_string(x = x,
-                                                  group = x,
-                                                  color = color))
-  }
-
-  p <- do.call(ggplot2::ggplot, params_ggplot) +
-    ggplot2::geom_pointrange(ggplot2::aes_string(y = est, ymin = lb, ymax = ub),
-                             position = ggplot2::position_dodge2(width = width)) +
-    ggplot2::theme_minimal() +
-    ggplot2::ylab("Estimate and confidence interval")
-  if (order != color) {
-    p <- p +  ggplot2::facet_grid(stats::as.formula(paste("~", dchoice)), scales="free_x", switch = "x") +
+    p <- ggplot2::ggplot(df, ggplot2::aes_string(x = x)) +
+      ggplot2::facet_grid(stats::as.formula(paste("~", dchoice)), scales="free_x", switch = "x") +
+      ggplot2::geom_pointrange(ggplot2::aes_string(y = est, ymin = lb, ymax = ub)) +
+      ggplot2::theme_minimal() +
       ggplot2::theme(strip.placement = "outside") +
-      ggplot2::xlab("Discrete Choices")
+      ggplot2::xlab("Discrete Choices") +
+      ggplot2::ylab("Estimate and confidence interval")
   } else {
-    p <- p +  ggplot2::xlab(sprintf("Discrete Choice: %s", dchoice))
+    p <- ggplot2::ggplot(df, ggplot2::aes_string(x = x, color = color)) +
+      ggplot2::facet_grid(stats::as.formula(paste("~", dchoice)), scales="free_x", switch = "x") +
+      ggplot2::geom_pointrange(ggplot2::aes_string(y = est, ymin = lb, ymax = ub),
+                               position = ggplot2::position_dodge2(width = width)) +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(strip.placement = "outside") +
+      ggplot2::xlab("Discrete Choices") +
+      ggplot2::ylab("Estimate and confidence interval")
   }
   p
 }

@@ -47,7 +47,9 @@ of Economic Development, Population Studies (29): 235.](preston_1975_p235.png){w
 
 </center>
 
-We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the World Bank. While the analysis it not meant to contribute to the question whether there is a causal link between these two constructs, I design the analysis such that identifying assumptions for such a causal interpretation of its findings are explicit.
+We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the [World Bank](https://data.worldbank.org) (GDP per capita, life expectancy at birth and unemployment rates), and the [Wittgenstein Center](http://dataexplorer.wittgensteincentre.org/wcde-v2/) for mean years of schooling received by country inhabitants being 15 years or older. As the schooling data is available at 5 year intervals only, I interpolate the years in-between to keep the data at annual frequency (another research degree of freedom, I know ...).
+
+While the analysis it not meant to contribute to the question whether there is a causal link between GDP per capita and life expectancy (see [Lutz and Kebede, Pop and Dev Review 2018](https://doi.org/10.1111/padr.12141) for a recent discussion), I design the analysis such that identifying assumptions for such a causal interpretation of its findings are explicit.
 
 
 ## Step 1: Define research design by a series of functions
@@ -57,6 +59,7 @@ Every research design can be implemented as a series of functions where each fun
 In the terminology of the `rdfanalysis` package, each function is called a "design step". It comes with "choices" that can be either discrete or continuous in nature. The choices are what generate researcher degrees of freedom. A set of made choices across all steps of a design constitutes a "research protocol". The total number of feasible research protocols equals the researcher degrees of freedom of a research design.
 
 In our case and in most designs, the first step reads or generates data, and the last step generates results. In principle, the `rdfanalysis` package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals. In our case, it is the 95 % confidence interval for the effect of a 10 % GDP per capita increase on life expectancy in years, provided by three variables:
+
 - the estimate (`est`)
 - a lower bound (`lb`) and
 - an upper bound (`ub`).
@@ -216,7 +219,7 @@ read_data <- function(input = NULL, choice = NULL) {
     mutate_at(c("country", "year"), as.factor) %>%
     select(country, year,
            lifeexpectancy, gdp_capita,
-           resdevelop_gdp, unemployment)
+           mn_yrs_school, unemployment)
 
   if(choice == "yes") df <- df %>%
     na.omit()
@@ -254,14 +257,14 @@ select_idvs <- function(input = NULL, choice = NULL) {
     "following values:",
     "",
     "- `gdp_only`: GDP per capita only",
-    "- `gdp_rd`: GDP per capita and research and development over GDP",
+    "- `gdp_school`: GDP per capita and mean years schooling",
     "- `gdp_ue`: GDP per capita and unemployment",
     "- `full`: Full model including all three variables"
   )
   choice_type <- list(
     list(name = "idvs",
          type = "character",
-         valid_values = c("gdp_only", "gdp_rd", "gdp_ue", "full"),
+         valid_values = c("gdp_only", "gdp_school", "gdp_ue", "full"),
          weights = c(0, 0, 0, 1))
   )
   if (is.null(choice)) return(list(
@@ -272,9 +275,9 @@ select_idvs <- function(input = NULL, choice = NULL) {
   # ___ Analysis code starts below ___
 
   df <- switch (choice[[1]],
-                "gdp_only" = input$data %>% select(-resdevelop_gdp, -unemployment),
-                "gdp_rd" = input$data %>% select(-unemployment),
-                "gdp_ue" = input$data %>% select(-resdevelop_gdp),
+                "gdp_only" = input$data %>% select(-mn_yrs_school, -unemployment),
+                "gdp_school" = input$data %>% select(-unemployment),
+                "gdp_ue" = input$data %>% select(-mn_yrs_school),
                 "full" = input$data
   )
 
@@ -524,7 +527,7 @@ To demonstrate these steps, I use a very quick'n'dirty simulation approach.
 It creates a country year panel and simulates data that are roughly comparable 
 to real data. It uses the following level-log setup:
 
-$lifeexpectancy = \beta_0 + \frac{es}{\log(1.1)}\log(gdp\_capita) + 10\log(resdevelop\_gdp) + 5log(unemployment) + \epsilon$
+$lifeexpectancy = \beta_0 + \frac{es}{\log(1.1)}\log(gdp\_capita) + 10\log(mn\_yrs\_school) + 5log(unemployment) + \epsilon$
 
 with $\beta_0$ being based on country-level base-lines that are adjusted for sample means of the independent variables.
 The effect `es` of a 10 % increase of `log(gdp_capita)` on `lifeexpectancy` in years is our main variable of interest. Like the `read_data()` function, `sim_data()` returns a path to a temporary CSV file containing the simulated data.
@@ -542,7 +545,7 @@ sim_data <- function(countries = 75, es = 1, years = 15) {
 
   base_gdp_capita <- rlnorm(countries, location, shape)
   base_unemp <- rbeta(countries, 2, 20)*100
-  base_rd_gdp <- rbeta(countries, 1.5, 150)*100
+  base_mn_yrs_school <- pmax(pmin(rnorm(countries, 4, 2), 13), 1)
   base_le <- rnorm(countries, 70, 10)
   base_le[base_le > 70] <- 70 + 0.6 * (base_le[base_le > 70] - 70)
 
@@ -552,25 +555,25 @@ sim_data <- function(countries = 75, es = 1, years = 15) {
         rnorm(countries, 0, 0.01 * sd_gdp_capita), 100) *
         (1 + rnorm(countries, 0.02, 0.02))
   }
-  df$resdevelop_gdp <- pmax(rep(base_rd_gdp, years) +
+  df$mn_yrs_school <- pmax(rep(base_mn_yrs_school, years) +
                               0.1 * (log(df$gdp_capita) - mean(log(df$gdp_capita))) +
-                              rnorm(n, 0.10, 0.05), 0.0001)
+                              rnorm(n, 0.5, 0.3), 1)
   df$unemployment <- pmax(rep(base_unemp, years) - 
                             0.2 * (log(df$gdp_capita) - 
                                      mean(log(df$gdp_capita))) + 
                             rnorm(n, 0.2, 0.2), 0.0001)
   df$lifeexpectancy <- rep(base_le, years) - 
-    10 * mean(log(df$resdevelop_gdp)) + 
+    10 * mean(log(df$mn_yrs_school)) + 
     5 * mean(log(df$unemployment)) -
     (es/log(1.1)) * mean(log(df$gdp_capita)) +
-    10 * log(df$resdevelop_gdp) -  
+    10 * log(df$mn_yrs_school) -  
     5 * log(df$unemployment) +
     (es/log(1.1)) * log(df$gdp_capita) + 
     rnorm(n, 0, 5)
 
   df$lifeexpectancy <- pmax(df$lifeexpectancy, 30)
   df <- df[, c("country", "year", "lifeexpectancy", 
-               "gdp_capita", "resdevelop_gdp", "unemployment")]
+               "gdp_capita", "mn_yrs_school", "unemployment")]
   tfile <- tempfile("simdata", fileext = c(".csv"))
   write_csv(df, tfile)
   tfile
@@ -585,7 +588,7 @@ test_design(design, input = sim_data(), reporter = "minimal")
 
 This looks good. Now let's see whether the design generates an effect estimate that is consistent with the effect of 1 year that we simulated. For that, we pick the protocol that is consistent with the simulation, meaning that
 
-- We use the full model since `sim_data()` incorporated effects of `unemployment` and `resdevelop_gdp`,
+- We use the full model since `sim_data()` incorporated effects of `unemployment` and `mn_yrs_school`,
 - we do not treat outliers,
 - we use the level-log model specification,
 - and we include country and year fixed effects and also cluster our standard errors by country and year.
@@ -661,7 +664,7 @@ We have now verified that our design is capable to identify a simulated effect w
 As we provided weights for each design step choice, we can now estimate the effect by applying these weights on our design. This is done by first running `exhaust_design(..., weight = TRUE)` on the actual data and by then using the returned protocol estimates from this function call as input to `calculate_weighted_estimate()`.
 
 ``` {r exhaust_weighted_ests, results = "hide"}
-weighted_ests <- exhaust_design(design, "https://joachim-gassen.github.io/data/wb_condensed.csv",
+weighted_ests <- exhaust_design(design, "https://joachim-gassen.github.io/data/wb_new.csv",
                                 weight = TRUE)
 ```
 ``` {r estimate_weighted_effect}
@@ -675,11 +678,11 @@ The estimated weighted effect size of `r round(weighted_eff$est, 3)` is much sma
 kable(weighted_ests, digits = 3)
 ```
 
-The protocol estimates are significant at the conventional 95 % level for four out of twelve protocols. You can also run a single protocol to analyze its full model results.
+The protocol estimates are significant at the conventional 95 % level for all twelve protocols. You can also run a single protocol to analyze its full model results.
 
 ``` {r single_protocol}
 res <-
-  read_data("https://joachim-gassen.github.io/data/wb_condensed.csv", "yes") %>%
+  read_data("https://joachim-gassen.github.io/data/wb_new.csv", "yes") %>%
   select_idvs("full") %>%
   treat_extreme_obs(list("win", 0.01)) %>%
   specify_model("level-log") %>%
@@ -688,7 +691,7 @@ res <-
 summary(res$model)
 ```
 
-Note that, while the implemented design returns an estimate of the life expectancy effect in years of a 10 % increase in GDP per capita, the documented model estimates of a level-log specification have to be transformed to produce that estimate. Based on the selected model, a 10 % increase in GDP per capita would be associated with $`r round(res$model$coefficients[1], 3)` \log(1.1) \approx `r round(round(res$model$coefficients[1], 3) * log(1.1), 3)`$ years change in life expectancy. Overall, one can conclude that the additional explanatory power of our independent variables in explaining life expectancy are not overwhelming once one allows for country and year fixed effects.
+Note that, while the implemented design returns an estimate of the life expectancy effect in years of a 10 % increase in GDP per capita, the documented model estimates of a level-log specification have to be transformed to produce that estimate. Based on the selected model, a 10 % increase in GDP per capita would be associated with $`r round(res$model$coefficients[1], 3)` \log(1.1) \approx `r round(round(res$model$coefficients[1], 3) * log(1.1), 3)`$ years change in life expectancy. Overall, one can conclude that the additional explanatory power of our independent variables in explaining life expectancy is modest once one allows for country and year fixed effects. Consistent with [Lutz and Kebede (2018)](https://doi.org/10.1111/padr.12141), we find a pronounced and significant association of schooling with life expectancy, but due to potential reverse causality issues I would be hesitant to argue causality here.
 
 How robust is our weighted effect estimate across our documented researcher degrees of freedom? Time to exhaust our design across all available design choices.
 
@@ -699,7 +702,7 @@ We will now exhaust all design choices and estimate our effect for each feasible
 
 ``` {r exhaust_design, results = "hide"}
 # ests <- exhaust_design(design,
-#                       "https://joachim-gassen.github.io/data/wb_condensed.csv")
+#                        "https://joachim-gassen.github.io/data/wb_new.csv")
 # save(ests, file = "case_study_ests.RData")
 
 load("case_study_ests.RData")
@@ -737,36 +740,50 @@ rel_ests <- log_ests %>%
 plot_rdf_ridges_by_dchoice(rel_ests, "est", "idvs", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
 ```
 
-Hmm... While most of the protocols generate an estimate roughly in the range of 0.0 to 0.2 years, there are some estimates that are consistently larger. Are those driven by the sample selection step?
+Hmm... While most of the protocols generate an estimate roughly in the range of 0.05 to 0.15 years, some of the univariate estimates are smaller and even below zero. Let's focus on them for a second and see whether they are driven by sample selection.
 
 ``` {r estimate_density_by_idvs_na, fig.width = 7, fig.height = 6, fig.align = "center"}
 rel_ests %>%
-  filter(na.omit == "yes") %>%
-  plot_rdf_ridges_by_dchoice("est", "idvs", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
+  filter(idvs == "gdp_only") %>%
+  plot_rdf_ridges_by_dchoice("est", "na.omit", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
 ```
 
-To some extent. When the outlier treatment is being applied on a smaller sample it seems to drive the coefficient up. Other then that the control variables seem to have little influence on the main coefficient. 
+Yes, this seems to be the case. When assessed univariately on the largest possible sample, the range of estimates becomes considerably larger. Is this driven by extreme observations?
 
-Finally, let's have a look at the outlier treatment.
-
-``` {r estimate_density_by_outlier, fig.width = 7, fig.height = 6, fig.align = "center"}
+``` {r estimates_gdp_only_by_outlier, fig.width = 7, fig.height = 6, fig.align = "center"}
 rel_ests %>%
-  filter(na.omit == "yes",
-         idvs == "full") %>%
+  filter(idvs == "gdp_only",
+         na.omit == "no") %>% 
   plot_rdf_estimates_by_choice("est", "lb", "ub", "outlier_tment_style", 
-                               color = "model_type", order = "outlier_cutoff", width = 0.8)
+                               color = "model_type", order = "outlier_cutoff", width = 0.008)
 ```
 
-The estimates are ordered by outlier treatment style and within that, by the magnitude of the outlier cutoff. Interestingly, deleting outliers by truncating has little effect on the estimate while limiting them to narrower percentile cutoffs tends to increase the estimate.
+This seems to be the case. In general, the stricter the outlier treatment, the larger the estimate. In addition, the univariate level-log specifications are generating larger and slightly narrower estimates compared to the univariate log-log specification, consistent with a percentage increase in GDP rather being associated with an absolute increase in life expectancy than a relative one. This seems reasonable because of diminishing rates of returns to wealth.
+
+Our last test will focus on the multivariate analyses that just use schooling as additional control, since including unemployment reduces the sample size while contributing little to the explanatory power of the model.
+
+``` {r estimates_gdp_school_by_outlier, fig.width = 7, fig.height = 6, fig.align = "center"}
+rel_ests %>%
+  filter(na.omit == "no",
+         idvs == "gdp_school") %>%
+  plot_rdf_estimates_by_choice("est", "lb", "ub", "outlier_tment_style", 
+                               color = "model_type", order = "outlier_cutoff", width = 0.008)
+```
+
+Again, outliers turn out to be influential here but into the opposite direction. Focusing on the narrower estimates of the level-log specification, it becomes apparent that removing outliers by truncating renders the estimate smaller and insignificant, while winsorizing extreme values does little to the coefficient. 
 
 
 ## Summing up
 
 Using the `rdfanalysis` package, we are able to systematically explore the `r format(nrow(ests), big.mark = ",")` degrees of freedom that we identified in a supposedly straight-forward panel data analysis of observational data. 
 
-Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$lb, 2)` to `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$ub, 2)` years. Assuming that no other unobservables or reverse causality affect our findings, this coefficient can be causally interpreted.
+Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series and unemployment and years of schooling as controls, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$lb, 2)` to `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$ub, 2)` years. Assuming that no other unobservables or reverse causality issues affect our findings, this coefficient could be interpreted as causal, but given how courageous these assumptions are I strongly advise against it.
 
-As can be assessed by the researcher degrees of freedom exploration, our estimate is only one of many feasible estimates. In particular, the country-year fixed effect structure has a dampening effect on the analysis. When relaxing this assumption the feasible range of estimates ranges from a lower bound of `r round(min(ests$lb), 2)` to an upper bound of `r round(max(ests$ub), 2)` years.
+As can be assessed by the researcher degrees of freedom exploration, our estimate is only one of many feasible estimates. The total range of estimates spans from a lower bound of `r round(min(ests$lb), 2)` to an upper bound of `r round(max(ests$ub), 2)` years. Three observations stand out from the exploration: 
+
+- The country-year fixed effect structure has a large dampening effect on the estimates. 
+- Using log-transformed values for the independent variables generally increases the estimates. 
+- The implicit sample selection caused by including additional control variables is also influential for our estimate and tends to increase it.
 
 It is impressive to see the number of researcher degrees of freedom that even such a simple research design like the one at hand implies. My hope is that the `rdfanalysis` package might motivate researchers to think more deeply about their choice set and to explore and document their findings more transparently.
 

@@ -92,7 +92,7 @@ A Case Study</a>
 A Case Study</h1>
                         <h4 class="author">Joachim Gassen</h4>
             
-            <h4 class="date">2019-03-27</h4>
+            <h4 class="date">2019-03-28</h4>
       
       
       <div class="hidden name"><code>analyzing_rdf.Rmd</code></div>
@@ -119,14 +119,20 @@ A Case Study</h1>
 <img src="preston_1975_p235.png" alt="Preston (1975): The Changing Relation between Mortality and level of Economic Development, Population Studies (29): 235." width="672"><p class="caption">Preston (1975): The Changing Relation between Mortality and level of Economic Development, Population Studies (29): 235.</p>
 </div>
 </center>
-<p>We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the World Bank. While the analysis it not meant to contribute to the question whether there is a causal link between these two constructs, I design the analysis such that identifying assumptions for such a causal interpretation of its findings are explicit.</p>
+<p>We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the <a href="https://data.worldbank.org">World Bank</a> (GDP per capita, life expectancy at birth and unemployment rates), and the <a href="http://dataexplorer.wittgensteincentre.org/wcde-v2/">Wittgenstein Center</a> for mean years of schooling received by country inhabitants being 15 years or older. As the schooling data is available at 5 year intervals only, I interpolate the years in-between to keep the data at annual frequency (another research degree of freedom, I know …).</p>
+<p>While the analysis it not meant to contribute to the question whether there is a causal link between GDP per capita and life expectancy (see <a href="https://doi.org/10.1111/padr.12141">Lutz and Kebede, Pop and Dev Review 2018</a> for a recent discussion), I design the analysis such that identifying assumptions for such a causal interpretation of its findings are explicit.</p>
 </div>
 <div id="step-1-define-research-design-by-a-series-of-functions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#step-1-define-research-design-by-a-series-of-functions" class="anchor"></a>Step 1: Define research design by a series of functions</h2>
 <p>Every research design can be implemented as a series of functions where each function receives the output of the previous function as a parameter and produces output for the next function.</p>
 <p>In the terminology of the <code>rdfanalysis</code> package, each function is called a “design step”. It comes with “choices” that can be either discrete or continuous in nature. The choices are what generate researcher degrees of freedom. A set of made choices across all steps of a design constitutes a “research protocol”. The total number of feasible research protocols equals the researcher degrees of freedom of a research design.</p>
-<p>In our case and in most designs, the first step reads or generates data, and the last step generates results. In principle, the <code>rdfanalysis</code> package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals. In our case, it is the 95 % confidence interval for the effect of a 10 % GDP per capita increase on life expectancy in years, provided by three variables: - the estimate (<code>est</code>) - a lower bound (<code>lb</code>) and - an upper bound (<code>ub</code>).</p>
+<p>In our case and in most designs, the first step reads or generates data, and the last step generates results. In principle, the <code>rdfanalysis</code> package is agnostic about the data structure that constitutes a result. In most cases, the result will take the form of one or several confidence intervals. In our case, it is the 95 % confidence interval for the effect of a 10 % GDP per capita increase on life expectancy in years, provided by three variables:</p>
+<ul>
+<li>the estimate (<code>est</code>)</li>
+<li>a lower bound (<code>lb</code>) and</li>
+<li>an upper bound (<code>ub</code>).</li>
+</ul>
 <p>To assess the impact of GDP per capita on life expectancy, our case design follows the following steps</p>
 <ul>
 <li>Read data</li>
@@ -272,7 +278,7 @@ design &lt;-<span class="st"> </span><span class="kw"><a href="../reference/defi
 <span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_at</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"country"</span>, <span class="st">"year"</span>), as.factor) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(country, year,
            lifeexpectancy, gdp_capita,
-           resdevelop_gdp, unemployment)
+           mn_yrs_school, unemployment)
 
   <span class="cf">if</span>(choice <span class="op">==</span><span class="st"> "yes"</span>) df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/na.fail">na.omit</a></span>()
@@ -309,14 +315,14 @@ design &lt;-<span class="st"> </span><span class="kw"><a href="../reference/defi
     <span class="st">"following values:"</span>,
     <span class="st">""</span>,
     <span class="st">"- `gdp_only`: GDP per capita only"</span>,
-    <span class="st">"- `gdp_rd`: GDP per capita and research and development over GDP"</span>,
+    <span class="st">"- `gdp_school`: GDP per capita and mean years schooling"</span>,
     <span class="st">"- `gdp_ue`: GDP per capita and unemployment"</span>,
     <span class="st">"- `full`: Full model including all three variables"</span>
   )
   choice_type &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
     <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">name =</span> <span class="st">"idvs"</span>,
          <span class="dt">type =</span> <span class="st">"character"</span>,
-         <span class="dt">valid_values =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gdp_only"</span>, <span class="st">"gdp_rd"</span>, <span class="st">"gdp_ue"</span>, <span class="st">"full"</span>),
+         <span class="dt">valid_values =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gdp_only"</span>, <span class="st">"gdp_school"</span>, <span class="st">"gdp_ue"</span>, <span class="st">"full"</span>),
          <span class="dt">weights =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>))
   )
   <span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NULL">is.null</a></span>(choice)) <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
@@ -327,9 +333,9 @@ design &lt;-<span class="st"> </span><span class="kw"><a href="../reference/defi
   <span class="co"># ___ Analysis code starts below ___</span>
 
   df &lt;-<span class="st"> </span><span class="cf">switch</span> (choice[[<span class="dv">1</span>]],
-                <span class="st">"gdp_only"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>resdevelop_gdp, <span class="op">-</span>unemployment),
-                <span class="st">"gdp_rd"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>unemployment),
-                <span class="st">"gdp_ue"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>resdevelop_gdp),
+                <span class="st">"gdp_only"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>mn_yrs_school, <span class="op">-</span>unemployment),
+                <span class="st">"gdp_school"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>unemployment),
+                <span class="st">"gdp_ue"</span> =<span class="st"> </span>input<span class="op">$</span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>mn_yrs_school),
                 <span class="st">"full"</span> =<span class="st"> </span>input<span class="op">$</span>data
   )
 
@@ -553,7 +559,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/prepare_design_documentation.html">prepare_design_documentation</a></span>(design, <span class="st">"preston_curve_design.pdf"</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/prepare_design_flow_chart.html">prepare_design_flow_chart</a></span>(design)</code></pre></div>
 <div id="htmlwidget-a8b475b8ef4176f0fa1e" style="width:768px;height:1152px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a8b475b8ef4176f0fa1e">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       outputorder = \"edgesfirst\",\n       bgcolor = \"white\"]\n\nnode [fontname = \"Helvetica\",\n      fontsize = \"10\",\n      shape = \"circle\",\n      fixedsize = \"true\",\n      width = \"0.5\",\n      style = \"filled\",\n      fillcolor = \"aliceblue\",\n      color = \"gray70\",\n      fontcolor = \"white\"]\n\nedge [fontname = \"Helvetica\",\n     fontsize = \"8\",\n     len = \"1.5\",\n     color = \"gray80\",\n     arrowsize = \"0.5\"]\n\n  \"1\" [label = \"read_data\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"2\" [label = \"na.omit:\nyes\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"3\" [label = \"na.omit:\nno\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"4\" [label = \"select_idvs\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"5\" [label = \"idvs:\ngdp_only\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"6\" [label = \"idvs:\ngdp_rd\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"7\" [label = \"idvs:\ngdp_ue\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"8\" [label = \"idvs:\nfull\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"9\" [label = \"treat_extreme_obs\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"10\" [label = \"outlier_tment_style:\nwin\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"11\" [label = \"outlier_tment_style:\ntrunc\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"12\" [label = \"outlier_cutoff\nvalid_min: 0\nvalid_max: 0.1\", shape = \"oval\", fixedsize = \"FALSE\", fillcolor = \"#4A708B\", fontcolor = \"#FFFFFF\"] \n  \"13\" [label = \"specify_model\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"14\" [label = \"model_type:\nlevel-level\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"15\" [label = \"model_type:\nlog-level\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"16\" [label = \"model_type:\nlevel-log\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"17\" [label = \"model_type:\nlog-log\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"18\" [label = \"est_model\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"19\" [label = \"feffect:\nnone\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"20\" [label = \"feffect:\ncountry\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"21\" [label = \"feffect:\nyear\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"22\" [label = \"feffect:\nctryyear\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"23\" [label = \"cluster:\nnone\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"24\" [label = \"cluster:\ncountry\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"25\" [label = \"cluster:\nyear\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"26\" [label = \"cluster:\nctryyear\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"27\" [label = \"result\", shape = \"diamond\", fixedsize = \"FALSE\", fillcolor = \"#708090\", fontcolor = \"#FFFFFF\"] \n  \"1\"->\"2\" \n  \"1\"->\"3\" \n  \"2\"->\"4\" \n  \"3\"->\"4\" \n  \"4\"->\"5\" \n  \"4\"->\"6\" \n  \"4\"->\"7\" \n  \"4\"->\"8\" \n  \"5\"->\"9\" \n  \"6\"->\"9\" \n  \"7\"->\"9\" \n  \"8\"->\"9\" \n  \"9\"->\"10\" \n  \"9\"->\"11\" \n  \"10\"->\"12\" \n  \"11\"->\"12\" \n  \"12\"->\"13\" \n  \"13\"->\"14\" \n  \"13\"->\"15\" \n  \"13\"->\"16\" \n  \"13\"->\"17\" \n  \"14\"->\"18\" \n  \"15\"->\"18\" \n  \"16\"->\"18\" \n  \"17\"->\"18\" \n  \"18\"->\"19\" \n  \"18\"->\"20\" \n  \"18\"->\"21\" \n  \"18\"->\"22\" \n  \"19\"->\"23\" \n  \"19\"->\"24\" \n  \"19\"->\"25\" \n  \"19\"->\"26\" \n  \"20\"->\"23\" \n  \"20\"->\"24\" \n  \"20\"->\"25\" \n  \"20\"->\"26\" \n  \"21\"->\"23\" \n  \"21\"->\"24\" \n  \"21\"->\"25\" \n  \"21\"->\"26\" \n  \"22\"->\"23\" \n  \"22\"->\"24\" \n  \"22\"->\"25\" \n  \"22\"->\"26\" \n  \"23\"->\"27\" \n  \"24\"->\"27\" \n  \"25\"->\"27\" \n  \"26\"->\"27\" \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-a8b475b8ef4176f0fa1e">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       outputorder = \"edgesfirst\",\n       bgcolor = \"white\"]\n\nnode [fontname = \"Helvetica\",\n      fontsize = \"10\",\n      shape = \"circle\",\n      fixedsize = \"true\",\n      width = \"0.5\",\n      style = \"filled\",\n      fillcolor = \"aliceblue\",\n      color = \"gray70\",\n      fontcolor = \"white\"]\n\nedge [fontname = \"Helvetica\",\n     fontsize = \"8\",\n     len = \"1.5\",\n     color = \"gray80\",\n     arrowsize = \"0.5\"]\n\n  \"1\" [label = \"read_data\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"2\" [label = \"na.omit:\nyes\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"3\" [label = \"na.omit:\nno\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"4\" [label = \"select_idvs\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"5\" [label = \"idvs:\ngdp_only\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"6\" [label = \"idvs:\ngdp_school\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"7\" [label = \"idvs:\ngdp_ue\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"8\" [label = \"idvs:\nfull\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"9\" [label = \"treat_extreme_obs\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"10\" [label = \"outlier_tment_style:\nwin\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"11\" [label = \"outlier_tment_style:\ntrunc\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"12\" [label = \"outlier_cutoff\nvalid_min: 0\nvalid_max: 0.1\", shape = \"oval\", fixedsize = \"FALSE\", fillcolor = \"#4A708B\", fontcolor = \"#FFFFFF\"] \n  \"13\" [label = \"specify_model\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"14\" [label = \"model_type:\nlevel-level\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"15\" [label = \"model_type:\nlog-level\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"16\" [label = \"model_type:\nlevel-log\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"17\" [label = \"model_type:\nlog-log\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"18\" [label = \"est_model\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"19\" [label = \"feffect:\nnone\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"20\" [label = \"feffect:\ncountry\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"21\" [label = \"feffect:\nyear\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"22\" [label = \"feffect:\nctryyear\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"23\" [label = \"cluster:\nnone\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"24\" [label = \"cluster:\ncountry\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"25\" [label = \"cluster:\nyear\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"26\" [label = \"cluster:\nctryyear\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"27\" [label = \"result\", shape = \"diamond\", fixedsize = \"FALSE\", fillcolor = \"#708090\", fontcolor = \"#FFFFFF\"] \n  \"1\"->\"2\" \n  \"1\"->\"3\" \n  \"2\"->\"4\" \n  \"3\"->\"4\" \n  \"4\"->\"5\" \n  \"4\"->\"6\" \n  \"4\"->\"7\" \n  \"4\"->\"8\" \n  \"5\"->\"9\" \n  \"6\"->\"9\" \n  \"7\"->\"9\" \n  \"8\"->\"9\" \n  \"9\"->\"10\" \n  \"9\"->\"11\" \n  \"10\"->\"12\" \n  \"11\"->\"12\" \n  \"12\"->\"13\" \n  \"13\"->\"14\" \n  \"13\"->\"15\" \n  \"13\"->\"16\" \n  \"13\"->\"17\" \n  \"14\"->\"18\" \n  \"15\"->\"18\" \n  \"16\"->\"18\" \n  \"17\"->\"18\" \n  \"18\"->\"19\" \n  \"18\"->\"20\" \n  \"18\"->\"21\" \n  \"18\"->\"22\" \n  \"19\"->\"23\" \n  \"19\"->\"24\" \n  \"19\"->\"25\" \n  \"19\"->\"26\" \n  \"20\"->\"23\" \n  \"20\"->\"24\" \n  \"20\"->\"25\" \n  \"20\"->\"26\" \n  \"21\"->\"23\" \n  \"21\"->\"24\" \n  \"21\"->\"25\" \n  \"21\"->\"26\" \n  \"22\"->\"23\" \n  \"22\"->\"24\" \n  \"22\"->\"25\" \n  \"22\"->\"26\" \n  \"23\"->\"27\" \n  \"24\"->\"27\" \n  \"25\"->\"27\" \n  \"26\"->\"27\" \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="step-4-optional-but-encouraged-simulate-data-for-additional-testing-and-power-analysis" class="section level2">
 <h2 class="hasAnchor">
@@ -565,7 +571,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <li>You can assess the power of your design.</li>
 </ul>
 <p>To demonstrate these steps, I use a very quick’n’dirty simulation approach. It creates a country year panel and simulates data that are roughly comparable to real data. It uses the following level-log setup:</p>
-<p><span class="math inline">\(lifeexpectancy = \beta_0 + \frac{es}{\log(1.1)}\log(gdp\_capita) + 10\log(resdevelop\_gdp) + 5log(unemployment) + \epsilon\)</span></p>
+<p><span class="math inline">\(lifeexpectancy = \beta_0 + \frac{es}{\log(1.1)}\log(gdp\_capita) + 10\log(mn\_yrs\_school) + 5log(unemployment) + \epsilon\)</span></p>
 <p>with <span class="math inline">\(\beta_0\)</span> being based on country-level base-lines that are adjusted for sample means of the independent variables. The effect <code>es</code> of a 10 % increase of <code><a href="https://www.rdocumentation.org/packages/base/topics/Log">log(gdp_capita)</a></code> on <code>lifeexpectancy</code> in years is our main variable of interest. Like the <code>read_data()</code> function, <code>sim_data()</code> returns a path to a temporary CSV file containing the simulated data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_data &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">countries =</span> <span class="dv">75</span>, <span class="dt">es =</span> <span class="dv">1</span>, <span class="dt">years =</span> <span class="dv">15</span>) {
   n &lt;-<span class="st"> </span>countries <span class="op">*</span><span class="st"> </span>years
@@ -579,7 +585,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 
   base_gdp_capita &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Lognormal">rlnorm</a></span>(countries, location, shape)
   base_unemp &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Beta">rbeta</a></span>(countries, <span class="dv">2</span>, <span class="dv">20</span>)<span class="op">*</span><span class="dv">100</span>
-  base_rd_gdp &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Beta">rbeta</a></span>(countries, <span class="fl">1.5</span>, <span class="dv">150</span>)<span class="op">*</span><span class="dv">100</span>
+  base_mn_yrs_school &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">pmax</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">pmin</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(countries, <span class="dv">4</span>, <span class="dv">2</span>), <span class="dv">13</span>), <span class="dv">1</span>)
   base_le &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(countries, <span class="dv">70</span>, <span class="dv">10</span>)
   base_le[base_le <span class="op">&gt;</span><span class="st"> </span><span class="dv">70</span>] &lt;-<span class="st"> </span><span class="dv">70</span> <span class="op">+</span><span class="st"> </span><span class="fl">0.6</span> <span class="op">*</span><span class="st"> </span>(base_le[base_le <span class="op">&gt;</span><span class="st"> </span><span class="dv">70</span>] <span class="op">-</span><span class="st"> </span><span class="dv">70</span>)
 
@@ -589,25 +595,25 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <span class="st">        </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(countries, <span class="dv">0</span>, <span class="fl">0.01</span> <span class="op">*</span><span class="st"> </span>sd_gdp_capita), <span class="dv">100</span>) <span class="op">*</span>
 <span class="st">        </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(countries, <span class="fl">0.02</span>, <span class="fl">0.02</span>))
   }
-  df<span class="op">$</span>resdevelop_gdp &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">pmax</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(base_rd_gdp, years) <span class="op">+</span>
+  df<span class="op">$</span>mn_yrs_school &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">pmax</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(base_mn_yrs_school, years) <span class="op">+</span>
 <span class="st">                              </span><span class="fl">0.1</span> <span class="op">*</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>gdp_capita) <span class="op">-</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>gdp_capita))) <span class="op">+</span>
-<span class="st">                              </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n, <span class="fl">0.10</span>, <span class="fl">0.05</span>), <span class="fl">0.0001</span>)
+<span class="st">                              </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n, <span class="fl">0.5</span>, <span class="fl">0.3</span>), <span class="dv">1</span>)
   df<span class="op">$</span>unemployment &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">pmax</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(base_unemp, years) <span class="op">-</span><span class="st"> </span>
 <span class="st">                            </span><span class="fl">0.2</span> <span class="op">*</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>gdp_capita) <span class="op">-</span><span class="st"> </span>
 <span class="st">                                     </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>gdp_capita))) <span class="op">+</span><span class="st"> </span>
 <span class="st">                            </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n, <span class="fl">0.2</span>, <span class="fl">0.2</span>), <span class="fl">0.0001</span>)
   df<span class="op">$</span>lifeexpectancy &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(base_le, years) <span class="op">-</span><span class="st"> </span>
-<span class="st">    </span><span class="dv">10</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>resdevelop_gdp)) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="dv">10</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>mn_yrs_school)) <span class="op">+</span><span class="st"> </span>
 <span class="st">    </span><span class="dv">5</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>unemployment)) <span class="op">-</span>
 <span class="st">    </span>(es<span class="op">/</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(<span class="fl">1.1</span>)) <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>gdp_capita)) <span class="op">+</span>
-<span class="st">    </span><span class="dv">10</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>resdevelop_gdp) <span class="op">-</span><span class="st">  </span>
+<span class="st">    </span><span class="dv">10</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>mn_yrs_school) <span class="op">-</span><span class="st">  </span>
 <span class="st">    </span><span class="dv">5</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>unemployment) <span class="op">+</span>
 <span class="st">    </span>(es<span class="op">/</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(<span class="fl">1.1</span>)) <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(df<span class="op">$</span>gdp_capita) <span class="op">+</span><span class="st"> </span>
 <span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n, <span class="dv">0</span>, <span class="dv">5</span>)
 
   df<span class="op">$</span>lifeexpectancy &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">pmax</a></span>(df<span class="op">$</span>lifeexpectancy, <span class="dv">30</span>)
   df &lt;-<span class="st"> </span>df[, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"lifeexpectancy"</span>, 
-               <span class="st">"gdp_capita"</span>, <span class="st">"resdevelop_gdp"</span>, <span class="st">"unemployment"</span>)]
+               <span class="st">"gdp_capita"</span>, <span class="st">"mn_yrs_school"</span>, <span class="st">"unemployment"</span>)]
   tfile &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/tempfile">tempfile</a></span>(<span class="st">"simdata"</span>, <span class="dt">fileext =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">".csv"</span>))
   <span class="kw"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span>(df, tfile)
   tfile
@@ -617,7 +623,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <span class="co">#&gt; ...............................................................................................................................................................................................................................................................................................</span></code></pre></div>
 <p>This looks good. Now let’s see whether the design generates an effect estimate that is consistent with the effect of 1 year that we simulated. For that, we pick the protocol that is consistent with the simulation, meaning that</p>
 <ul>
-<li>We use the full model since <code>sim_data()</code> incorporated effects of <code>unemployment</code> and <code>resdevelop_gdp</code>,</li>
+<li>We use the full model since <code>sim_data()</code> incorporated effects of <code>unemployment</code> and <code>mn_yrs_school</code>,</li>
 <li>we do not treat outliers,</li>
 <li>we use the level-log model specification,</li>
 <li>and we include country and year fixed effects and also cluster our standard errors by country and year.</li>
@@ -681,7 +687,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <h2 class="hasAnchor">
 <a href="#step-5-estimate-effect" class="anchor"></a>Step 5: Estimate effect</h2>
 <p>As we provided weights for each design step choice, we can now estimate the effect by applying these weights on our design. This is done by first running <code><a href="../reference/exhaust_design.html">exhaust_design(..., weight = TRUE)</a></code> on the actual data and by then using the returned protocol estimates from this function call as input to <code><a href="../reference/calculate_weighted_estimate.html">calculate_weighted_estimate()</a></code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">weighted_ests &lt;-<span class="st"> </span><span class="kw"><a href="../reference/exhaust_design.html">exhaust_design</a></span>(design, <span class="st">"https://joachim-gassen.github.io/data/wb_condensed.csv"</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">weighted_ests &lt;-<span class="st"> </span><span class="kw"><a href="../reference/exhaust_design.html">exhaust_design</a></span>(design, <span class="st">"https://joachim-gassen.github.io/data/wb_new.csv"</span>,
                                 <span class="dt">weight =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">weighted_eff &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calculate_weighted_estimate.html">calculate_weighted_estimate</a></span>(weighted_ests, <span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>)
 <span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(weighted_eff), <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
@@ -693,13 +699,13 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <th align="right">n</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.085</td>
-<td align="right">0.001</td>
-<td align="right">0.17</td>
+<td align="right">0.112</td>
+<td align="right">0.031</td>
+<td align="right">0.193</td>
 <td align="right">12</td>
 </tr></tbody>
 </table>
-<p>The estimated weighted effect size of 0.085 is much smaller than our simulated effect of one year. We can also assess the results for each of the twelve protocols with non-zero weights.</p>
+<p>The estimated weighted effect size of 0.112 is much smaller than our simulated effect of one year. We can also assess the results for each of the twelve protocols with non-zero weights.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(weighted_ests, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -725,9 +731,9 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <td align="left">ctryyear</td>
 <td align="left">ctryyear</td>
 <td align="right">0.05</td>
-<td align="right">0.062</td>
-<td align="right">-0.016</td>
-<td align="right">0.141</td>
+<td align="right">0.136</td>
+<td align="right">0.046</td>
+<td align="right">0.225</td>
 </tr>
 <tr class="even">
 <td align="left">yes</td>
@@ -738,9 +744,9 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <td align="left">ctryyear</td>
 <td align="left">ctryyear</td>
 <td align="right">0.05</td>
-<td align="right">0.062</td>
-<td align="right">-0.016</td>
-<td align="right">0.141</td>
+<td align="right">0.136</td>
+<td align="right">0.046</td>
+<td align="right">0.225</td>
 </tr>
 <tr class="odd">
 <td align="left">yes</td>
@@ -751,9 +757,9 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <td align="left">ctryyear</td>
 <td align="left">ctryyear</td>
 <td align="right">0.10</td>
-<td align="right">0.067</td>
-<td align="right">-0.012</td>
-<td align="right">0.146</td>
+<td align="right">0.118</td>
+<td align="right">0.041</td>
+<td align="right">0.196</td>
 </tr>
 <tr class="even">
 <td align="left">yes</td>
@@ -764,9 +770,9 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <td align="left">ctryyear</td>
 <td align="left">ctryyear</td>
 <td align="right">0.10</td>
-<td align="right">0.055</td>
-<td align="right">-0.022</td>
-<td align="right">0.132</td>
+<td align="right">0.104</td>
+<td align="right">0.036</td>
+<td align="right">0.173</td>
 </tr>
 <tr class="odd">
 <td align="left">yes</td>
@@ -777,9 +783,9 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <td align="left">ctryyear</td>
 <td align="left">ctryyear</td>
 <td align="right">0.10</td>
-<td align="right">0.103</td>
-<td align="right">0.028</td>
-<td align="right">0.177</td>
+<td align="right">0.095</td>
+<td align="right">0.024</td>
+<td align="right">0.167</td>
 </tr>
 <tr class="even">
 <td align="left">yes</td>
@@ -790,93 +796,93 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <td align="left">ctryyear</td>
 <td align="left">ctryyear</td>
 <td align="right">0.10</td>
-<td align="right">0.066</td>
-<td align="right">-0.017</td>
-<td align="right">0.149</td>
-</tr>
-<tr class="odd">
-<td align="left">yes</td>
-<td align="left">full</td>
-<td align="left">win</td>
-<td align="right">0.00</td>
-<td align="left">log-log</td>
-<td align="left">ctryyear</td>
-<td align="left">ctryyear</td>
-<td align="right">0.05</td>
-<td align="right">0.093</td>
-<td align="right">-0.002</td>
-<td align="right">0.188</td>
-</tr>
-<tr class="even">
-<td align="left">yes</td>
-<td align="left">full</td>
-<td align="left">trunc</td>
-<td align="right">0.00</td>
-<td align="left">log-log</td>
-<td align="left">ctryyear</td>
-<td align="left">ctryyear</td>
-<td align="right">0.05</td>
-<td align="right">0.093</td>
-<td align="right">-0.002</td>
-<td align="right">0.188</td>
-</tr>
-<tr class="odd">
-<td align="left">yes</td>
-<td align="left">full</td>
-<td align="left">win</td>
-<td align="right">0.01</td>
-<td align="left">log-log</td>
-<td align="left">ctryyear</td>
-<td align="left">ctryyear</td>
-<td align="right">0.10</td>
-<td align="right">0.097</td>
-<td align="right">0.002</td>
-<td align="right">0.192</td>
-</tr>
-<tr class="even">
-<td align="left">yes</td>
-<td align="left">full</td>
-<td align="left">trunc</td>
-<td align="right">0.01</td>
-<td align="left">log-log</td>
-<td align="left">ctryyear</td>
-<td align="left">ctryyear</td>
-<td align="right">0.10</td>
-<td align="right">0.085</td>
-<td align="right">-0.005</td>
-<td align="right">0.175</td>
-</tr>
-<tr class="odd">
-<td align="left">yes</td>
-<td align="left">full</td>
-<td align="left">win</td>
-<td align="right">0.05</td>
-<td align="left">log-log</td>
-<td align="left">ctryyear</td>
-<td align="left">ctryyear</td>
-<td align="right">0.10</td>
-<td align="right">0.128</td>
-<td align="right">0.043</td>
-<td align="right">0.214</td>
-</tr>
-<tr class="even">
-<td align="left">yes</td>
-<td align="left">full</td>
-<td align="left">trunc</td>
-<td align="right">0.05</td>
-<td align="left">log-log</td>
-<td align="left">ctryyear</td>
-<td align="left">ctryyear</td>
-<td align="right">0.10</td>
-<td align="right">0.097</td>
+<td align="right">0.079</td>
 <td align="right">0.006</td>
-<td align="right">0.187</td>
+<td align="right">0.152</td>
+</tr>
+<tr class="odd">
+<td align="left">yes</td>
+<td align="left">full</td>
+<td align="left">win</td>
+<td align="right">0.00</td>
+<td align="left">log-log</td>
+<td align="left">ctryyear</td>
+<td align="left">ctryyear</td>
+<td align="right">0.05</td>
+<td align="right">0.164</td>
+<td align="right">0.053</td>
+<td align="right">0.274</td>
+</tr>
+<tr class="even">
+<td align="left">yes</td>
+<td align="left">full</td>
+<td align="left">trunc</td>
+<td align="right">0.00</td>
+<td align="left">log-log</td>
+<td align="left">ctryyear</td>
+<td align="left">ctryyear</td>
+<td align="right">0.05</td>
+<td align="right">0.164</td>
+<td align="right">0.053</td>
+<td align="right">0.274</td>
+</tr>
+<tr class="odd">
+<td align="left">yes</td>
+<td align="left">full</td>
+<td align="left">win</td>
+<td align="right">0.01</td>
+<td align="left">log-log</td>
+<td align="left">ctryyear</td>
+<td align="left">ctryyear</td>
+<td align="right">0.10</td>
+<td align="right">0.135</td>
+<td align="right">0.047</td>
+<td align="right">0.223</td>
+</tr>
+<tr class="even">
+<td align="left">yes</td>
+<td align="left">full</td>
+<td align="left">trunc</td>
+<td align="right">0.01</td>
+<td align="left">log-log</td>
+<td align="left">ctryyear</td>
+<td align="left">ctryyear</td>
+<td align="right">0.10</td>
+<td align="right">0.116</td>
+<td align="right">0.043</td>
+<td align="right">0.190</td>
+</tr>
+<tr class="odd">
+<td align="left">yes</td>
+<td align="left">full</td>
+<td align="left">win</td>
+<td align="right">0.05</td>
+<td align="left">log-log</td>
+<td align="left">ctryyear</td>
+<td align="left">ctryyear</td>
+<td align="right">0.10</td>
+<td align="right">0.093</td>
+<td align="right">0.013</td>
+<td align="right">0.174</td>
+</tr>
+<tr class="even">
+<td align="left">yes</td>
+<td align="left">full</td>
+<td align="left">trunc</td>
+<td align="right">0.05</td>
+<td align="left">log-log</td>
+<td align="left">ctryyear</td>
+<td align="left">ctryyear</td>
+<td align="right">0.10</td>
+<td align="right">0.083</td>
+<td align="right">0.007</td>
+<td align="right">0.160</td>
 </tr>
 </tbody>
 </table>
-<p>The protocol estimates are significant at the conventional 95 % level for four out of twelve protocols. You can also run a single protocol to analyze its full model results.</p>
+<p>The protocol estimates are significant at the conventional 95 % level for all twelve protocols. You can also run a single protocol to analyze its full model results.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res &lt;-
-<span class="st">  </span><span class="kw">read_data</span>(<span class="st">"https://joachim-gassen.github.io/data/wb_condensed.csv"</span>, <span class="st">"yes"</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">read_data</span>(<span class="st">"https://joachim-gassen.github.io/data/wb_new.csv"</span>, <span class="st">"yes"</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select_idvs</span>(<span class="st">"full"</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">treat_extreme_obs</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"win"</span>, <span class="fl">0.01</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">specify_model</span>(<span class="st">"level-log"</span>) <span class="op">%&gt;%</span>
@@ -889,22 +895,22 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Residuals:</span>
 <span class="co">#&gt;     Min      1Q  Median      3Q     Max </span>
-<span class="co">#&gt; -5.7352 -0.3071  0.0105  0.3371  6.5261 </span>
+<span class="co">#&gt; -7.3006 -0.6092  0.0612  0.6129 10.8838 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Coefficients:</span>
-<span class="co">#&gt;                Estimate Cluster s.e. t value Pr(&gt;|t|)  </span>
-<span class="co">#&gt; gdp_capita     0.704603     0.421847   1.670   0.0951 .</span>
-<span class="co">#&gt; resdevelop_gdp 0.026667     0.149992   0.178   0.8589  </span>
-<span class="co">#&gt; unemployment   0.002579     0.181227   0.014   0.9886  </span>
+<span class="co">#&gt;               Estimate Cluster s.e. t value Pr(&gt;|t|)    </span>
+<span class="co">#&gt; gdp_capita      1.2410       0.4155   2.987  0.00284 ** </span>
+<span class="co">#&gt; mn_yrs_school   7.4985       1.3322   5.629 1.95e-08 ***</span>
+<span class="co">#&gt; unemployment   -0.1483       0.3467  -0.428  0.66884    </span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Residual standard error: 0.6922 on 1419 degrees of freedom</span>
-<span class="co">#&gt; Multiple R-squared(full model): 0.9903   Adjusted R-squared: 0.9893 </span>
-<span class="co">#&gt; Multiple R-squared(proj model): 0.01576   Adjusted R-squared: -0.08828 </span>
-<span class="co">#&gt; F-statistic(full model, *iid*):967.5 on 150 and 1419 DF, p-value: &lt; 2.2e-16 </span>
-<span class="co">#&gt; F-statistic(proj model): 1.061 on 3 and 128 DF, p-value: 0.3682</span></code></pre></div>
-<p>Note that, while the implemented design returns an estimate of the life expectancy effect in years of a 10 % increase in GDP per capita, the documented model estimates of a level-log specification have to be transformed to produce that estimate. Based on the selected model, a 10 % increase in GDP per capita would be associated with <span class="math inline">\(0.705 \log(1.1) \approx 0.067\)</span> years change in life expectancy. Overall, one can conclude that the additional explanatory power of our independent variables in explaining life expectancy are not overwhelming once one allows for country and year fixed effects.</p>
+<span class="co">#&gt; Residual standard error: 1.567 on 3798 degrees of freedom</span>
+<span class="co">#&gt; Multiple R-squared(full model): 0.9751   Adjusted R-squared: 0.9738 </span>
+<span class="co">#&gt; Multiple R-squared(proj model): 0.128   Adjusted R-squared: 0.08228 </span>
+<span class="co">#&gt; F-statistic(full model, *iid*):748.9 on 199 and 3798 DF, p-value: &lt; 2.2e-16 </span>
+<span class="co">#&gt; F-statistic(proj model): 13.76 on 3 and 172 DF, p-value: 4.396e-08</span></code></pre></div>
+<p>Note that, while the implemented design returns an estimate of the life expectancy effect in years of a 10 % increase in GDP per capita, the documented model estimates of a level-log specification have to be transformed to produce that estimate. Based on the selected model, a 10 % increase in GDP per capita would be associated with <span class="math inline">\(1.241 \log(1.1) \approx 0.118\)</span> years change in life expectancy. Overall, one can conclude that the additional explanatory power of our independent variables in explaining life expectancy is modest once one allows for country and year fixed effects. Consistent with <a href="https://doi.org/10.1111/padr.12141">Lutz and Kebede (2018)</a>, we find a pronounced and significant association of schooling with life expectancy, but due to potential reverse causality issues I would be hesitant to argue causality here.</p>
 <p>How robust is our weighted effect estimate across our documented researcher degrees of freedom? Time to exhaust our design across all available design choices.</p>
 </div>
 <div id="step-6-assess-robustness-of-effect" class="section level2">
@@ -912,7 +918,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <a href="#step-6-assess-robustness-of-effect" class="anchor"></a>Step 6: Assess robustness of effect</h2>
 <p>We will now exhaust all design choices and estimate our effect for each feasible protocol. As these combine to 11,264 protocols, running the code below will take a while. This is why we load the data that is generated by the commented lines from the disk.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ests &lt;- exhaust_design(design,</span>
-<span class="co">#                       "https://joachim-gassen.github.io/data/wb_condensed.csv")</span>
+<span class="co">#                        "https://joachim-gassen.github.io/data/wb_new.csv")</span>
 <span class="co"># save(ests, file = "case_study_ests.RData")</span>
 
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/load">load</a></span>(<span class="st">"case_study_ests.RData"</span>)</code></pre></div>
@@ -936,27 +942,39 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 
 <span class="kw"><a href="../reference/plot_rdf_ridges_by_dchoice.html">plot_rdf_ridges_by_dchoice</a></span>(rel_ests, <span class="st">"est"</span>, <span class="st">"idvs"</span>, <span class="dt">hist =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="fl">0.9</span>, <span class="dt">fill =</span> <span class="st">"lightblue"</span>, <span class="dt">color =</span> <span class="ot">NA</span>)</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/estimate_density_by_idvs-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>Hmm… While most of the protocols generate an estimate roughly in the range of 0.0 to 0.2 years, there are some estimates that are consistently larger. Are those driven by the sample selection step?</p>
+<p>Hmm… While most of the protocols generate an estimate roughly in the range of 0.05 to 0.15 years, some of the univariate estimates are smaller and even below zero. Let’s focus on them for a second and see whether they are driven by sample selection.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rel_ests <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(na.omit <span class="op">==</span><span class="st"> "yes"</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/plot_rdf_ridges_by_dchoice.html">plot_rdf_ridges_by_dchoice</a></span>(<span class="st">"est"</span>, <span class="st">"idvs"</span>, <span class="dt">hist =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="fl">0.9</span>, <span class="dt">fill =</span> <span class="st">"lightblue"</span>, <span class="dt">color =</span> <span class="ot">NA</span>)</code></pre></div>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(idvs <span class="op">==</span><span class="st"> "gdp_only"</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/plot_rdf_ridges_by_dchoice.html">plot_rdf_ridges_by_dchoice</a></span>(<span class="st">"est"</span>, <span class="st">"na.omit"</span>, <span class="dt">hist =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="fl">0.9</span>, <span class="dt">fill =</span> <span class="st">"lightblue"</span>, <span class="dt">color =</span> <span class="ot">NA</span>)</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/estimate_density_by_idvs_na-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>To some extent. When the outlier treatment is being applied on a smaller sample it seems to drive the coefficient up. Other then that the control variables seem to have little influence on the main coefficient.</p>
-<p>Finally, let’s have a look at the outlier treatment.</p>
+<p>Yes, this seems to be the case. When assessed univariately on the largest possible sample, the range of estimates becomes considerably larger. Is this driven by extreme observations?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rel_ests <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(na.omit <span class="op">==</span><span class="st"> "yes"</span>,
-         idvs <span class="op">==</span><span class="st"> "full"</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(idvs <span class="op">==</span><span class="st"> "gdp_only"</span>,
+         na.omit <span class="op">==</span><span class="st"> "no"</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="../reference/plot_rdf_estimates_by_choice.html">plot_rdf_estimates_by_choice</a></span>(<span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>, <span class="st">"outlier_tment_style"</span>, 
-                               <span class="dt">color =</span> <span class="st">"model_type"</span>, <span class="dt">order =</span> <span class="st">"outlier_cutoff"</span>, <span class="dt">width =</span> <span class="fl">0.8</span>)</code></pre></div>
-<p><img src="analyzing_rdf_files/figure-html/estimate_density_by_outlier-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>The estimates are ordered by outlier treatment style and within that, by the magnitude of the outlier cutoff. Interestingly, deleting outliers by truncating has little effect on the estimate while limiting them to narrower percentile cutoffs tends to increase the estimate.</p>
+                               <span class="dt">color =</span> <span class="st">"model_type"</span>, <span class="dt">order =</span> <span class="st">"outlier_cutoff"</span>, <span class="dt">width =</span> <span class="fl">0.008</span>)</code></pre></div>
+<p><img src="analyzing_rdf_files/figure-html/estimates_gdp_only_by_outlier-1.png" width="672" style="display: block; margin: auto;"></p>
+<p>This seems to be the case. In general, the stricter the outlier treatment, the larger the estimate. In addition, the univariate level-log specifications are generating larger and slightly narrower estimates compared to the univariate log-log specification, consistent with a percentage increase in GDP rather being associated with an absolute increase in life expectancy than a relative one. This seems reasonable because of diminishing rates of returns to wealth.</p>
+<p>Our last test will focus on the multivariate analyses that just use schooling as additional control, since including unemployment reduces the sample size while contributing little to the explanatory power of the model.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rel_ests <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(na.omit <span class="op">==</span><span class="st"> "no"</span>,
+         idvs <span class="op">==</span><span class="st"> "gdp_school"</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/plot_rdf_estimates_by_choice.html">plot_rdf_estimates_by_choice</a></span>(<span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>, <span class="st">"outlier_tment_style"</span>, 
+                               <span class="dt">color =</span> <span class="st">"model_type"</span>, <span class="dt">order =</span> <span class="st">"outlier_cutoff"</span>, <span class="dt">width =</span> <span class="fl">0.008</span>)</code></pre></div>
+<p><img src="analyzing_rdf_files/figure-html/estimates_gdp_school_by_outlier-1.png" width="672" style="display: block; margin: auto;"></p>
+<p>Again, outliers turn out to be influential here but into the opposite direction. Focusing on the narrower estimates of the level-log specification, it becomes apparent that removing outliers by truncating renders the estimate smaller and insignificant, while winsorizing extreme values does little to the coefficient.</p>
 </div>
 <div id="summing-up" class="section level2">
 <h2 class="hasAnchor">
 <a href="#summing-up" class="anchor"></a>Summing up</h2>
 <p>Using the <code>rdfanalysis</code> package, we are able to systematically explore the 11,264 degrees of freedom that we identified in a supposedly straight-forward panel data analysis of observational data.</p>
-<p>Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of 0 to 0.17 years. Assuming that no other unobservables or reverse causality affect our findings, this coefficient can be causally interpreted.</p>
-<p>As can be assessed by the researcher degrees of freedom exploration, our estimate is only one of many feasible estimates. In particular, the country-year fixed effect structure has a dampening effect on the analysis. When relaxing this assumption the feasible range of estimates ranges from a lower bound of -0.35 to an upper bound of 0.95 years.</p>
+<p>Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series and unemployment and years of schooling as controls, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of 0.03 to 0.19 years. Assuming that no other unobservables or reverse causality issues affect our findings, this coefficient could be interpreted as causal, but given how courageous these assumptions are I strongly advise against it.</p>
+<p>As can be assessed by the researcher degrees of freedom exploration, our estimate is only one of many feasible estimates. The total range of estimates spans from a lower bound of -0.35 to an upper bound of 0.92 years. Three observations stand out from the exploration:</p>
+<ul>
+<li>The country-year fixed effect structure has a large dampening effect on the estimates.</li>
+<li>Using log-transformed values for the independent variables generally increases the estimates.</li>
+<li>The implicit sample selection caused by including additional control variables is also influential for our estimate and tends to increase it.</li>
+</ul>
 <p>It is impressive to see the number of researcher degrees of freedom that even such a simple research design like the one at hand implies. My hope is that the <code>rdfanalysis</code> package might motivate researchers to think more deeply about their choice set and to explore and document their findings more transparently.</p>
 <p>If you have remarks about this vignette or the package, I would love to hear from you. Feel free to reach out via <a href="mailto:gassen@wiwi.hu-berlin.de">email</a> or <a href="https://twitter.com/JoachimGassen">twitter</a>.</p>
 <p>Enjoy!</p>

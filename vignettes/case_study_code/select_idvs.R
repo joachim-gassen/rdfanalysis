@@ -12,14 +12,14 @@ select_idvs <- function(input = NULL, choice = NULL) {
     "following values:",
     "",
     "- `gdp_only`: GDP per capita only",
-    "- `gdp_rd`: GDP per capita and research and development over GDP",
+    "- `gdp_school`: GDP per capita and mean years schooling",
     "- `gdp_ue`: GDP per capita and unemployment",
     "- `full`: Full model including all three variables"
   )
   choice_type <- list(
     list(name = "idvs",
          type = "character",
-         valid_values = c("gdp_only", "gdp_rd", "gdp_ue", "full"),
+         valid_values = c("gdp_only", "gdp_school", "gdp_ue", "full"),
          weights = c(0, 0, 0, 1))
   )
   if (is.null(choice)) return(list(
@@ -30,9 +30,9 @@ select_idvs <- function(input = NULL, choice = NULL) {
   # ___ Analysis code starts below ___
 
   df <- switch (choice[[1]],
-                "gdp_only" = input$data %>% select(-resdevelop_gdp, -unemployment),
-                "gdp_rd" = input$data %>% select(-unemployment),
-                "gdp_ue" = input$data %>% select(-resdevelop_gdp),
+                "gdp_only" = input$data %>% select(-mn_yrs_school, -unemployment),
+                "gdp_school" = input$data %>% select(-unemployment),
+                "gdp_ue" = input$data %>% select(-mn_yrs_school),
                 "full" = input$data
   )
 
