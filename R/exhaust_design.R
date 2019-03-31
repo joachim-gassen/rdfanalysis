@@ -1,5 +1,5 @@
 generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
-  nobs <- NULL # to make ddevtools:check() happy
+  nobs <- NULL # to make devtools:check() happy
 
   choice_list <- vector("list", length(d))
   if(weighted) weight_list <- vector("list", length(d))
@@ -53,11 +53,11 @@ generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
 
 #' Exhaust all Researcher Degrees of Freedom
 #'
-#' Parse through a reserch design, iterating over all possible choices, thereby exhausting all
+#' Parse through a research design, iterating over all possible choices, thereby exhausting all
 #' documented researcher degrees of freedom. Returns a data frame containing the results for all
 #' choice combinations.
 #'
-#' @param d A character vector of the research design steps function names
+#' @param d A character vector of the research design steps function names.
 #' @param start_input The input data for the first step.
 #' @param weight Whether each step's choices should be weighted by their user assigned weights as
 #'   included in the \code{choice_type}. Protocols with zero weight are excluded from the analysis.
