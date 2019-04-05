@@ -47,7 +47,7 @@ of Economic Development, Population Studies (29): 235.](preston_1975_p235.png){w
 
 </center>
 
-We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the [World Bank](https://data.worldbank.org) (GDP per capita, life expectancy at birth and unemployment rates), and the [Wittgenstein Center](http://dataexplorer.wittgensteincentre.org/wcde-v2/) for mean years of schooling received by country inhabitants being 15 years or older. As the schooling data is available at 5 year intervals only, I interpolate the years in-between to keep the data at annual frequency (another research degree of freedom, I know ...).
+We will estimate the respective coefficient for GDP per capita in a multiple regression framework on a panel data set of country-year data provided by the [World Bank](https://data.worldbank.org) (GDP per capita, life expectancy at birth and unemployment rates), and the [Wittgenstein Center](http://dataexplorer.wittgensteincentre.org/wcde-v2/) for mean years of schooling received by country inhabitants being 15 years or older. As the schooling data is available at 5 year intervals only, I interpolate the years in-between linearly to keep the data at annual frequency (another research degree of freedom, I know ...). If you want to explore the data underlying the case, [click here](https://jgassen.shinyapps.io/expand_rdfanalysis) to access an interactive data exploration tool based on my [ExPanDaR package](https://joachim-gassen.github.io/ExPanDaR). With this tool, you can also re-generate most protocols that we study below by hand.
 
 While the analysis it not meant to contribute to the question whether there is a causal link between GDP per capita and life expectancy (see [Lutz and Kebede, Pop and Dev Review 2018](https://doi.org/10.1111/padr.12141) for a recent discussion), I design the analysis such that identifying assumptions for such a causal interpretation of its findings are explicit.
 
@@ -785,8 +785,65 @@ As can be assessed by the researcher degrees of freedom exploration, our estimat
 - Using log-transformed values for the independent variables generally increases the estimates. 
 - The implicit sample selection caused by including additional control variables is also influential for our estimate and tends to increase it.
 
-It is impressive to see the number of researcher degrees of freedom that even such a simple research design like the one at hand implies. My hope is that the `rdfanalysis` package might motivate researchers to think more deeply about their choice set and to explore and document their findings more transparently.
+It is impressive to see the number of researcher degrees of freedom that even such a simple research design like the one at hand implies. My hope is that the `rdfanalysis` package might motivate researchers to think more deeply about their choice set and to explore and document their findings more transparently. 
 
 If you have remarks about this vignette or the package, I would love to hear from you. Feel free to reach out via [email](mailto:gassen@wiwi.hu-berlin.de) or [twitter](https://twitter.com/JoachimGassen).
 
 Enjoy!
+
+## Appendix
+
+Below you find the code to run the data in the ExPanD shiny web app for extensive interactive exploration. You can re-generate most protocols from above and more. An online version is accessible [here](https://jgassen.shinyapps.io/expand_rdfanalysis). 
+
+```{r expand, eval = FALSE}
+library(tidyverse)
+library(ExPanDaR)
+
+df_all <- read_csv("https://joachim-gassen.github.io/data/wb_new.csv", col_types = cols()) %>%
+  mutate_at(c("country", "year"), as.factor) %>%
+  mutate_at(c("lifeexpectancy", "gdp_capita",
+           "mn_yrs_school", "unemployment"), list(ln = log)) %>%
+  select(country, region, year, 
+         gdp_capita, lifeexpectancy,
+         mn_yrs_school, unemployment,
+         gdp_capita_ln, lifeexpectancy_ln, 
+         mn_yrs_school_ln, unemployment_ln) 
+
+df_na.omit <- df_all %>% na.omit
+
+wb_var_def <- worldbank_var_def %>%
+  slice(c(1,2,4,8,23,19)) %>%
+  left_join(worldbank_data_def, by = c("var_def" = "var_name")) %>%
+  select(-var_def) %>%
+  rename(var_def = var_def.y,
+         type = type.x) %>%
+  select(var_name, var_def, type, can_be_na) %>%
+  add_row(var_name = "mn_yrs_school", var_def = "Mean number of years spent in school, age group 15+. Source: Wittgenstein Centre for Demography and Global Human Capital (2018). Wittgenstein Centre Data Explorer Version 2.0. Data between five year intervals are based on linear interpolation.", 
+          type = "numeric", can_be_na = 1, .after = 5)
+
+for (var in c("gdp_capita", "lifeexpectancy", "mn_yrs_school", "unemployment")) {
+  wb_var_def <- rbind(wb_var_def,
+                      list(paste0(var, "_ln"), paste("Log-transformed version of", var), "numeric", 1))
+}
+
+abstract <- paste("This interactive display is part of the <a href=https://joachim-gassen.github.io/rdfanalysis>",
+                  "R package rdfanalysis</a>.",
+                  "The package provides researchers with a coding framework that supports",
+                  "formal documentation and systematic exploration of",
+                  "the researcher degrees of freedom that are inherent in research designs.<p>",
+                  "This display provides data from the World Bank and the Wittgenstein Centre",
+                  "to assess the impact of real Gross Domestic Product (GDP) per capita on life expectancy.",
+                  "This association has become known as the Preston Curve.<p>",
+                  "You can choose below whether you want to examine a sample with or without missing observations.", 
+                  "Hover over the variable names in the descriptive table to learn more about the variable",
+                  "definitions and use the various displays to explore the data.<p>",
+                  "Joachim Gassen - <a href=mailto:gassen@wiwi.hu-berlin.de>gassen@wiwi.hu-berlin.de</a> - March 2019")
+
+
+ExPanD(list(df_all, df_na.omit), 
+       df_name = c("All observations", "Observations with NAs omitted"),
+       df_def = wb_var_def,
+       title = "Explore the Perston Curve",
+       abstract = abstract)
+
+```
