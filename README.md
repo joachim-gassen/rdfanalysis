@@ -15,7 +15,7 @@ For a more in-depth introduction into the package, please refer to the [vignette
 ### Step 1: Open a new Rstudio project in a clean directory and install the `rdfanalysis` package
 
 ``` r
-devtools:intall_github("joachim-gassen/rdfanalysis")
+devtools::install_github("joachim-gassen/rdfanalysis")
 library(rdfanalysis)
 ```
 
@@ -100,7 +100,7 @@ test_design(design, input = sim_data(100, 0.1), reporter = "minimal")
 
 ### Step 7: Document your design
 
-The below serves documentation purposes. The function `prepare_design_documentation()` generates a PDF file in your project directory that documents your code.
+The below serves documentation purposes. The function `prepare_design_documentation()` generates a PDF file in your project directory that documents your code. For it to work you need a local `R Markdown` installation that is capable to produce PDF files.
 
 ``` r
 prepare_design_documentation(design, output_file = "my_design.pdf")
@@ -123,13 +123,13 @@ sim_data(100, 0.1) %>%
 
     ## $data
     ## $data$est
-    ## [1] 0.2166091
+    ## [1] 0.236353
     ## 
     ## $data$lb
-    ## [1] 0.01899325
+    ## [1] 0.01058808
     ## 
     ## $data$ub
-    ## [1] 0.414225
+    ## [1] 0.4621179
     ## 
     ## 
     ## $protocol
@@ -167,7 +167,7 @@ kable(df)
 
 | control\_for\_z |        est|         lb|         ub|
 |:----------------|----------:|----------:|----------:|
-| yes             |  0.1399993|  0.0788181|  0.2011806|
-| no              |  0.6467797|  0.5927678|  0.7007916|
+| yes             |  0.1014760|  0.0394621|  0.1634900|
+| no              |  0.6016612|  0.5489681|  0.6543544|
 
 Only two researcher degrees of freedom in this setting but you will easily get into the thousands in a real research setting. For a real-life case study on how to use `rdfanalysis`, please refer to the [vignette included in the documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).

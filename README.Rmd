@@ -35,7 +35,7 @@ For a more in-depth introduction into the package, please refer to the
 ### Step 1: Open a new Rstudio project in a clean directory and install the `rdfanalysis` package
 
 ```{r library, eval = FALSE}
-devtools:intall_github("joachim-gassen/rdfanalysis")
+devtools::install_github("joachim-gassen/rdfanalysis")
 library(rdfanalysis)
 ```
 
@@ -133,7 +133,8 @@ test_design(design, input = sim_data(100, 0.1), reporter = "minimal")
 ### Step 7: Document your design
 
 The below serves documentation purposes. The function `prepare_design_documentation()`
-generates a PDF file in your project directory that documents your code.
+generates a PDF file in your project directory that documents your code. For it 
+to work you need a local `R Markdown` installation that is capable to produce PDF files.
 
 ```{r document_design, eval = FALSE}
 prepare_design_documentation(design, output_file = "my_design.pdf")
