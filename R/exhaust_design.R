@@ -91,7 +91,9 @@ exhaust_design <- function(d, start_input, weight = FALSE, est_by_cchoice = 10) 
     unlist(input$data)
   }
   close(pb)
+  choices <- 1:ncol(choice_df)
   choice_df <- cbind(choice_df, results)
+  attr(choice_df, "choices") <- choices
   rownames(choice_df) <- NULL
   choice_df
 }

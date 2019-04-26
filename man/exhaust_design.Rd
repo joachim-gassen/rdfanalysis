@@ -7,7 +7,7 @@
 exhaust_design(d, start_input, weight = FALSE, est_by_cchoice = 10)
 }
 \arguments{
-\item{d}{A character vector of the research design steps function names}
+\item{d}{A character vector of the research design steps function names.}
 
 \item{start_input}{The input data for the first step.}
 
@@ -22,7 +22,7 @@ spaced steps, staring at \code{valid_min} and ending at \code{valid_max}.}
 A data frame containing results for all feasible choice permutations.
 }
 \description{
-Parse through a reserch design, iterating over all possible choices, thereby exhausting all
+Parse through a research design, iterating over all possible choices, thereby exhausting all
 documented researcher degrees of freedom. Returns a data frame containing the results for all
 choice combinations.
 }
