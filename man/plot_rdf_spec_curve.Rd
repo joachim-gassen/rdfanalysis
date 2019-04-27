@@ -5,37 +5,51 @@
 \title{Plot the Specification Curve of your Reseracher Degrees of Freedom}
 \usage{
 plot_rdf_spec_curve(ests, est, lb = "", ub = "", sample_frac = 0.1,
-  sig_color = "red", ribbon_color = "lightblue")
+  est_color = "black", est_color_signeg = "yellow",
+  est_color_sigpos = "blue", ribbon_color = "lightblue",
+  lower_to_upper = 3)
 }
 \arguments{
-\item{ests}{The data frame provided by \code{exhaust_design()}.}
+\item{ests}{The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.}
 
 \item{est}{A character string indicating the estimate that you want to plot.}
 
 \item{lb}{A character string indicating the lower bound of the estimate.}
 
 \item{ub}{A character string indicating the upper bound of the estimate.
-If both \code{lb} und \code{ub} are present the confindence interval around
-the estimate is plotted and the significane of each estimate is assessed.}
+If both \code{lb} und \code{ub} are present the plot includes a confindence
+interval around the estimate and colors the estimate points according to
+their significance (see below).}
 
 \item{sample_frac}{The percentage of the protocols that should be plottted.
 If your design produces many degrees of freedom, sampling speeds up plotting
 time and makes the plot less clutered.}
 
-\item{sig_color}{Color of significant estimates (only used when \code{lb} and
-\code{ub} are present).}
+\item{est_color}{Color of estimates points for specification curve}
+
+\item{est_color_signeg}{Color of significantly negative estimates.}
+
+\item{est_color_sigpos}{Color of significantly positive estimates.}
 
 \item{ribbon_color}{Color of the confidence interval (only used when \code{lb} and
 \code{ub} are present).}
+
+\item{lower_to_upper}{The size of the choice part of the plot, relative to
+the specification curve itself.}
 }
 \value{
-A plot.
+A ggplot object.
 }
 \description{
-Plots a visulization of the specification curve as introduced by
-Simonsohn, Simmons and Nelson.
+Visualizes a result estimate across your researcher desgrees of
+freedom by plotting its specification curve as introduced by
+\href{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998}{Simonsohn, Simmons and Nelson}.
 }
 \details{
+Significance of estimates is only dislayed when \code{lb} and
+\code{ub} are present. It is assessed by testing whether
+\code{lb} and \code{ub} are of equal sign.
+
 See the vignette of the package for further details.
 }
 \examples{

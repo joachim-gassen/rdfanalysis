@@ -64,7 +64,8 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/analyzing_rdf.html">Analyzing Researchers Degrees of Freedom: A Case Study</a>
+      <a href="articles/analyzing_rdf.html">Analyzing Researcher Degrees of Freedom:  
+A Case Study</a>
     </li>
   </ul>
 </li>
@@ -86,7 +87,7 @@
 <!--/.navbar -->
 
       
-      </header><script src="index_files/htmlwidgets-1.3/htmlwidgets.js"></script><script src="index_files/viz-0.3/viz.js"></script><link href="index_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+      </header><script src="index_files/htmlwidgets-1.3/htmlwidgets.js"></script><script src="index_files/viz-1.8.2/viz.js"></script><link href="index_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
 <script src="index_files/grViz-binding-1.0.0/grViz.js"></script><div class="row">
   <div class="col-md-9 contents">
     
@@ -105,7 +106,7 @@
 <div id="step-1-open-a-new-rstudio-project-in-a-clean-directory-and-install-the-rdfanalysis-package" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-1-open-a-new-rstudio-project-in-a-clean-directory-and-install-the-rdfanalysis-package" class="anchor"></a>Step 1: Open a new Rstudio project in a clean directory and install the <code>rdfanalysis</code> package</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">:</span><span class="kw">intall_github</span>(<span class="st">"joachim-gassen/rdfanalysis"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"joachim-gassen/rdfanalysis"</span>)
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rdfanalysis)</code></pre></div>
 </div>
 <div id="step-2-write-a-function-that-simulates-data" class="section level3">
@@ -182,7 +183,7 @@
 <div id="step-7-document-your-design" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-7-document-your-design" class="anchor"></a>Step 7: Document your design</h3>
-<p>The below serves documentation purposes. The function <code><a href="reference/prepare_design_documentation.html">prepare_design_documentation()</a></code> generates a PDF file in your project directory that documents your code.</p>
+<p>The below serves documentation purposes. The function <code><a href="reference/prepare_design_documentation.html">prepare_design_documentation()</a></code> generates a PDF file in your project directory that documents your code. For it to work you need a local <code>R Markdown</code> installation that is capable to produce PDF files.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/prepare_design_documentation.html">prepare_design_documentation</a></span>(design, <span class="dt">output_file =</span> <span class="st">"my_design.pdf"</span>)</code></pre></div>
 <p><code><a href="reference/prepare_design_flow_chart.html">prepare_design_flow_chart()</a></code> produces a quick visual of the code flow.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/prepare_design_flow_chart.html">prepare_design_flow_chart</a></span>(design, <span class="dt">landscape =</span> <span class="ot">TRUE</span>)</code></pre></div>

@@ -715,7 +715,19 @@ plot_rdf_estimate_density(ests, "est", "lb", "ub", color = "lightblue") +
   theme_minimal()
 ```
 
-Quite a range of estimates. How do the coefficients vary by model specification? To be able to assess the precise range of our estimates, we now use histogram-based ridge lines instead of densities.
+Quite a range of estimates. How do the coefficients vary by model specification?  
+For a quick overview the package has implemented the specification curve visual 
+as suggested by [Simonsohn, Simmons and Nelson](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998}).
+
+``` {r spec_curve, fig.width = 7, fig.height = 10, fig.align = "center"}
+plot_rdf_spec_curve(ests, "est", "lb", "ub") 
+```
+
+This visual is based on a 10 % sample of estimates (can be adjusted via the 
+`sample_frac` parameter). It provides a very good first impression of both, the overall distribution of 
+the main estimate of interest as well as influential choices. 
+
+For example, you see that the type of the estimation model is influential for the magnitude of the effect. To be able to assess the precise range of our estimates conditional on this discrete choice, we now use the `plot_rdf_by_dchoice()` function with histogram-based ridge lines instead of densities.
 
 ``` {r estimate_density_by_model_type, fig.width = 7, fig.height = 6, fig.align = "center"}
 plot_rdf_ridges_by_dchoice(ests, "est", "model_type", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
@@ -777,7 +789,7 @@ Again, outliers turn out to be influential here but into the opposite direction.
 
 Using the `rdfanalysis` package, we are able to systematically explore the `r format(nrow(ests), big.mark = ",")` degrees of freedom that we identified in a supposedly straight-forward panel data analysis of observational data. 
 
-Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series and unemployment and years of schooling as controls, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$lb, 2)` to `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$ub, 2)` years. Assuming that no other unobservables or reverse causality issues affect our findings, this coefficient could be interpreted as causal, but given how courageous these assumptions are I strongly advise against it.
+Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series and controlling for unemployment and years of schooling, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$lb, 2)` to `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$ub, 2)` years. Assuming that no other unobservables or reverse causality issues affect our findings, this coefficient could be interpreted as causal, but given how courageous these assumptions are I strongly advise against it.
 
 As can be assessed by the researcher degrees of freedom exploration, our estimate is only one of many feasible estimates. The total range of estimates spans from a lower bound of `r round(min(ests$lb), 2)` to an upper bound of `r round(max(ests$ub), 2)` years. Three observations stand out from the exploration: 
 

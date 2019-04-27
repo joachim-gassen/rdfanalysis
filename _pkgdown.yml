@@ -33,6 +33,7 @@ reference:
   - exhaust_design
   - calculate_weighted_estimate
   - plot_rdf_estimate_density
+  - plot_rdf_spec_curve
   - plot_rdf_estimates_by_choice
   - plot_rdf_ridges_by_dchoice
 - title: Helper functions
