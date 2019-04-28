@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_rdf_spec_curve.R
 \name{plot_rdf_spec_curve}
 \alias{plot_rdf_spec_curve}
-\title{Plot the Specification Curve of your Reseracher Degrees of Freedom}
+\title{Plot the Specification Curve of your Researcher Degrees of Freedom}
 \usage{
 plot_rdf_spec_curve(ests, est, lb = "", ub = "", sample_frac = 0.1,
   est_color = "black", est_color_signeg = "yellow",
@@ -41,7 +41,7 @@ the specification curve itself.}
 A ggplot object.
 }
 \description{
-Visualizes a result estimate across your researcher desgrees of
+Visualizes a result estimate across your researcher degrees of
 freedom by plotting its specification curve as introduced by
 \href{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998}{Simonsohn, Simmons and Nelson}.
 }

@@ -92,7 +92,7 @@ A Case Study</a>
 A Case Study</h1>
                         <h4 class="author">Joachim Gassen</h4>
             
-            <h4 class="date">2019-04-27</h4>
+            <h4 class="date">2019-04-28</h4>
       
       
       <div class="hidden name"><code>analyzing_rdf.Rmd</code></div>
@@ -927,7 +927,7 @@ est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span c
 <span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>()</code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/estimate_density-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>Quite a range of estimates. How do the coefficients vary by model specification?<br>
-For a quick overview the package has implemented the specification curve visual as suggested by <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998%7D">Simonsohn, Simmons and Nelson</a>.</p>
+For a quick overview the package has implemented the specification curve visual as suggested by <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998">Simonsohn, Simmons and Nelson</a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/plot_rdf_spec_curve.html">plot_rdf_spec_curve</a></span>(ests, <span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>) </code></pre></div>
 <p><img src="analyzing_rdf_files/figure-html/spec_curve-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>This visual is based on a 10 % sample of estimates (can be adjusted via the <code>sample_frac</code> parameter). It provides a very good first impression of both, the overall distribution of the main estimate of interest as well as influential choices.</p>

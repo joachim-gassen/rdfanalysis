@@ -717,7 +717,7 @@ plot_rdf_estimate_density(ests, "est", "lb", "ub", color = "lightblue") +
 
 Quite a range of estimates. How do the coefficients vary by model specification?  
 For a quick overview the package has implemented the specification curve visual 
-as suggested by [Simonsohn, Simmons and Nelson](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998}).
+as suggested by [Simonsohn, Simmons and Nelson](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998).
 
 ``` {r spec_curve, fig.width = 7, fig.height = 10, fig.align = "center"}
 plot_rdf_spec_curve(ests, "est", "lb", "ub") 

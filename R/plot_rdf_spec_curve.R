@@ -1,6 +1,6 @@
-#' Plot the Specification Curve of your Reseracher Degrees of Freedom
+#' Plot the Specification Curve of your Researcher Degrees of Freedom
 #'
-#' Visualizes a result estimate across your researcher desgrees of
+#' Visualizes a result estimate across your researcher degrees of
 #' freedom by plotting its specification curve as introduced by
 #' \href{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998}{Simonsohn, Simmons and Nelson}.
 #'
