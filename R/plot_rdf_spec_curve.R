@@ -34,7 +34,7 @@
 #' }
 #' @export
 plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
-                                sample_frac = 0.1,
+                                sample_frac = 1,
                                 est_color = "black",
                                 est_color_signeg = "yellow",
                                 est_color_sigpos = "blue",
