@@ -720,7 +720,7 @@ For a quick overview the package has implemented the specification curve visual
 as suggested by [Simonsohn, Simmons and Nelson](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998).
 
 ``` {r spec_curve, fig.width = 7, fig.height = 10, fig.align = "center"}
-plot_rdf_spec_curve(ests, "est", "lb", "ub") 
+plot_rdf_spec_curve(ests, "est", "lb", "ub", sample_frac = 0.1) 
 ```
 
 This visual is based on a 10 % sample of estimates (can be adjusted via the 
