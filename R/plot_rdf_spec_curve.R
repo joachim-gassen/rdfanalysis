@@ -14,13 +14,22 @@
 #' @param sample_frac The percentage of the protocols that should be plottted.
 #' If your design produces many degrees of freedom, sampling speeds up plotting
 #' time and makes the plot less clutered.
+#' @param est_label Y-Axis label for the specification curve. Defaults to
+#' \code{est}.
 #' @param est_color Color of estimates points for specification curve
 #' @param est_color_signeg Color of significantly negative estimates.
 #' @param est_color_sigpos Color of significantly positive estimates.
 #' @param ribbon_color Color of the confidence interval (only used when \code{lb} and
 #' \code{ub} are present).
+#' @param pt_size Point plot size for estimates and choice indicators that are
+#' not highlighted (see below).
 #' @param lower_to_upper The size of the choice part of the plot, relative to
 #' the specification curve itself.
+#' @param highlight \code{NULL} or, if you want to highlight certain protocols by
+#' their point size, a data frame containing the choices that identify the
+#' protocols.
+#' @param pt_size_highlight Point plot size for highlighted estimates and
+#' choice indicators.
 #' @return A ggplot object.
 #' @details
 #' Significance of estimates is only dislayed when \code{lb} and
@@ -35,16 +44,29 @@
 #' @export
 plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
                                 sample_frac = 1,
+                                est_label = est,
                                 est_color = "black",
                                 est_color_signeg = "yellow",
                                 est_color_sigpos = "blue",
                                 ribbon_color = "lightblue",
-                                lower_to_upper = 3) {
+                                pt_size = 0.1,
+                                lower_to_upper = 3,
+                                highlight = NULL,
+                                pt_size_highlight = 3) {
   choice <- item <- n <- option <- sig <- NULL
   # To make devtools::check() happy
 
-  if (xor(lb == "", ub == "")) stop("lb and ub need to be provided both or not at all")
   choices <- names(ests)[attr(ests, "choices")]
+
+  if(!is.null(highlight)) {
+    if (!is.data.frame(highlight) | !identical(names(highlight), choices))
+      stop("invalid highlight parameter. Needs to be a data frame with all choices")
+    if (sample_frac != 1)
+      warning(paste("Highlightening protocols is not advised with sampling",
+                    "as protocols might be omitted from the plot"))
+  }
+  if (xor(lb == "", ub == "")) stop("lb and ub need to be provided both or not at all")
+
   for(c in choices) {
     if (c == choices[1]) {
       item_levels <- sprintf("%s: %s", c, unique(ests[,c]))
@@ -53,30 +75,37 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
     }
   }
 
+  if (!is.null(highlight)) {
+    highlight$highlight <- TRUE
+    ests <- ests %>%
+      dplyr::left_join(highlight, by = choices)
+    ests$highlight[is.na(ests$highlight)] <- FALSE
+  } else ests$highlight <- FALSE
+
   if (lb != "") {
     es <- ests %>%
-      dplyr::select(!!! rlang::syms(choices),
+      dplyr::select(highlight, !!! rlang::syms(choices),
              !! rlang::sym(est), !! rlang::sym(lb), !! rlang::sym(ub)) %>%
       dplyr::arrange(!! rlang::sym(est), !! rlang::sym(lb), !! rlang::sym(ub)) %>%
       dplyr::mutate(n = dplyr::row_number()) %>%
       dplyr::sample_frac(sample_frac) %>%
-      tidyr::gather(key = "choice", value = "option", -n,
+      tidyr::gather(key = "choice", value = "option", -n, -highlight,
              -!!rlang::sym(est), -!!rlang::sym(lb), -!!rlang::sym(ub)) %>%
       dplyr::mutate(item = sprintf("%s: %s", choice, option),
              sig = factor(sign(!!rlang::sym(lb)) + sign(!!rlang::sym(ub)))) %>%
-      dplyr::select(n, choice, item, sig,
+      dplyr::select(n, choice, item, highlight, sig,
              !!rlang::sym(est), !!rlang::sym(lb), !!rlang::sym(ub)) %>%
       dplyr::arrange(n)
   } else {
     es <- ests %>%
-      dplyr::select(!!!rlang::syms(choices), !!rlang::sym(est)) %>%
+      dplyr::select(highlight, !!!rlang::syms(choices), !!rlang::sym(est)) %>%
       dplyr::arrange(!!rlang::sym(est)) %>%
       dplyr::mutate(n = dplyr::row_number()) %>%
       dplyr::sample_frac(sample_frac) %>%
-      tidyr::gather(key = "choice", value = "option", -n,
+      tidyr::gather(key = "choice", value = "option", -n, -highlight,
              -!!rlang::sym(est)) %>%
       dplyr::mutate(item = sprintf("%s: %s", choice, option)) %>%
-      dplyr::select(n, choice, item, !!rlang::sym(est)) %>%
+      dplyr::select(n, choice, item, highlight, !!rlang::sym(est)) %>%
       dplyr::arrange(n)
   }
 
@@ -85,40 +114,49 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
 
   if (lb != "") {
     sc <- es %>%
-      dplyr::select(n, sig,
+      dplyr::select(n, sig, highlight,
              !!rlang::sym(est), !!rlang::sym(lb), !!rlang::sym(ub)) %>%
       dplyr::distinct() %>%
       ggplot2::ggplot(ggplot2::aes(x = n, y = !!rlang::sym(est))) +
       ggplot2::geom_ribbon(ggplot2::aes(ymin = !!rlang::sym(lb),
                                         ymax = !!rlang::sym(ub)),
                            fill = ribbon_color, color = ribbon_color) +
-      ggplot2::geom_point(ggplot2::aes(color = sig), size = 0.01) +
+      ggplot2::geom_point(ggplot2::aes(color = sig, size = highlight)) +
       ggplot2::theme_minimal() +
+      ggplot2::ylab(est_label) +
       ggplot2::theme(axis.title.x = ggplot2::element_blank(),
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()) +
-      ggplot2::guides(color = FALSE) +
+      ggplot2::guides(color = FALSE, size = FALSE) +
       ggplot2::scale_color_manual(values = c("-2" = est_color_signeg,
                                              "0" = est_color,
-                                             "2" = est_color_sigpos))
+                                             "2" = est_color_sigpos)) +
+      ggplot2::scale_size_manual(values = c("FALSE" = pt_size,
+                                             "TRUE" = pt_size_highlight))
   } else {
     sc <- es %>%
       dplyr::select(n, !!rlang::sym(est)) %>%
       dplyr::distinct() %>%
       ggplot2::ggplot(ggplot2::aes(x = n, y = !!rlang::sym(est))) +
-      ggplot2::geom_point(size = 0.01, color = est_color) +
+      ggplot2::geom_point(ggplot2::aes(size = highlight), color = est_color) +
       ggplot2::theme_minimal() +
+      ggplot2::ylab(est_label) +
       ggplot2::theme(axis.title.x = ggplot2::element_blank(),
             axis.text.x = ggplot2::element_blank(),
-            axis.ticks.x = ggplot2::element_blank())
+            axis.ticks.x = ggplot2::element_blank()) +
+      ggplot2::guides(size = FALSE) +
+      ggplot2::scale_size_manual(values = c("FALSE" = pt_size,
+                                            "TRUE" = pt_size_highlight))
   }
 
   dc <- ggplot2::ggplot(data = es, ggplot2::aes(x = n, y = item, color = choice)) +
-    ggplot2::geom_point(size = 0.01) +
+    ggplot2::geom_point(ggplot2::aes(size = highlight)) +
     ggplot2::theme_minimal() +
     ggplot2::xlab("Protocol") +
     ggplot2::ylab("") +
-    ggplot2::guides(color = FALSE)
+    ggplot2::guides(color = FALSE, size = FALSE) +
+    ggplot2::scale_size_manual(values = c("FALSE" = pt_size,
+                                          "TRUE" = pt_size_highlight))
 
   gsc <- ggplot2::ggplot_build(sc)
   gdc <- ggplot2::ggplot_build(dc)

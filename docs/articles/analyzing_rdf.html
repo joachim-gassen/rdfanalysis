@@ -92,7 +92,7 @@ A Case Study</a>
 A Case Study</h1>
                         <h4 class="author">Joachim Gassen</h4>
             
-            <h4 class="date">2019-04-28</h4>
+            <h4 class="date">2019-05-03</h4>
       
       
       <div class="hidden name"><code>analyzing_rdf.Rmd</code></div>
@@ -1018,24 +1018,30 @@ wb_var_def &lt;-<span class="st"> </span>worldbank_var_def <span class="op">%&gt
                       <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(var, <span class="st">"_ln"</span>), <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(<span class="st">"Log-transformed version of"</span>, var), <span class="st">"numeric"</span>, <span class="dv">1</span>))
 }
 
-abstract &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(<span class="st">"This interactive display is part of the &lt;a href=https://joachim-gassen.github.io/rdfanalysis&gt;"</span>,
+abstract &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(<span class="st">"&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;This interactive display is part of the "</span>,
+                  <span class="st">"&lt;a href=https://joachim-gassen.github.io/rdfanalysis&gt;"</span>,
                   <span class="st">"R package rdfanalysis&lt;/a&gt;."</span>,
-                  <span class="st">"The package provides researchers with a coding framework that supports"</span>,
-                  <span class="st">"formal documentation and systematic exploration of"</span>,
-                  <span class="st">"the researcher degrees of freedom that are inherent in research designs.&lt;p&gt;"</span>,
-                  <span class="st">"This display provides data from the World Bank and the Wittgenstein Centre"</span>,
-                  <span class="st">"to assess the impact of real Gross Domestic Product (GDP) per capita on life expectancy."</span>,
+                  <span class="st">"The package provides researchers with a coding framework"</span>,
+                  <span class="st">"that supports formal documentation and systematic"</span>,
+                  <span class="st">"exploration of the researcher degrees of freedom that are"</span>,
+                  <span class="st">"inherent in research designs.&lt;/p&gt;"</span>,
+                  <span class="st">"&lt;p&gt;Data is provided by the World Bank and the Wittgenstein"</span>,
+                  <span class="st">"Centre and used to assess the impact of real"</span>,
+                  <span class="st">"gross domestic product (GDP) per capita on life expectancy."</span>,
                   <span class="st">"This association has become known as the Preston Curve.&lt;p&gt;"</span>,
-                  <span class="st">"You can choose below whether you want to examine a sample with or without missing observations."</span>, 
-                  <span class="st">"Hover over the variable names in the descriptive table to learn more about the variable"</span>,
-                  <span class="st">"definitions and use the various displays to explore the data.&lt;p&gt;"</span>,
-                  <span class="st">"Joachim Gassen - &lt;a href=mailto:gassen@wiwi.hu-berlin.de&gt;gassen@wiwi.hu-berlin.de&lt;/a&gt; - March 2019"</span>)
+                  <span class="st">"You can choose below whether you want to examine a sample"</span>,
+                  <span class="st">"with or without missing observations. Hover over the"</span>,
+                  <span class="st">"variable names in the descriptive table to see variable"</span>,
+                  <span class="st">"definitions and use the various displays to explore the"</span>, 
+                  <span class="st">"data.&lt;p&gt;"</span>,
+                  <span class="st">"Joachim Gassen - &lt;a href=mailto:gassen@wiwi.hu-berlin.de&gt;"</span>,
+                  <span class="st">"gassen@wiwi.hu-berlin.de&lt;/a&gt; - March 2019"</span>)
 
 
 <span class="kw"><a href="https://www.rdocumentation.org/packages/ExPanDaR/topics/ExPanD">ExPanD</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(df_all, df_na.omit), 
        <span class="dt">df_name =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"All observations"</span>, <span class="st">"Observations with NAs omitted"</span>),
        <span class="dt">df_def =</span> wb_var_def,
-       <span class="dt">title =</span> <span class="st">"Explore the Perston Curve"</span>,
+       <span class="dt">title =</span> <span class="st">"Explore the Link Between National Income and Life Expectancy (Preston Curve)"</span>,
        <span class="dt">abstract =</span> abstract)</code></pre></div>
 </div>
   </div>

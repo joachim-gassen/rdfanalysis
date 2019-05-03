@@ -139,9 +139,10 @@ freedom by plotting its specification curve as introduced by
     </div>
 
     <pre class="usage"><span class='fu'>plot_rdf_spec_curve</span>(<span class='no'>ests</span>, <span class='no'>est</span>, <span class='kw'>lb</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>ub</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>sample_frac</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>est_color</span> <span class='kw'>=</span> <span class='st'>"black"</span>, <span class='kw'>est_color_signeg</span> <span class='kw'>=</span> <span class='st'>"yellow"</span>,
+  <span class='kw'>est_label</span> <span class='kw'>=</span> <span class='no'>est</span>, <span class='kw'>est_color</span> <span class='kw'>=</span> <span class='st'>"black"</span>, <span class='kw'>est_color_signeg</span> <span class='kw'>=</span> <span class='st'>"yellow"</span>,
   <span class='kw'>est_color_sigpos</span> <span class='kw'>=</span> <span class='st'>"blue"</span>, <span class='kw'>ribbon_color</span> <span class='kw'>=</span> <span class='st'>"lightblue"</span>,
-  <span class='kw'>lower_to_upper</span> <span class='kw'>=</span> <span class='fl'>3</span>)</pre>
+  <span class='kw'>pt_size</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>lower_to_upper</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>highlight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>pt_size_highlight</span> <span class='kw'>=</span> <span class='fl'>3</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,6 +173,11 @@ If your design produces many degrees of freedom, sampling speeds up plotting
 time and makes the plot less clutered.</p></td>
     </tr>
     <tr>
+      <th>est_label</th>
+      <td><p>Y-Axis label for the specification curve. Defaults to
+<code>est</code>.</p></td>
+    </tr>
+    <tr>
       <th>est_color</th>
       <td><p>Color of estimates points for specification curve</p></td>
     </tr>
@@ -189,9 +195,25 @@ time and makes the plot less clutered.</p></td>
 <code>ub</code> are present).</p></td>
     </tr>
     <tr>
+      <th>pt_size</th>
+      <td><p>Point plot size for estimates and choice indicators that are
+not highlighted (see below).</p></td>
+    </tr>
+    <tr>
       <th>lower_to_upper</th>
       <td><p>The size of the choice part of the plot, relative to
 the specification curve itself.</p></td>
+    </tr>
+    <tr>
+      <th>highlight</th>
+      <td><p><code>NULL</code> or, if you want to highlight certain protocols by
+their point size, a data frame containing the choices that identify the
+protocols.</p></td>
+    </tr>
+    <tr>
+      <th>pt_size_highlight</th>
+      <td><p>Point plot size for highlighted estimates and
+choice indicators.</p></td>
     </tr>
     </table>
     

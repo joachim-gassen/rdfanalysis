@@ -5,9 +5,10 @@
 \title{Plot the Specification Curve of your Researcher Degrees of Freedom}
 \usage{
 plot_rdf_spec_curve(ests, est, lb = "", ub = "", sample_frac = 1,
-  est_color = "black", est_color_signeg = "yellow",
+  est_label = est, est_color = "black", est_color_signeg = "yellow",
   est_color_sigpos = "blue", ribbon_color = "lightblue",
-  lower_to_upper = 3)
+  pt_size = 0.1, lower_to_upper = 3, highlight = NULL,
+  pt_size_highlight = 3)
 }
 \arguments{
 \item{ests}{The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.}
@@ -25,6 +26,9 @@ their significance (see below).}
 If your design produces many degrees of freedom, sampling speeds up plotting
 time and makes the plot less clutered.}
 
+\item{est_label}{Y-Axis label for the specification curve. Defaults to
+\code{est}.}
+
 \item{est_color}{Color of estimates points for specification curve}
 
 \item{est_color_signeg}{Color of significantly negative estimates.}
@@ -34,8 +38,18 @@ time and makes the plot less clutered.}
 \item{ribbon_color}{Color of the confidence interval (only used when \code{lb} and
 \code{ub} are present).}
 
+\item{pt_size}{Point plot size for estimates and choice indicators that are
+not highlighted (see below).}
+
 \item{lower_to_upper}{The size of the choice part of the plot, relative to
 the specification curve itself.}
+
+\item{highlight}{\code{NULL} or, if you want to highlight certain protocols by
+their point size, a data frame containing the choices that identify the
+protocols.}
+
+\item{pt_size_highlight}{Point plot size for highlighted estimates and
+choice indicators.}
 }
 \value{
 A ggplot object.
