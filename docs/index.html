@@ -87,8 +87,8 @@ A Case Study</a>
 <!--/.navbar -->
 
       
-      </header><script src="index_files/htmlwidgets-1.3/htmlwidgets.js"></script><script src="index_files/viz-1.8.2/viz.js"></script><link href="index_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
-<script src="index_files/grViz-binding-1.0.0/grViz.js"></script><div class="row">
+      </header><script src="index_files/htmlwidgets-1.5.1/htmlwidgets.js"></script><script src="index_files/viz-0.3/viz.js"></script><link href="index_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="index_files/grViz-binding-1.0.1/grViz.js"></script><div class="row">
   <div class="col-md-9 contents">
     
 
@@ -101,109 +101,149 @@ A Case Study</a>
 <h2 class="hasAnchor">
 <a href="#a-package-to-explore-and-document-your-degrees-of-freedom" class="anchor"></a>A package to explore and document your degrees of freedom</h2>
 <p>This in-development package provides a coding infrastructure that allows researchers to systematically document and explore their researcher degrees of freedom when conducting analyses on observational data. The resulting code base is self-documenting, supports unit testing and power simulations based on simulated data. The documented researcher degrees of freedom can be exhausted to generate a distribution of outcome estimates.</p>
-<p>To provide a quick tour we will construct a research design where an independent variable x is confounded by a co-variate z and where the only researcher degree of freedom is whether to control for z in the regression setup. We will ignore the testing bit in this quick walk-through.</p>
+<div id="new-plot-a-specification-curve" class="section level3">
+<h3 class="hasAnchor">
+<a href="#new-plot-a-specification-curve" class="anchor"></a>New: Plot a specification curve</h3>
+<p>The below displays a specification curve (<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998">Simonsohn, Simmons and Nelson</a>) based on an systematic exploration of the Preston curve. It summarizes 11,264 regressions in one plot. See this <a href="https://joachim-gassen.github.io/2019/04/11264-regressions-in-one-tidy-plot/">blog article</a> and this <a href="https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html">vignette</a> for more detail. While the code works with the result data frame created following the procedure below, it also works on data frames that contain choices and coefficient estimates created by other means.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># devtools::install_github("joachim-gassen/rdfanalysis")</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rdfanalysis)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/load">load</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/connections">url</a></span>(<span class="st">"https://joachim-gassen.github.io/data/rdf_ests.RData"</span>))</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="reference/plot_rdf_spec_curve.html">plot_rdf_spec_curve</a></span>(ests, <span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>) </a></code></pre></div>
+<p><img src="index_files/figure-html/spec_curve-1.png" width="700"></p>
+</div>
+<div id="even-newer-let-your-researchers-degrees-of-freedom-shine" class="section level3">
+<h3 class="hasAnchor">
+<a href="#even-newer-let-your-researchers-degrees-of-freedom-shine" class="anchor"></a>Even newer: Let your researcher’s degrees of freedom shine!</h3>
+<p>To explore your specification curve you can also use a shiny frontend that is included with the package. If you use the coding infrastructure from the package it even allows you to interactively explore your findings from a single regression output to the full specification curve. <a href="https://jgassen.shinyapps.io/shiny_rdf_spec_curve">See for yourself</a>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># devtools::install_github("joachim-gassen/rdfanalysis")</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rdfanalysis)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/load">load</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/connections">url</a></span>(<span class="st">"https://joachim-gassen.github.io/data/rdf_ests.RData"</span>))</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># The following is based on having a local fork of the repo. See the</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># vignettes of the package to learn more about how to use the full</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># rdfanalsis package.</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">design &lt;-<span class="st"> </span><span class="kw"><a href="reference/define_design.html">define_design</a></span>(<span class="dt">steps =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"read_data"</span>,</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">                                  <span class="st">"select_idvs"</span>,</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">                                  <span class="st">"treat_extreme_obs"</span>,</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">                                  <span class="st">"specify_model"</span>,</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">                                  <span class="st">"est_model"</span>),</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">                        <span class="dt">rel_dir =</span> <span class="st">"vignettes/case_study_code"</span>)</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="kw"><a href="reference/shiny_rdf_spec_curve.html">shiny_rdf_spec_curve</a></span>(ests, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"est"</span>, <span class="st">"lb"</span>, <span class="st">"ub"</span>),</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">                     design, <span class="st">"vignettes/case_study_code"</span>,</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">                     <span class="st">"https://joachim-gassen.github.io/data/wb_new.csv"</span>)</a></code></pre></div>
+<div class="figure">
+<img src="articles/shiny_rdf_spec_curve.gif" alt="A Shiny Specification Curve"><p class="caption">A Shiny Specification Curve</p>
+</div>
+</div>
+</div>
+<div id="a-package-tour" class="section level2">
+<h2 class="hasAnchor">
+<a href="#a-package-tour" class="anchor"></a>A Package Tour</h2>
+<p>To provide a quick tour of the full package and its workflow I will use a “research design” where an independent variable x is confounded by a co-variate z and where the only researcher degree of freedom is whether to control for z in the regression setup. We will ignore the testing bit in this quick walk-through.</p>
 <p>For a more in-depth introduction into the package, please refer to the <a href="https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html">vignette included in the documentation</a>.</p>
 <div id="step-1-open-a-new-rstudio-project-in-a-clean-directory-and-install-the-rdfanalysis-package" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-1-open-a-new-rstudio-project-in-a-clean-directory-and-install-the-rdfanalysis-package" class="anchor"></a>Step 1: Open a new Rstudio project in a clean directory and install the <code>rdfanalysis</code> package</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"joachim-gassen/rdfanalysis"</span>)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rdfanalysis)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"joachim-gassen/rdfanalysis"</span>)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rdfanalysis)</a></code></pre></div>
 </div>
 <div id="step-2-write-a-function-that-simulates-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-2-write-a-function-that-simulates-data" class="anchor"></a>Step 2: Write a function that simulates data</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_data &lt;-<span class="st"> </span><span class="cf">function</span>(n, effect_size) {
-  z &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n)
-  x &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n) <span class="op">+</span><span class="st"> </span>z 
-  y &lt;-<span class="st"> </span>effect_size<span class="op">*</span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n) 
-  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">z =</span> z)
-}</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">sim_data &lt;-<span class="st"> </span><span class="cf">function</span>(n, effect_size) {</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">  z &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">  x &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n) <span class="op">+</span><span class="st"> </span>z </a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  y &lt;-<span class="st"> </span>effect_size<span class="op">*</span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n) </a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">z =</span> z)</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">}</a></code></pre></div>
 </div>
 <div id="step-3-define-your-research-design-by-a-series-of-functions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-3-define-your-research-design-by-a-series-of-functions" class="anchor"></a>Step 3: Define your research design by a series of functions</h3>
 <p>Each research design consists of a series of steps. Each step becomes a function. To initialize these functions, you can use the call <code><a href="reference/define_design.html">define_design()</a></code>. It creates a <code>code</code> directory in your current working directory and produces template code for each step. In this case, our design will have only one step.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">design &lt;-<span class="st"> </span><span class="kw"><a href="reference/define_design.html">define_design</a></span>(<span class="st">"est_model"</span>)</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">design &lt;-<span class="st"> </span><span class="kw"><a href="reference/define_design.html">define_design</a></span>(<span class="st">"est_model"</span>)</a></code></pre></div>
 </div>
 <div id="step-4-develop-your-code-for-each-step" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-4-develop-your-code-for-each-step" class="anchor"></a>Step 4: Develop your code for each step</h3>
 <p>Edit the resulting template file <code>est_model.R</code> in the code directory until it looks like the code below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">input =</span> <span class="ot">NULL</span>, <span class="dt">choice =</span> <span class="ot">NULL</span>) {
-  step_description &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(
-    <span class="st">"## Estimate model"</span>,
-    <span class="st">"### Content"</span>,
-    <span class="st">""</span>,
-    <span class="st">"This step estimates on OLS model based on simulated data."</span>
-  )
-  choice_description &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(
-    <span class="st">"### Choice"</span>,
-    <span class="st">""</span>,
-    <span class="st">"A character value `control_for_z` that may take one of the following values:"</span>,
-    <span class="st">""</span>,
-    <span class="st">"- `yes`: control for z"</span>,
-    <span class="st">"- `no`: do not control for z"</span>
-  )
-  choice_type &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
-    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">name =</span> <span class="st">"control_for_z"</span>, 
-         <span class="dt">type =</span> <span class="st">"character"</span>, 
-         <span class="dt">valid_values =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"yes"</span>, <span class="st">"no"</span>))
-  )
-  <span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NULL">is.null</a></span>(choice)) <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
-    <span class="dt">step_description =</span> step_description,
-    <span class="dt">choice_description =</span> choice_description,
-    <span class="dt">choice_type =</span> choice_type
-  )) <span class="cf">else</span> <span class="kw"><a href="reference/check_choice.html">check_choice</a></span>(choice, choice_type)
-
-  <span class="co"># ___ Analysis code starts below ___</span>
-  <span class="cf">if</span>(choice[[<span class="dv">1</span>]] <span class="op">==</span><span class="st"> "yes"</span>) 
-    mod &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/lm">lm</a></span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z, <span class="dt">data =</span> input)
-  <span class="cf">else</span>     mod &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/lm">lm</a></span>(y <span class="op">~</span><span class="st"> </span>x, <span class="dt">data =</span> input)
-  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
-    <span class="dt">data =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
-      <span class="dt">est =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(mod)<span class="op">$</span>coefficient[<span class="dv">2</span>,<span class="dv">1</span>],
-      <span class="dt">lb =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(mod)[<span class="dv">2</span>,<span class="dv">1</span>],
-      <span class="dt">ub =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(mod)[<span class="dv">2</span>,<span class="dv">2</span>]
-    ),
-    <span class="dt">protocol =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(choice)
-  ))  
-} </code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">est_model &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">input =</span> <span class="ot">NULL</span>, <span class="dt">choice =</span> <span class="ot">NULL</span>) {</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">  step_description &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">    <span class="st">"## Estimate model"</span>,</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">    <span class="st">"### Content"</span>,</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">    <span class="st">""</span>,</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">    <span class="st">"This step estimates on OLS model based on simulated data."</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">  )</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">  choice_description &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">    <span class="st">"### Choice"</span>,</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">    <span class="st">""</span>,</a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">    <span class="st">"A character value `control_for_z` that may take one of the following values:"</span>,</a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">    <span class="st">""</span>,</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">    <span class="st">"- `yes`: control for z"</span>,</a>
+<a class="sourceLine" id="cb6-14" data-line-number="14">    <span class="st">"- `no`: do not control for z"</span></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">  )</a>
+<a class="sourceLine" id="cb6-16" data-line-number="16">  choice_type &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
+<a class="sourceLine" id="cb6-17" data-line-number="17">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">name =</span> <span class="st">"control_for_z"</span>, </a>
+<a class="sourceLine" id="cb6-18" data-line-number="18">         <span class="dt">type =</span> <span class="st">"character"</span>, </a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">         <span class="dt">valid_values =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"yes"</span>, <span class="st">"no"</span>))</a>
+<a class="sourceLine" id="cb6-20" data-line-number="20">  )</a>
+<a class="sourceLine" id="cb6-21" data-line-number="21">  <span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NULL">is.null</a></span>(choice)) <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
+<a class="sourceLine" id="cb6-22" data-line-number="22">    <span class="dt">step_description =</span> step_description,</a>
+<a class="sourceLine" id="cb6-23" data-line-number="23">    <span class="dt">choice_description =</span> choice_description,</a>
+<a class="sourceLine" id="cb6-24" data-line-number="24">    <span class="dt">choice_type =</span> choice_type</a>
+<a class="sourceLine" id="cb6-25" data-line-number="25">  )) <span class="cf">else</span> <span class="kw"><a href="reference/check_choice.html">check_choice</a></span>(choice, choice_type)</a>
+<a class="sourceLine" id="cb6-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb6-27" data-line-number="27">  <span class="co"># ___ Analysis code starts below ___</span></a>
+<a class="sourceLine" id="cb6-28" data-line-number="28">  <span class="cf">if</span>(choice[[<span class="dv">1</span>]] <span class="op">==</span><span class="st"> "yes"</span>) </a>
+<a class="sourceLine" id="cb6-29" data-line-number="29">    mod &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/lm">lm</a></span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z, <span class="dt">data =</span> input)</a>
+<a class="sourceLine" id="cb6-30" data-line-number="30">  <span class="cf">else</span>     mod &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/lm">lm</a></span>(y <span class="op">~</span><span class="st"> </span>x, <span class="dt">data =</span> input)</a>
+<a class="sourceLine" id="cb6-31" data-line-number="31">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
+<a class="sourceLine" id="cb6-32" data-line-number="32">    <span class="dt">data =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
+<a class="sourceLine" id="cb6-33" data-line-number="33">      <span class="dt">est =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(mod)<span class="op">$</span>coefficient[<span class="dv">2</span>,<span class="dv">1</span>],</a>
+<a class="sourceLine" id="cb6-34" data-line-number="34">      <span class="dt">lb =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(mod)[<span class="dv">2</span>,<span class="dv">1</span>],</a>
+<a class="sourceLine" id="cb6-35" data-line-number="35">      <span class="dt">ub =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(mod)[<span class="dv">2</span>,<span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb6-36" data-line-number="36">    ),</a>
+<a class="sourceLine" id="cb6-37" data-line-number="37">    <span class="dt">protocol =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(choice)</a>
+<a class="sourceLine" id="cb6-38" data-line-number="38">  ))  </a>
+<a class="sourceLine" id="cb6-39" data-line-number="39">} </a></code></pre></div>
 </div>
 <div id="step-5-source-your-code" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-5-source-your-code" class="anchor"></a>Step 5: Source your code</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/source_design.html">source_design</a></span>(design)</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="reference/source_design.html">source_design</a></span>(design)</a></code></pre></div>
 </div>
 <div id="step-6-test-your-code" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-6-test-your-code" class="anchor"></a>Step 6: Test your code</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/test_design.html">test_design</a></span>(design, <span class="dt">input =</span> <span class="kw">sim_data</span>(<span class="dv">100</span>, <span class="fl">0.1</span>), <span class="dt">reporter =</span> <span class="st">"minimal"</span>)</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="reference/test_design.html">test_design</a></span>(design, <span class="dt">input =</span> <span class="kw">sim_data</span>(<span class="dv">100</span>, <span class="fl">0.1</span>), <span class="dt">reporter =</span> <span class="st">"minimal"</span>)</a></code></pre></div>
 <pre><code>## ........................</code></pre>
 </div>
 <div id="step-7-document-your-design" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-7-document-your-design" class="anchor"></a>Step 7: Document your design</h3>
 <p>The below serves documentation purposes. The function <code><a href="reference/prepare_design_documentation.html">prepare_design_documentation()</a></code> generates a PDF file in your project directory that documents your code. For it to work you need a local <code>R Markdown</code> installation that is capable to produce PDF files.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/prepare_design_documentation.html">prepare_design_documentation</a></span>(design, <span class="dt">output_file =</span> <span class="st">"my_design.pdf"</span>)</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="reference/prepare_design_documentation.html">prepare_design_documentation</a></span>(design, <span class="dt">output_file =</span> <span class="st">"my_design.pdf"</span>)</a></code></pre></div>
 <p><code><a href="reference/prepare_design_flow_chart.html">prepare_design_flow_chart()</a></code> produces a quick visual of the code flow.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/prepare_design_flow_chart.html">prepare_design_flow_chart</a></span>(design, <span class="dt">landscape =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<div id="htmlwidget-71857a86af5ad6ec1b34" style="width:700px;height:432.632880098888px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-71857a86af5ad6ec1b34">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       outputorder = \"edgesfirst\",\n       bgcolor = \"white\",\n       rankdir = \"LR\"]\n\nnode [fontname = \"Helvetica\",\n      fontsize = \"10\",\n      shape = \"circle\",\n      fixedsize = \"true\",\n      width = \"0.5\",\n      style = \"filled\",\n      fillcolor = \"aliceblue\",\n      color = \"gray70\",\n      fontcolor = \"white\"]\n\nedge [fontname = \"Helvetica\",\n     fontsize = \"8\",\n     len = \"1.5\",\n     color = \"gray80\",\n     arrowsize = \"0.5\"]\n\n  \"1\" [label = \"est_model\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"2\" [label = \"control_for_z:\nyes\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"3\" [label = \"control_for_z:\nno\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"4\" [label = \"result\", shape = \"diamond\", fixedsize = \"FALSE\", fillcolor = \"#708090\", fontcolor = \"#FFFFFF\"] \n  \"1\"->\"2\" \n  \"1\"->\"3\" \n  \"2\"->\"4\" \n  \"3\"->\"4\" \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="reference/prepare_design_flow_chart.html">prepare_design_flow_chart</a></span>(design, <span class="dt">landscape =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div id="htmlwidget-9ed75657517d0912b9cc" style="width:700px;height:432.632880098888px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9ed75657517d0912b9cc">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       outputorder = \"edgesfirst\",\n       bgcolor = \"white\",\n       rankdir = \"LR\"]\n\nnode [fontname = \"Helvetica\",\n      fontsize = \"10\",\n      shape = \"circle\",\n      fixedsize = \"true\",\n      width = \"0.5\",\n      style = \"filled\",\n      fillcolor = \"aliceblue\",\n      color = \"gray70\",\n      fontcolor = \"white\"]\n\nedge [fontname = \"Helvetica\",\n     fontsize = \"8\",\n     len = \"1.5\",\n     color = \"gray80\",\n     arrowsize = \"0.5\"]\n\n  \"1\" [label = \"est_model\", shape = \"rectangle\", fixedsize = \"FALSE\", fillcolor = \"#7EC0EE\", fontcolor = \"#FFFFFF\"] \n  \"2\" [label = \"control_for_z:\nyes\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"3\" [label = \"control_for_z:\nno\", shape = \"ellipse\", fixedsize = \"FALSE\", fillcolor = \"#6CA6CD\", fontcolor = \"#FFFFFF\"] \n  \"4\" [label = \"result\", shape = \"diamond\", fixedsize = \"FALSE\", fillcolor = \"#708090\", fontcolor = \"#FFFFFF\"] \n  \"1\"->\"2\" \n  \"1\"->\"3\" \n  \"2\"->\"4\" \n  \"3\"->\"4\" \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="step-8-run-a-single-protocol-of-choices" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-8-run-a-single-protocol-of-choices" class="anchor"></a>Step 8: Run a single protocol of choices</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sim_data</span>(<span class="dv">100</span>, <span class="fl">0.1</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">est_model</span>(<span class="st">"yes"</span>)</code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">sim_data</span>(<span class="dv">100</span>, <span class="fl">0.1</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="st">  </span><span class="kw">est_model</span>(<span class="st">"yes"</span>)</a></code></pre></div>
 <pre><code>## $data
 ## $data$est
-## [1] 0.2506496
+## [1] 0.1719526
 ## 
 ## $data$lb
-## [1] 0.03860576
+## [1] -0.02749259
 ## 
 ## $data$ub
-## [1] 0.4626934
+## [1] 0.3713979
 ## 
 ## 
 ## $protocol
@@ -213,25 +253,25 @@ A Case Study</a>
 <div id="step-9-assess-the-power-of-your-analysis-for-a-certain-protocol" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-9-assess-the-power-of-your-analysis-for-a-certain-protocol" class="anchor"></a>Step 9: Assess the power of your analysis for a certain protocol</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">power_df &lt;-<span class="st"> </span><span class="kw"><a href="reference/simulate_design_power.html">simulate_design_power</a></span>(design, <span class="dt">protocol =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"yes"</span>), 
-                                  <span class="dt">input_sim_func =</span> sim_data, 
-                                  <span class="dt">range_n =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="dv">100</span>, <span class="dv">1000</span>, <span class="dv">100</span>),
-                                  <span class="dt">effect_size =</span> <span class="fl">0.1</span>)
-
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)
-power_df <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">group_by</span>(n) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">power =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(lb <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)<span class="op">/</span><span class="kw">n</span>()) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> n, <span class="dt">y =</span> power)) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">theme_minimal</span>()</code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">power_df &lt;-<span class="st"> </span><span class="kw"><a href="reference/simulate_design_power.html">simulate_design_power</a></span>(design, <span class="dt">protocol =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"yes"</span>), </a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">                                  <span class="dt">input_sim_func =</span> sim_data, </a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">                                  <span class="dt">range_n =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="dv">100</span>, <span class="dv">1000</span>, <span class="dv">100</span>),</a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">                                  <span class="dt">effect_size =</span> <span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb14-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb14-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
+<a class="sourceLine" id="cb14-7" data-line-number="7">power_df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-8" data-line-number="8"><span class="st">  </span><span class="kw">group_by</span>(n) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-9" data-line-number="9"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">power =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(lb <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)<span class="op">/</span><span class="kw">n</span>()) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-10" data-line-number="10"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> n, <span class="dt">y =</span> power)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb14-11" data-line-number="11"><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-12" data-line-number="12"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
 <p><img src="index_files/figure-html/sim_power-1.png" width="700"></p>
 </div>
 <div id="step-10-exhaust-your-researcher-degrees-of-freedom" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-10-exhaust-your-researcher-degrees-of-freedom" class="anchor"></a>Step 10: Exhaust your researcher degrees of freedom</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw"><a href="reference/exhaust_design.html">exhaust_design</a></span>(design, <span class="kw">sim_data</span>(<span class="dv">1000</span>, <span class="fl">0.1</span>)) </code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">kable</span>(df)</code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">df &lt;-<span class="st"> </span><span class="kw"><a href="reference/exhaust_design.html">exhaust_design</a></span>(design, <span class="kw">sim_data</span>(<span class="dv">1000</span>, <span class="fl">0.1</span>)) </a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">kable</span>(df)</a></code></pre></div>
 <table class="table table">
 <thead><tr class="header">
 <th align="left">control_for_z</th>
@@ -242,15 +282,15 @@ power_df <span class="op">%&gt;%</span>
 <tbody>
 <tr class="odd">
 <td align="left">yes</td>
-<td align="right">0.1118323</td>
-<td align="right">0.0499461</td>
-<td align="right">0.1737184</td>
+<td align="right">0.1027651</td>
+<td align="right">0.0408415</td>
+<td align="right">0.1646887</td>
 </tr>
 <tr class="even">
 <td align="left">no</td>
-<td align="right">0.6078597</td>
-<td align="right">0.5550079</td>
-<td align="right">0.6607114</td>
+<td align="right">0.6181407</td>
+<td align="right">0.5611233</td>
+<td align="right">0.6751582</td>
 </tr>
 </tbody>
 </table>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • rdfanalysis</title>
+<title>An Interactive Specification Curve — shiny_rdf_spec_curve • rdfanalysis</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,11 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="An Interactive Specification Curve — shiny_rdf_spec_curve" />
+
+<meta property="og:description" content="A shiny based web app that allows you to explore your
+  researcher degrees of freedom's specification curve interactively." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -57,7 +61,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -118,129 +122,91 @@ A Case Study</a>
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>An Interactive Specification Curve</h1>
+    
+    <div class="hidden name"><code>shiny_rdf_spec_curve.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>A shiny based web app that allows you to explore your
+  researcher degrees of freedom's specification curve interactively.</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-main-functions" class="hasAnchor"><a href="#section-main-functions" class="anchor"></a>Main functions</h2>
-          <p class="section-desc"><p>Functions to organize the researcher degrees of freedom analyis workflow</p></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="define_design.html">define_design()</a></code> </p>
-        </td>
-        <td><p>Define Your Research Design and Create Code Directory with Step Templates</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="source_design.html">source_design()</a></code> </p>
-        </td>
-        <td><p>Source the R Files that Contain the Design Steps</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prepare_design_documentation.html">prepare_design_documentation()</a></code> </p>
-        </td>
-        <td><p>Document your Research Design in a PDF File</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prepare_design_flow_chart.html">prepare_design_flow_chart()</a></code> </p>
-        </td>
-        <td><p>Prepare A Flow Chart of Your Research Design</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="test_design.html">test_design()</a></code> </p>
-        </td>
-        <td><p>Test Design for Code Consistency</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="simulate_design_power.html">simulate_design_power()</a></code> </p>
-        </td>
-        <td><p>Use Simulated Data to Test the Power of Your Research Design</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="exhaust_design.html">exhaust_design()</a></code> </p>
-        </td>
-        <td><p>Exhaust all Researcher Degrees of Freedom</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="calculate_weighted_estimate.html">calculate_weighted_estimate()</a></code> </p>
-        </td>
-        <td><p>Calculate Weighted Estimate</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_rdf_estimate_density.html">plot_rdf_estimate_density()</a></code> </p>
-        </td>
-        <td><p>Plot Researcher Degrees of Freedom Estimates' Density</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_rdf_spec_curve.html">plot_rdf_spec_curve()</a></code> </p>
-        </td>
-        <td><p>Plot the Specification Curve of your Researcher Degrees of Freedom</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_rdf_estimates_by_choice.html">plot_rdf_estimates_by_choice()</a></code> </p>
-        </td>
-        <td><p>Plot Estimates by Choice</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_rdf_ridges_by_dchoice.html">plot_rdf_ridges_by_dchoice()</a></code> </p>
-        </td>
-        <td><p>Plot Estimate Ridge Lines by Discrete Choice</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="shiny_rdf_spec_curve.html">shiny_rdf_spec_curve()</a></code> </p>
-        </td>
-        <td><p>An Interactive Specification Curve</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-helper-functions" class="hasAnchor"><a href="#section-helper-functions" class="anchor"></a>Helper functions</h2>
-          <p class="section-desc"><p>Functions used by the step template</p></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="check_choice.html">check_choice()</a></code> </p>
-        </td>
-        <td><p>Check Design Step Choice</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>shiny_rdf_spec_curve</span>(<span class='no'>ests</span>, <span class='no'>spec_curve_parms</span>, <span class='kw'>design</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>rel_dir</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start_input</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>regression_cutoff</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+  <span class='kw'>default_choices</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"A Shiny Specification Curve"</span>,
+  <span class='kw'>abstract</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>ests</th>
+      <td><p>The data frame provided by <code><a href='exhaust_design.html'>exhaust_design()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>spec_curve_parms</th>
+      <td><p>A list containing additional paramters that will be
+passed on to <code><a href='plot_rdf_spec_curve.html'>plot_rdf_spec_curve()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>design</th>
+      <td><p>if not <code>NULL</code> it takes the design that was used to generate
+the estimates. In this case, you also need to specify the <code>rel_dir</code>
+and <code>start_input</code> parameter below. The shiny app will then display
+full regresssion results when you select choices that generate less than
+<code>regression_cutoff</code> estimates.</p></td>
+    </tr>
+    <tr>
+      <th>rel_dir</th>
+      <td><p>The path to the code directory. See above.</p></td>
+    </tr>
+    <tr>
+      <th>start_input</th>
+      <td><p>The parameters that you pass to the first design step.
+See above.</p></td>
+    </tr>
+    <tr>
+      <th>regression_cutoff</th>
+      <td><p>If your choices generate less or equal estimates,
+the display will switch to normal regression output (needs parameters above
+to be not <code>NULL</code>).</p></td>
+    </tr>
+    <tr>
+      <th>default_choices</th>
+      <td><p>A list containing choices that you want
+the app to start with. If <code>NULL</code>, it will start with all choices
+included.</p></td>
+    </tr>
+    <tr>
+      <th>title</th>
+      <td><p>The title of the shiny app.</p></td>
+    </tr>
+    <tr>
+      <th>abstract</th>
+      <td><p>Text that will be displayed by the app. Wrapped
+into <code>HTML()</code> so that you can use HTML code.</p></td>
+    </tr>
     </table>
-  </div>
+    
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+  <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='st'>"Sorry. No examples yet."</span>)
+<span class='co'># }</span></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-main-functions">Main functions</a></li>
-      <li><a href="#section-helper-functions">Helper functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+            
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 

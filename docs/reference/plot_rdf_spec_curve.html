@@ -140,7 +140,8 @@ freedom by plotting its specification curve as introduced by
 
     <pre class="usage"><span class='fu'>plot_rdf_spec_curve</span>(<span class='no'>ests</span>, <span class='no'>est</span>, <span class='kw'>lb</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>ub</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>sample_frac</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>est_label</span> <span class='kw'>=</span> <span class='no'>est</span>, <span class='kw'>est_color</span> <span class='kw'>=</span> <span class='st'>"black"</span>, <span class='kw'>est_color_signeg</span> <span class='kw'>=</span> <span class='st'>"yellow"</span>,
-  <span class='kw'>est_color_sigpos</span> <span class='kw'>=</span> <span class='st'>"blue"</span>, <span class='kw'>ribbon_color</span> <span class='kw'>=</span> <span class='st'>"lightblue"</span>,
+  <span class='kw'>est_color_sigpos</span> <span class='kw'>=</span> <span class='st'>"blue"</span>, <span class='kw'>ribbon</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>ests</span>) <span class='kw'>&gt;</span> <span class='fl'>30</span>,
+  <span class='kw'>ribbon_color</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/ifelse'>ifelse</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>ests</span>) <span class='kw'>&gt;</span> <span class='fl'>30</span>, <span class='st'>"lightblue"</span>, <span class='st'>"black"</span>),
   <span class='kw'>pt_size</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>lower_to_upper</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>highlight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>pt_size_highlight</span> <span class='kw'>=</span> <span class='fl'>3</span>)</pre>
     
@@ -188,6 +189,14 @@ time and makes the plot less clutered.</p></td>
     <tr>
       <th>est_color_sigpos</th>
       <td><p>Color of significantly positive estimates.</p></td>
+    </tr>
+    <tr>
+      <th>ribbon</th>
+      <td><p>If TRUE a ribbon displaying the confidence interval is being
+plotted. If FALSE, lines are printed instead (looks nicer if you have only
+few degrees of freedom to plot). <code>ribbon_color</code> applies
+in either case (only used when <code>lb</code> and
+<code>ub</code> are present).</p></td>
     </tr>
     <tr>
       <th>ribbon_color</th>

@@ -13,13 +13,13 @@ shiny_rdf_spec_curve(ests, spec_curve_parms, design = NULL,
 \item{ests}{The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.}
 
 \item{spec_curve_parms}{A list containing additional paramters that will be
-parsed on to \code{\link[rdfanalysis:plot_rdf_spec_curve]{plot_rdf_spec_curve()}}.}
+passed on to \code{\link[rdfanalysis:plot_rdf_spec_curve]{plot_rdf_spec_curve()}}.}
 
 \item{design}{if not \code{NULL} it takes the design that was used to generate
 the estimates. In this case, you also need to specify the \code{rel_dir}
-and \code{start_input} parameter below and the shiny app will then display
+and \code{start_input} parameter below. The shiny app will then display
 full regresssion results when you select choices that generate less than
-\code{regression_cutoff} estimates}
+\code{regression_cutoff} estimates.}
 
 \item{rel_dir}{The path to the code directory. See above.}
 
@@ -27,8 +27,8 @@ full regresssion results when you select choices that generate less than
 See above.}
 
 \item{regression_cutoff}{If your choices generate less or equal estimates,
-the display will switch to normal regression output (needs parameter above
-to be not \code{NULL}.}
+the display will switch to normal regression output (needs parameters above
+to be not \code{NULL}).}
 
 \item{default_choices}{A list containing choices that you want
 the app to start with. If \code{NULL}, it will start with all choices
@@ -36,11 +36,11 @@ included.}
 
 \item{title}{The title of the shiny app.}
 
-\item{abstract}{An chunck of text that will be displayed by the app. Wrapped
+\item{abstract}{Text that will be displayed by the app. Wrapped
 into \code{HTML()} so that you can use HTML code.}
 }
 \description{
-A shiny based web app that allows you to eyplore your
+A shiny based web app that allows you to explore your
   researcher degrees of freedom's specification curve interactively.
 }
 \examples{
