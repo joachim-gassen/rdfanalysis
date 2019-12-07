@@ -28,7 +28,7 @@ read_data <- function(input = NULL, choice = NULL) {
   )) else check_choice(choice, choice_type)
   # ___ Analysis code starts below ___
 
-  df <- read_csv(input, col_types = cols()) %>%
+  df <- readr::read_csv(input, col_types = readr::cols()) %>%
     mutate_at(c("country", "year"), as.factor) %>%
     select(country, year,
            lifeexpectancy, gdp_capita,

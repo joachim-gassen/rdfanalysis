@@ -1,8 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^README.Rmd
-^README_files$
-^test.R
+^README*
+^test*
 ^code
 ^docs
 ^_pkgdown.yml

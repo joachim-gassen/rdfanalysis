@@ -65,6 +65,7 @@ generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
 #' @param est_by_cchoice Each continous choice will be evaluated by \code{est_by_choice} equally
 #'   spaced steps, staring at \code{valid_min} and ending at \code{valid_max}.
 #' @return A data frame containing results for all feasible choice permutations.
+#'
 #' @details See the vignette of the package for further details.
 #' @examples
 #' \dontrun{

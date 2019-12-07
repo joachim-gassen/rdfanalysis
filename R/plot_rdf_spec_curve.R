@@ -19,6 +19,11 @@
 #' @param est_color Color of estimates points for specification curve
 #' @param est_color_signeg Color of significantly negative estimates.
 #' @param est_color_sigpos Color of significantly positive estimates.
+#' @param ribbon If TRUE a ribbon displaying the confidence interval is being
+#' plotted. If FALSE, lines are printed instead (looks nicer if you have only
+#' few degrees of freedom to plot). \code{ribbon_color} applies
+#' in either case (only used when \code{lb} and
+#' \code{ub} are present).
 #' @param ribbon_color Color of the confidence interval (only used when \code{lb} and
 #' \code{ub} are present).
 #' @param pt_size Point plot size for estimates and choice indicators that are
@@ -48,7 +53,9 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
                                 est_color = "black",
                                 est_color_signeg = "yellow",
                                 est_color_sigpos = "blue",
-                                ribbon_color = "lightblue",
+                                ribbon = nrow(ests) > 30,
+                                ribbon_color = ifelse(nrow(ests) > 30,
+                                                  "lightblue", "black"),
                                 pt_size = 0.1,
                                 lower_to_upper = 3,
                                 highlight = NULL,
@@ -117,10 +124,16 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
       dplyr::select(n, sig, highlight,
              !!rlang::sym(est), !!rlang::sym(lb), !!rlang::sym(ub)) %>%
       dplyr::distinct() %>%
-      ggplot2::ggplot(ggplot2::aes(x = n, y = !!rlang::sym(est))) +
-      ggplot2::geom_ribbon(ggplot2::aes(ymin = !!rlang::sym(lb),
-                                        ymax = !!rlang::sym(ub)),
-                           fill = ribbon_color, color = ribbon_color) +
+      ggplot2::ggplot(ggplot2::aes(x = n, y = !!rlang::sym(est)))
+    if(ribbon) sc <- sc +
+        ggplot2::geom_ribbon(ggplot2::aes(ymin = !!rlang::sym(lb),
+                                          ymax = !!rlang::sym(ub)),
+                             fill = ribbon_color, color = ribbon_color)
+    else sc <- sc +
+        ggplot2::geom_segment(ggplot2::aes(xend = n, y = !!rlang::sym(lb),
+                                           yend = !!rlang::sym(ub)),
+                              color = ribbon_color)
+    sc <- sc +
       ggplot2::geom_point(ggplot2::aes(color = sig, size = highlight)) +
       ggplot2::theme_minimal() +
       ggplot2::ylab(est_label) +

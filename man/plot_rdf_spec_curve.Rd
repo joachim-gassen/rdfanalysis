@@ -6,7 +6,8 @@
 \usage{
 plot_rdf_spec_curve(ests, est, lb = "", ub = "", sample_frac = 1,
   est_label = est, est_color = "black", est_color_signeg = "yellow",
-  est_color_sigpos = "blue", ribbon_color = "lightblue",
+  est_color_sigpos = "blue", ribbon = nrow(ests) > 30,
+  ribbon_color = ifelse(nrow(ests) > 30, "lightblue", "black"),
   pt_size = 0.1, lower_to_upper = 3, highlight = NULL,
   pt_size_highlight = 3)
 }
@@ -34,6 +35,12 @@ time and makes the plot less clutered.}
 \item{est_color_signeg}{Color of significantly negative estimates.}
 
 \item{est_color_sigpos}{Color of significantly positive estimates.}
+
+\item{ribbon}{If TRUE a ribbon displaying the confidence interval is being
+plotted. If FALSE, lines are printed instead (looks nicer if you have only
+few degrees of freedom to plot). \code{ribbon_color} applies
+in either case (only used when \code{lb} and
+\code{ub} are present).}
 
 \item{ribbon_color}{Color of the confidence interval (only used when \code{lb} and
 \code{ub} are present).}
