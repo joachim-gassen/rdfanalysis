@@ -28,6 +28,8 @@
 #' \code{ub} are present).
 #' @param pt_size Point plot size for estimates and choice indicators that are
 #' not highlighted (see below).
+#' @param choice_ind_point Whether you want your choice indicators to be
+#' points (TRUE) or vertical lines (FALSE).
 #' @param lower_to_upper The size of the choice part of the plot, relative to
 #' the specification curve itself.
 #' @param highlight \code{NULL} or, if you want to highlight certain protocols by
@@ -56,6 +58,7 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
                                 ribbon = nrow(ests) > 30,
                                 ribbon_color = ifelse(nrow(ests) > 30,
                                                   "lightblue", "black"),
+                                choice_ind_point = TRUE,
                                 pt_size = 0.1,
                                 lower_to_upper = 3,
                                 highlight = NULL,
@@ -163,7 +166,19 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
   }
 
   dc <- ggplot2::ggplot(data = es, ggplot2::aes(x = n, y = item, color = choice)) +
-    ggplot2::geom_point(ggplot2::aes(size = highlight)) +
+    geom_blank()
+
+  if (choice_ind_point)
+    dc <- dc +  ggplot2::geom_point(ggplot2::aes(size = highlight))
+  else
+    dc <- dc + ggplot2::geom_segment(ggplot2::aes(
+      xend = n,
+      y = as.numeric(item) - 0.2,
+      yend = as.numeric(item) + 0.2,
+      size = highlight
+    ))
+
+  dc <- dc +
     ggplot2::theme_minimal() +
     ggplot2::xlab("Protocol") +
     ggplot2::ylab("") +
