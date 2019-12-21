@@ -166,7 +166,7 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
   }
 
   dc <- ggplot2::ggplot(data = es, ggplot2::aes(x = n, y = item, color = choice)) +
-    geom_blank()
+    ggplot2::geom_blank()
 
   if (choice_ind_point)
     dc <- dc +  ggplot2::geom_point(ggplot2::aes(size = highlight))
