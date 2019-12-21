@@ -128,7 +128,7 @@ server <- function(input, output) {
         if(nrow(plot_df()) > 0) {
             do.call(
                 plot_rdf_spec_curve,
-                c(list(plot_df()), unlist(spec_curve_parms),
+                c(list(plot_df()), spec_curve_parms,
                   pt_size = min(max(50/nrow(plot_df()), 0.1), 3))
             )
         }
