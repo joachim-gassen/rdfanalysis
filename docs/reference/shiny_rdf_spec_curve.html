@@ -172,8 +172,12 @@ See above.</p></td>
     </tr>
     <tr>
       <th>libs</th>
-      <td><p>A vector containing additional libraries that are required to run
-the design. See above.</p></td>
+      <td><p>A vector containing additional packages that need to be attached
+to run the design. NOTE: While this works fine when you host the shiny app
+yourself, shinyapps.io fails to include the listed packages when deploying
+the app. So, if you plan to host your app on shinyapps.io, you are better
+served including <code><a href='https://www.rdocumentation.org/packages/base/topics/library'>library()</a></code> calls in your design code files or to use
+the <code>::</code> operator in your code.</p></td>
     </tr>
     <tr>
       <th>regression_cutoff</th>

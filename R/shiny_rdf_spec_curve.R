@@ -14,8 +14,12 @@
 #' @param rel_dir The path to the code directory. See above.
 #' @param start_input The parameters that you pass to the first design step.
 #'   See above.
-#' @param libs A vector containing additional libraries that are required to run
-#'   the design. See above.
+#' @param libs A vector containing additional packages that need to be attached
+#'   to run the design. NOTE: While this works fine when you host the shiny app
+#'   yourself, shinyapps.io fails to include the listed packages when deploying
+#'   the app. So, if you plan to host your app on shinyapps.io, you are better
+#'   served including \code{library()} calls in your design code files or to use
+#'   the \code{::} operator in your code.
 #' @param regression_cutoff If your choices generate less or equal estimates,
 #'   the display will switch to normal regression output (needs parameters above
 #'   to be not \code{NULL}).
