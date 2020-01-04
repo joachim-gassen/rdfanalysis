@@ -137,9 +137,9 @@ A Case Study</a>
     </div>
 
     <pre class="usage"><span class='fu'>shiny_rdf_spec_curve</span>(<span class='no'>ests</span>, <span class='no'>spec_curve_parms</span>, <span class='kw'>design</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rel_dir</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start_input</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>regression_cutoff</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>default_choices</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"A Shiny Specification Curve"</span>,
-  <span class='kw'>abstract</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+  <span class='kw'>rel_dir</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start_input</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>libs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>regression_cutoff</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>default_choices</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"A Shiny Specification Curve"</span>, <span class='kw'>abstract</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,6 +169,11 @@ full regresssion results when you select choices that generate less than
       <th>start_input</th>
       <td><p>The parameters that you pass to the first design step.
 See above.</p></td>
+    </tr>
+    <tr>
+      <th>libs</th>
+      <td><p>A vector containing additional libraries that are required to run
+the design. See above.</p></td>
     </tr>
     <tr>
       <th>regression_cutoff</th>

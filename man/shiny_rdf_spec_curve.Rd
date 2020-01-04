@@ -5,9 +5,9 @@
 \title{An Interactive Specification Curve}
 \usage{
 shiny_rdf_spec_curve(ests, spec_curve_parms, design = NULL,
-  rel_dir = NULL, start_input = NULL, regression_cutoff = 5,
-  default_choices = NULL, title = "A Shiny Specification Curve",
-  abstract = NULL)
+  rel_dir = NULL, start_input = NULL, libs = NULL,
+  regression_cutoff = 5, default_choices = NULL,
+  title = "A Shiny Specification Curve", abstract = NULL)
 }
 \arguments{
 \item{ests}{The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.}
@@ -25,6 +25,9 @@ full regresssion results when you select choices that generate less than
 
 \item{start_input}{The parameters that you pass to the first design step.
 See above.}
+
+\item{libs}{A vector containing additional libraries that are required to run
+the design. See above.}
 
 \item{regression_cutoff}{If your choices generate less or equal estimates,
 the display will switch to normal regression output (needs parameters above

@@ -14,6 +14,8 @@
 #' @param rel_dir The path to the code directory. See above.
 #' @param start_input The parameters that you pass to the first design step.
 #'   See above.
+#' @param libs A vector containing additional libraries that are required to run
+#'   the design. See above.
 #' @param regression_cutoff If your choices generate less or equal estimates,
 #'   the display will switch to normal regression output (needs parameters above
 #'   to be not \code{NULL}).
@@ -31,7 +33,7 @@
 #' @export
 shiny_rdf_spec_curve <- function(ests, spec_curve_parms,
                                  design = NULL, rel_dir = NULL,
-                                 start_input = NULL,
+                                 start_input = NULL, libs = NULL,
                                  regression_cutoff = 5,
                                  default_choices = NULL,
                                  title = "A Shiny Specification Curve",
@@ -53,7 +55,7 @@ shiny_rdf_spec_curve <- function(ests, spec_curve_parms,
     file.copy(file.path(rel_dir, paste0(design, ".R")), code_dir)
   }
 
-  save(ests, spec_curve_parms, design, rel_dir, start_input,
+  save(ests, spec_curve_parms, design, rel_dir, libs, start_input,
        regression_cutoff, default_choices, title, abstract,
        file = paste0(app_dir, "/shiny.Rda"))
   on.exit(unlink(app_dir, recursive = TRUE))

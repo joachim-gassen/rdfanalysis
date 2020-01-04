@@ -142,8 +142,8 @@ freedom by plotting its specification curve as introduced by
   <span class='kw'>est_label</span> <span class='kw'>=</span> <span class='no'>est</span>, <span class='kw'>est_color</span> <span class='kw'>=</span> <span class='st'>"black"</span>, <span class='kw'>est_color_signeg</span> <span class='kw'>=</span> <span class='st'>"yellow"</span>,
   <span class='kw'>est_color_sigpos</span> <span class='kw'>=</span> <span class='st'>"blue"</span>, <span class='kw'>ribbon</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>ests</span>) <span class='kw'>&gt;</span> <span class='fl'>30</span>,
   <span class='kw'>ribbon_color</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/ifelse'>ifelse</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>ests</span>) <span class='kw'>&gt;</span> <span class='fl'>30</span>, <span class='st'>"lightblue"</span>, <span class='st'>"black"</span>),
-  <span class='kw'>pt_size</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>lower_to_upper</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>highlight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>pt_size_highlight</span> <span class='kw'>=</span> <span class='fl'>3</span>)</pre>
+  <span class='kw'>choice_ind_point</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>pt_size</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>lower_to_upper</span> <span class='kw'>=</span> <span class='fl'>3</span>,
+  <span class='kw'>highlight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>pt_size_highlight</span> <span class='kw'>=</span> <span class='fl'>3</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,6 +202,11 @@ in either case (only used when <code>lb</code> and
       <th>ribbon_color</th>
       <td><p>Color of the confidence interval (only used when <code>lb</code> and
 <code>ub</code> are present).</p></td>
+    </tr>
+    <tr>
+      <th>choice_ind_point</th>
+      <td><p>Whether you want your choice indicators to be
+points (TRUE) or vertical lines (FALSE).</p></td>
     </tr>
     <tr>
       <th>pt_size</th>

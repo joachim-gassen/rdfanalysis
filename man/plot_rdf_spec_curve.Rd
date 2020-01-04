@@ -8,8 +8,8 @@ plot_rdf_spec_curve(ests, est, lb = "", ub = "", sample_frac = 1,
   est_label = est, est_color = "black", est_color_signeg = "yellow",
   est_color_sigpos = "blue", ribbon = nrow(ests) > 30,
   ribbon_color = ifelse(nrow(ests) > 30, "lightblue", "black"),
-  pt_size = 0.1, lower_to_upper = 3, highlight = NULL,
-  pt_size_highlight = 3)
+  choice_ind_point = TRUE, pt_size = 0.1, lower_to_upper = 3,
+  highlight = NULL, pt_size_highlight = 3)
 }
 \arguments{
 \item{ests}{The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.}
@@ -44,6 +44,9 @@ in either case (only used when \code{lb} and
 
 \item{ribbon_color}{Color of the confidence interval (only used when \code{lb} and
 \code{ub} are present).}
+
+\item{choice_ind_point}{Whether you want your choice indicators to be
+points (TRUE) or vertical lines (FALSE).}
 
 \item{pt_size}{Point plot size for estimates and choice indicators that are
 not highlighted (see below).}

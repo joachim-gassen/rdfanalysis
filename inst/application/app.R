@@ -8,6 +8,7 @@ data <- ests
 mods <<- NULL
 
 if (!is.null(design)) source_design(design)
+if (!is.null(libs)) invisible(lapply(libs, library, character.only = TRUE))
 
 est_models <- function(d, choice_df, start_input) {
     mods <- vector("list", nrow(choice_df))
