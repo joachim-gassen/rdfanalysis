@@ -7,7 +7,8 @@
 shiny_rdf_spec_curve(ests, spec_curve_parms, design = NULL,
   rel_dir = NULL, start_input = NULL, libs = NULL,
   regression_cutoff = 5, default_choices = NULL,
-  title = "A Shiny Specification Curve", abstract = NULL)
+  title = "A Shiny Specification Curve", abstract = NULL,
+  choice_labels = NULL)
 }
 \arguments{
 \item{ests}{The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.}
@@ -45,6 +46,11 @@ included.}
 
 \item{abstract}{Text that will be displayed by the app. Wrapped
 into \code{HTML()} so that you can use HTML code.}
+
+\item{choice_labels}{Character vector containing the labels that will be used
+to label the select list input controls in the shiny app. If \code{NULL},
+the select list input controls are labeled based on the choice column names
+from the \code{ests} data frame.}
 }
 \description{
 A shiny based web app that allows you to explore your

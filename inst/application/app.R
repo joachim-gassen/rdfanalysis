@@ -9,6 +9,9 @@ mods <<- NULL
 
 if (!is.null(design)) source_design(design)
 if (!is.null(libs)) invisible(lapply(libs, library, character.only = TRUE))
+if (is.null(choice_labels)) {
+    choice_labels <- sprintf("Choose %s", names(data)[attr(data, "choices")])
+}
 
 est_models <- function(d, choice_df, start_input) {
     mods <- vector("list", nrow(choice_df))
@@ -30,13 +33,12 @@ ui <- fluidPage(
     hr(),
     p(HTML(abstract)),
     hr(),
-    # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
             lapply(attr(data, "choices"), function(i)
                 selectInput(
                     names(data)[i],
-                    sprintf("Choose %s", names(data)[i]),
+                    choice_labels[i],
                     unique(data[, i]),
                     selected = {
                         if(! names(data)[i] %in% names(default_choices))
@@ -48,9 +50,8 @@ ui <- fluidPage(
             )
         ),
 
-        # Show a plot of the generated distribution
         mainPanel(
-            tags$style(HTML("#regression table{margin: auto;}")),
+            tags$style(HTML("#regression table{margin: auto; border-collapse:separate; border-spacing:10px 5px}")),
             uiOutput("ui_display")
         )
     ),
@@ -66,13 +67,12 @@ ui <- fluidPage(
                 "<a href=https://www.wiwi.hu-berlin.de/de/professuren/bwl/rwuwp/staff/gassen>",
                 "Humboldt-Universität zu Berlin</a>",
                 "and <a href=https://www.accounting-for-transparency.de>",
-                "TRR 266 'Accounting for Transparency'</a>, 2019."
+                "TRR 266 'Accounting for Transparency'</a>, 2020."
             )
         )
     )
 )
 
-# Define server logic required to draw a histogram
 server <- function(input, output) {
     mods <- reactiveVal(NULL)
 
@@ -107,7 +107,7 @@ server <- function(input, output) {
             row_intro <- '<tr><td style="text-align:left">'
             row_outro <- '</td></tr>'
             cell_break <- '</td><td>'
-            start_tab <- tab[1:(length(tab) - 2)]
+            start_tab <- tab[1:(length(tab) - 3)]
             for (choice in attr(data, "choices")) {
                 name_choice <- names(data)[choice]
                 choices_made <- plot_df()[, name_choice]
@@ -136,5 +136,4 @@ server <- function(input, output) {
     })
 }
 
-# Run the application
 shinyApp(ui = ui, server = server)

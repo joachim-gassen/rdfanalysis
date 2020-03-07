@@ -139,7 +139,8 @@ A Case Study</a>
     <pre class="usage"><span class='fu'>shiny_rdf_spec_curve</span>(<span class='no'>ests</span>, <span class='no'>spec_curve_parms</span>, <span class='kw'>design</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>rel_dir</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start_input</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>libs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>regression_cutoff</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>default_choices</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"A Shiny Specification Curve"</span>, <span class='kw'>abstract</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"A Shiny Specification Curve"</span>, <span class='kw'>abstract</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>choice_labels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -199,6 +200,13 @@ included.</p></td>
       <th>abstract</th>
       <td><p>Text that will be displayed by the app. Wrapped
 into <code>HTML()</code> so that you can use HTML code.</p></td>
+    </tr>
+    <tr>
+      <th>choice_labels</th>
+      <td><p>Character vector containing the labels that will be used
+to label the select list input controls in the shiny app. If <code>NULL</code>,
+the select list input controls are labeled based on the choice column names
+from the <code>ests</code> data frame.</p></td>
     </tr>
     </table>
     

@@ -29,6 +29,10 @@
 #' @param title The title of the shiny app.
 #' @param abstract Text that will be displayed by the app. Wrapped
 #'   into \code{HTML()} so that you can use HTML code.
+#' @param choice_labels Character vector containing the labels that will be used
+#'   to label the select list input controls in the shiny app. If \code{NULL},
+#'   the select list input controls are labeled based on the choice column names
+#'   from the \code{ests} data frame.
 #'
 #' @examples
 #' \dontrun{
@@ -41,7 +45,8 @@ shiny_rdf_spec_curve <- function(ests, spec_curve_parms,
                                  regression_cutoff = 5,
                                  default_choices = NULL,
                                  title = "A Shiny Specification Curve",
-                                 abstract = NULL) {
+                                 abstract = NULL,
+                                 choice_labels = NULL) {
   if (!is.data.frame(ests)) stop("ests is not a dataframe")
   if (!is.list(spec_curve_parms) || length(spec_curve_parms) < 1)
     stop("spec_curve_parms needs to be a non-empty list")
@@ -49,6 +54,13 @@ shiny_rdf_spec_curve <- function(ests, spec_curve_parms,
            any(is.null(c(design, rel_dir, start_input))))
     stop(paste("When you set one of design, rel_dir, start_input, you need",
                "to set all of them"))
+
+  if (!is.null(choice_labels)) {
+    if (length(choice_labels) != length(attr(ests, "choices")))
+      stop("choice_labels does not have labels for each choice column in ests")
+    if (!is.character(choice_labels))
+      stop("choice_labels is not a character string")
+  }
 
   pkg_app_dir <- system.file("application", package = "rdfanalysis")
   file.copy(pkg_app_dir, tempdir(), recursive=TRUE)
@@ -60,7 +72,7 @@ shiny_rdf_spec_curve <- function(ests, spec_curve_parms,
   }
 
   save(ests, spec_curve_parms, design, rel_dir, libs, start_input,
-       regression_cutoff, default_choices, title, abstract,
+       regression_cutoff, default_choices, title, abstract, choice_labels,
        file = paste0(app_dir, "/shiny.Rda"))
   on.exit(unlink(app_dir, recursive = TRUE))
   try(shiny::runApp(appDir = app_dir))
