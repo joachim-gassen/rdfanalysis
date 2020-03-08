@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^README*
 ^test*
+^shinyapps*
 ^code
 ^docs
 ^_pkgdown.yml

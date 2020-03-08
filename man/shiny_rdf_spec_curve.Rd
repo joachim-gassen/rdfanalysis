@@ -6,7 +6,7 @@
 \usage{
 shiny_rdf_spec_curve(ests, spec_curve_parms, design = NULL,
   rel_dir = NULL, start_input = NULL, libs = NULL,
-  regression_cutoff = 5, default_choices = NULL,
+  add_files = NULL, regression_cutoff = 5, default_choices = NULL,
   title = "A Shiny Specification Curve", abstract = NULL,
   choice_labels = NULL)
 }
@@ -33,6 +33,11 @@ yourself, shinyapps.io fails to include the listed packages when deploying
 the app. So, if you plan to host your app on shinyapps.io, you are better
 served including \code{library()} calls in your design code files or to use
 the \code{::} operator in your code.}
+
+\item{add_files}{A character vector containing relative paths to files and
+dreictories that you want to bundle with the shiny app. The files will be
+copied to the temporary directory that hosts the shiny app and directories
+will be copied recursively.}
 
 \item{regression_cutoff}{If your choices generate less or equal estimates,
 the display will switch to normal regression output (needs parameters above

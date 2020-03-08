@@ -20,6 +20,10 @@
 #'   the app. So, if you plan to host your app on shinyapps.io, you are better
 #'   served including \code{library()} calls in your design code files or to use
 #'   the \code{::} operator in your code.
+#' @param add_files A character vector containing relative paths to files and
+#'   dreictories that you want to bundle with the shiny app. The files will be
+#'   copied to the temporary directory that hosts the shiny app and directories
+#'   will be copied recursively.
 #' @param regression_cutoff If your choices generate less or equal estimates,
 #'   the display will switch to normal regression output (needs parameters above
 #'   to be not \code{NULL}).
@@ -42,6 +46,7 @@
 shiny_rdf_spec_curve <- function(ests, spec_curve_parms,
                                  design = NULL, rel_dir = NULL,
                                  start_input = NULL, libs = NULL,
+                                 add_files = NULL,
                                  regression_cutoff = 5,
                                  default_choices = NULL,
                                  title = "A Shiny Specification Curve",
@@ -59,7 +64,7 @@ shiny_rdf_spec_curve <- function(ests, spec_curve_parms,
     if (length(choice_labels) != length(attr(ests, "choices")))
       stop("choice_labels does not have labels for each choice column in ests")
     if (!is.character(choice_labels))
-      stop("choice_labels is not a character string")
+      stop("choice_labels is not a character vector")
   }
 
   pkg_app_dir <- system.file("application", package = "rdfanalysis")
@@ -69,6 +74,14 @@ shiny_rdf_spec_curve <- function(ests, spec_curve_parms,
     code_dir <- file.path(app_dir, "code")
     dir.create(code_dir)
     file.copy(file.path(rel_dir, paste0(design, ".R")), code_dir)
+  }
+
+  if(!is.null(add_files)) {
+    if (!is.character(add_files))
+      stop("add_files is not a character vector")
+    if (any(!file.exists(add_files)))
+      stop("add_files points to files that do not exist")
+    file.copy(add_files, app_dir, recursive = TRUE)
   }
 
   save(ests, spec_curve_parms, design, rel_dir, libs, start_input,

@@ -138,7 +138,7 @@ A Case Study</a>
 
     <pre class="usage"><span class='fu'>shiny_rdf_spec_curve</span>(<span class='no'>ests</span>, <span class='no'>spec_curve_parms</span>, <span class='kw'>design</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>rel_dir</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start_input</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>libs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>regression_cutoff</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>default_choices</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>add_files</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>regression_cutoff</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>default_choices</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>title</span> <span class='kw'>=</span> <span class='st'>"A Shiny Specification Curve"</span>, <span class='kw'>abstract</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>choice_labels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
@@ -179,6 +179,13 @@ yourself, shinyapps.io fails to include the listed packages when deploying
 the app. So, if you plan to host your app on shinyapps.io, you are better
 served including <code><a href='https://www.rdocumentation.org/packages/base/topics/library'>library()</a></code> calls in your design code files or to use
 the <code>::</code> operator in your code.</p></td>
+    </tr>
+    <tr>
+      <th>add_files</th>
+      <td><p>A character vector containing relative paths to files and
+dreictories that you want to bundle with the shiny app. The files will be
+copied to the temporary directory that hosts the shiny app and directories
+will be copied recursively.</p></td>
     </tr>
     <tr>
       <th>regression_cutoff</th>
