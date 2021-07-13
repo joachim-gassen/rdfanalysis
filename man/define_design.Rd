@@ -4,8 +4,12 @@
 \alias{define_design}
 \title{Define Your Research Design and Create Code Directory with Step Templates}
 \usage{
-define_design(steps, rel_dir = "./code", one_file = FALSE,
-  one_file_name = "design_steps.R")
+define_design(
+  steps,
+  rel_dir = "./code",
+  one_file = FALSE,
+  one_file_name = "design_steps.R"
+)
 }
 \arguments{
 \item{steps}{A character vector containing the names for the step functions.

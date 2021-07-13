@@ -143,7 +143,7 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
       ggplot2::theme(axis.title.x = ggplot2::element_blank(),
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()) +
-      ggplot2::guides(color = FALSE, size = FALSE) +
+      ggplot2::guides(color = "none", size = "none") +
       ggplot2::scale_color_manual(values = c("-2" = est_color_signeg,
                                              "0" = est_color,
                                              "2" = est_color_sigpos)) +
@@ -160,7 +160,7 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
       ggplot2::theme(axis.title.x = ggplot2::element_blank(),
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()) +
-      ggplot2::guides(size = FALSE) +
+      ggplot2::guides(size = "none") +
       ggplot2::scale_size_manual(values = c("FALSE" = pt_size,
                                             "TRUE" = pt_size_highlight))
   }
@@ -182,7 +182,7 @@ plot_rdf_spec_curve <- function(ests, est, lb = "", ub = "",
     ggplot2::theme_minimal() +
     ggplot2::xlab("Protocol") +
     ggplot2::ylab("") +
-    ggplot2::guides(color = FALSE, size = FALSE) +
+    ggplot2::guides(color = "none", size = "none") +
     ggplot2::scale_size_manual(values = c("FALSE" = pt_size,
                                           "TRUE" = pt_size_highlight))
 

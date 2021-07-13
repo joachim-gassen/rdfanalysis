@@ -4,11 +4,20 @@
 \alias{shiny_rdf_spec_curve}
 \title{An Interactive Specification Curve}
 \usage{
-shiny_rdf_spec_curve(ests, spec_curve_parms, design = NULL,
-  rel_dir = NULL, start_input = NULL, libs = NULL,
-  add_files = NULL, regression_cutoff = 5, default_choices = NULL,
-  title = "A Shiny Specification Curve", abstract = NULL,
-  choice_labels = NULL)
+shiny_rdf_spec_curve(
+  ests,
+  spec_curve_parms,
+  design = NULL,
+  rel_dir = NULL,
+  start_input = NULL,
+  libs = NULL,
+  add_files = NULL,
+  regression_cutoff = 5,
+  default_choices = NULL,
+  title = "A Shiny Specification Curve",
+  abstract = NULL,
+  choice_labels = NULL
+)
 }
 \arguments{
 \item{ests}{The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.}

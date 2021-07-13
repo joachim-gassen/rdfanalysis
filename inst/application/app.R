@@ -1,7 +1,7 @@
 library(shiny)
 library(dplyr)
 library(rdfanalysis)
-library(stargazer)
+library(modelsummary)
 
 load("shiny.Rda")
 data <- ests
@@ -103,11 +103,16 @@ server <- function(input, output) {
 
     output$regression <- renderPrint({
         if (!is.null(mods())) {
-            tab <- capture.output(stargazer(mods(), type = "html"))
+            tab <- strsplit(
+              modelsummary(
+                mods(), estimate = "{estimate}{stars}", ouput = "html"
+              ), "\n"
+            )[[1]]
+
             row_intro <- '<tr><td style="text-align:left">'
             row_outro <- '</td></tr>'
             cell_break <- '</td><td>'
-            start_tab <- tab[1:(length(tab) - 3)]
+            start_tab <- tab[1:(length(tab) - 2)]
             for (choice in attr(data, "choices")) {
                 name_choice <- names(data)[choice]
                 choices_made <- plot_df()[, name_choice]

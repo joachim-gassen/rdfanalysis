@@ -4,10 +4,14 @@
 \alias{prepare_design_documentation}
 \title{Document your Research Design in a PDF File}
 \usage{
-prepare_design_documentation(d, output_file, title = "Research Design",
-  code = TRUE, rmd_header = c("--- ", sprintf("title: \\"\%s\\"",
-  title), sprintf("date: \\"\%s\\"", Sys.Date()), "output: pdf_document",
-  "---", ""))
+prepare_design_documentation(
+  d,
+  output_file,
+  title = "Research Design",
+  code = TRUE,
+  rmd_header = c("--- ", sprintf("title: \\"\%s\\"", title), sprintf("date: \\"\%s\\"",
+    Sys.Date()), "output: pdf_document", "---", "")
+)
 }
 \arguments{
 \item{d}{A character vector of the research design steps function names}

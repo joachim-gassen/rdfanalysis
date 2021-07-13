@@ -4,12 +4,24 @@
 \alias{plot_rdf_spec_curve}
 \title{Plot the Specification Curve of your Researcher Degrees of Freedom}
 \usage{
-plot_rdf_spec_curve(ests, est, lb = "", ub = "", sample_frac = 1,
-  est_label = est, est_color = "black", est_color_signeg = "yellow",
-  est_color_sigpos = "blue", ribbon = nrow(ests) > 30,
+plot_rdf_spec_curve(
+  ests,
+  est,
+  lb = "",
+  ub = "",
+  sample_frac = 1,
+  est_label = est,
+  est_color = "black",
+  est_color_signeg = "yellow",
+  est_color_sigpos = "blue",
+  ribbon = nrow(ests) > 30,
   ribbon_color = ifelse(nrow(ests) > 30, "lightblue", "black"),
-  choice_ind_point = TRUE, pt_size = 0.1, lower_to_upper = 3,
-  highlight = NULL, pt_size_highlight = 3)
+  choice_ind_point = TRUE,
+  pt_size = 0.1,
+  lower_to_upper = 3,
+  highlight = NULL,
+  pt_size_highlight = 3
+)
 }
 \arguments{
 \item{ests}{The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.}
