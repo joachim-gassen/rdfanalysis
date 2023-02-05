@@ -43,5 +43,5 @@ test_design <- function(d, input = NULL,
   }
   pkg_app_dir <- system.file("test_code", package = "rdfanalysis")
   test_code <- paste0(pkg_app_dir, "/test_design.R")
-  testthat::test_file(test_code, env = e, encoding = "UTF-8", ...)
+  testthat::test_file(test_code, env = e, ...)
 }

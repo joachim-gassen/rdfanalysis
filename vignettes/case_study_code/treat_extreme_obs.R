@@ -48,13 +48,13 @@ treat_extreme_obs <- function(input = NULL, choice = NULL) {
          "win" = {
            df <- input$data
            df[, 3:ncol(df)] <-
-             treat_outliers(df[, 3:ncol(df)], percentile = choice[[2]])
+             ExPanDaR::treat_outliers(df[, 3:ncol(df)], percentile = choice[[2]])
            df
          },
          "trunc" = {
            df <- input$data
            df[, 3:ncol(df)] <-
-             treat_outliers(df[, 3:ncol(df)],
+             ExPanDaR::treat_outliers(df[, 3:ncol(df)],
                             percentile = choice[[2]],
                             truncate = TRUE)
            df

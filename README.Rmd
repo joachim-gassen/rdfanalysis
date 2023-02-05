@@ -5,7 +5,10 @@ author: Joachim Gassen
 
 ```{r setup, include=FALSE}
 set.seed(42)
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE, cache = TRUE,
+  fig.path = "man/figures/"
+)
 library(tidyverse)
 library(rdfanalysis)
 library(knitr)
@@ -23,7 +26,59 @@ supports unit testing and power simulations based on simulated data. The
 documented researcher degrees of freedom can be exhausted to generate a 
 distribution of outcome estimates.
 
-To provide a quick tour we will construct a research design where an 
+
+### New: Plot a specification curve
+
+The below displays a specification curve ([Simonsohn, Simmons and Nelson](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998)) based
+on an systematic exploration of the Preston curve. It summarizes 11,264 
+regressions in one plot. See this [blog article](https://joachim-gassen.github.io/2019/04/11264-regressions-in-one-tidy-plot/)
+and this [vignette](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html)
+for more detail. While the code works with the result data frame created
+following the procedure below, it also works on data frames that contain 
+choices and coefficient estimates created by other means.
+
+``` {r spec_curve}
+# devtools::install_github("joachim-gassen/rdfanalysis")
+library(rdfanalysis)
+load(url("https://joachim-gassen.github.io/data/rdf_ests.RData"))
+plot_rdf_spec_curve(ests, "est", "lb", "ub") 
+```
+
+
+### Even newer: Let your researcher's degrees of freedom shine!
+
+To explore your specification curve you can also use a shiny frontend that
+is included with the package. If you use the coding infrastructure from the
+package it even allows you to interactively explore your findings from a 
+single regression output to the full specification curve. [See for yourself](https://jgassen.shinyapps.io/shiny_rdf_spec_curve).
+
+``` {r shiny_pec_curve, eval = FALSE}
+# devtools::install_github("joachim-gassen/rdfanalysis")
+library(rdfanalysis)
+load(url("https://joachim-gassen.github.io/data/rdf_ests.RData"))
+
+# The following is based on having a local fork of the repo. See the
+# vignettes of the package to learn more about how to use the full
+# rdfanalsis package.
+
+design <- define_design(steps = c("read_data",
+                                  "select_idvs",
+                                  "treat_extreme_obs",
+                                  "specify_model",
+                                  "est_model"),
+                        rel_dir = "vignettes/case_study_code")
+
+shiny_rdf_spec_curve(ests, list("est", "lb", "ub"),
+                     design, "vignettes/case_study_code",
+                     "https://joachim-gassen.github.io/data/wb_new.csv")
+```
+
+![A Shiny Specification Curve](vignettes/shiny_rdf_spec_curve.gif)
+
+## A Package Tour
+
+To provide a quick tour of the full package and its workflow 
+I will use a "research design" where an 
 independent variable x is confounded by a co-variate z and where the
 only researcher degree of freedom is whether to control for z in the 
 regression setup. We will ignore the testing bit in this quick walk-through.
@@ -35,7 +90,7 @@ For a more in-depth introduction into the package, please refer to the
 ### Step 1: Open a new Rstudio project in a clean directory and install the `rdfanalysis` package
 
 ```{r library, eval = FALSE}
-devtools:intall_github("joachim-gassen/rdfanalysis")
+devtools::install_github("joachim-gassen/rdfanalysis")
 library(rdfanalysis)
 ```
 
@@ -133,7 +188,8 @@ test_design(design, input = sim_data(100, 0.1), reporter = "minimal")
 ### Step 7: Document your design
 
 The below serves documentation purposes. The function `prepare_design_documentation()`
-generates a PDF file in your project directory that documents your code.
+generates a PDF file in your project directory that documents your code. For it 
+to work you need a local `R Markdown` installation that is capable to produce PDF files.
 
 ```{r document_design, eval = FALSE}
 prepare_design_documentation(design, output_file = "my_design.pdf")
@@ -187,3 +243,7 @@ Only two researcher degrees of freedom in this setting but you will easily get i
 For a real-life case study on how to use `rdfanalysis`, please refer to the
 [vignette included in the documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).
 
+
+## Project Funding
+
+This is a project of the [Open Science Data Center](https://www.accounting-for-transparency.de/projects/open-science-data-center/) and funded by the [Deutsche Forschungsgemeinschaft (DFG, German Research Foundation)](https://www.dfg.de/en/index.jsp): [Project-ID 403041268 – TRR 266 Accounting for Transparency](https://www.accounting-for-transparency.de).

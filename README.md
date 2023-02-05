@@ -1,21 +1,87 @@
 Joachim Gassen
 
-Researcher Degrees of Freedom Analysis
-======================================
+# Researcher Degrees of Freedom Analysis
 
-A package to explore and document your degrees of freedom
----------------------------------------------------------
+## A package to explore and document your degrees of freedom
 
-This in-development package provides a coding infrastructure that allows researchers to systematically document and explore their researcher degrees of freedom when conducting analyses on observational data. The resulting code base is self-documenting, supports unit testing and power simulations based on simulated data. The documented researcher degrees of freedom can be exhausted to generate a distribution of outcome estimates.
+This in-development package provides a coding infrastructure that allows
+researchers to systematically document and explore their researcher
+degrees of freedom when conducting analyses on observational data. The
+resulting code base is self-documenting, supports unit testing and power
+simulations based on simulated data. The documented researcher degrees
+of freedom can be exhausted to generate a distribution of outcome
+estimates.
 
-To provide a quick tour we will construct a research design where an independent variable x is confounded by a co-variate z and where the only researcher degree of freedom is whether to control for z in the regression setup. We will ignore the testing bit in this quick walk-through.
+### New: Plot a specification curve
 
-For a more in-depth introduction into the package, please refer to the [vignette included in the documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).
+The below displays a specification curve ([Simonsohn, Simmons and
+Nelson](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998))
+based on an systematic exploration of the Preston curve. It summarizes
+11,264 regressions in one plot. See this [blog
+article](https://joachim-gassen.github.io/2019/04/11264-regressions-in-one-tidy-plot/)
+and this
+[vignette](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html)
+for more detail. While the code works with the result data frame created
+following the procedure below, it also works on data frames that contain
+choices and coefficient estimates created by other means.
+
+``` r
+# devtools::install_github("joachim-gassen/rdfanalysis")
+library(rdfanalysis)
+load(url("https://joachim-gassen.github.io/data/rdf_ests.RData"))
+plot_rdf_spec_curve(ests, "est", "lb", "ub") 
+```
+
+![](man/figures/spec_curve-1.png)<!-- -->
+
+### Even newer: Let your researcher’s degrees of freedom shine!
+
+To explore your specification curve you can also use a shiny frontend
+that is included with the package. If you use the coding infrastructure
+from the package it even allows you to interactively explore your
+findings from a single regression output to the full specification
+curve. [See for
+yourself](https://jgassen.shinyapps.io/shiny_rdf_spec_curve).
+
+``` r
+# devtools::install_github("joachim-gassen/rdfanalysis")
+library(rdfanalysis)
+load(url("https://joachim-gassen.github.io/data/rdf_ests.RData"))
+
+# The following is based on having a local fork of the repo. See the
+# vignettes of the package to learn more about how to use the full
+# rdfanalsis package.
+
+design <- define_design(steps = c("read_data",
+                                  "select_idvs",
+                                  "treat_extreme_obs",
+                                  "specify_model",
+                                  "est_model"),
+                        rel_dir = "vignettes/case_study_code")
+
+shiny_rdf_spec_curve(ests, list("est", "lb", "ub"),
+                     design, "vignettes/case_study_code",
+                     "https://joachim-gassen.github.io/data/wb_new.csv")
+```
+
+![A Shiny Specification Curve](vignettes/shiny_rdf_spec_curve.gif)
+
+## A Package Tour
+
+To provide a quick tour of the full package and its workflow I will use
+a “research design” where an independent variable x is confounded by a
+co-variate z and where the only researcher degree of freedom is whether
+to control for z in the regression setup. We will ignore the testing bit
+in this quick walk-through.
+
+For a more in-depth introduction into the package, please refer to the
+[vignette included in the
+documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).
 
 ### Step 1: Open a new Rstudio project in a clean directory and install the `rdfanalysis` package
 
 ``` r
-devtools:intall_github("joachim-gassen/rdfanalysis")
+devtools::install_github("joachim-gassen/rdfanalysis")
 library(rdfanalysis)
 ```
 
@@ -32,7 +98,11 @@ sim_data <- function(n, effect_size) {
 
 ### Step 3: Define your research design by a series of functions
 
-Each research design consists of a series of steps. Each step becomes a function. To initialize these functions, you can use the call `define_design()`. It creates a `code` directory in your current working directory and produces template code for each step. In this case, our design will have only one step.
+Each research design consists of a series of steps. Each step becomes a
+function. To initialize these functions, you can use the call
+`define_design()`. It creates a `code` directory in your current working
+directory and produces template code for each step. In this case, our
+design will have only one step.
 
 ``` r
 design <- define_design("est_model")
@@ -40,7 +110,8 @@ design <- define_design("est_model")
 
 ### Step 4: Develop your code for each step
 
-Edit the resulting template file `est_model.R` in the code directory until it looks like the code below.
+Edit the resulting template file `est_model.R` in the code directory
+until it looks like the code below.
 
 ``` r
 est_model <- function(input = NULL, choice = NULL) {
@@ -100,7 +171,10 @@ test_design(design, input = sim_data(100, 0.1), reporter = "minimal")
 
 ### Step 7: Document your design
 
-The below serves documentation purposes. The function `prepare_design_documentation()` generates a PDF file in your project directory that documents your code.
+The below serves documentation purposes. The function
+`prepare_design_documentation()` generates a PDF file in your project
+directory that documents your code. For it to work you need a local
+`R Markdown` installation that is capable to produce PDF files.
 
 ``` r
 prepare_design_documentation(design, output_file = "my_design.pdf")
@@ -112,7 +186,7 @@ prepare_design_documentation(design, output_file = "my_design.pdf")
 prepare_design_flow_chart(design, landscape = TRUE)
 ```
 
-![](README_files/figure-markdown_github/flow_chart-1.png)
+![](man/figures/flow_chart-1.png)<!-- -->
 
 ### Step 8: Run a single protocol of choices
 
@@ -123,13 +197,13 @@ sim_data(100, 0.1) %>%
 
     ## $data
     ## $data$est
-    ## [1] 0.2166091
+    ## [1] 0.1762571
     ## 
     ## $data$lb
-    ## [1] 0.01899325
+    ## [1] -0.03138844
     ## 
     ## $data$ub
-    ## [1] 0.414225
+    ## [1] 0.3839027
     ## 
     ## 
     ## $protocol
@@ -153,7 +227,7 @@ power_df %>%
   theme_minimal()
 ```
 
-![](README_files/figure-markdown_github/sim_power-1.png)
+![](man/figures/sim_power-1.png)<!-- -->
 
 ### Step 10: Exhaust your researcher degrees of freedom
 
@@ -165,9 +239,22 @@ df <- exhaust_design(design, sim_data(1000, 0.1))
 kable(df)
 ```
 
-| control\_for\_z |        est|         lb|         ub|
-|:----------------|----------:|----------:|----------:|
-| yes             |  0.1399993|  0.0788181|  0.2011806|
-| no              |  0.6467797|  0.5927678|  0.7007916|
+| control_for_z |       est |       lb |        ub |
+|:--------------|----------:|---------:|----------:|
+| yes           | 0.1372860 | 0.078503 | 0.1960689 |
+| no            | 0.5653054 | 0.513296 | 0.6173148 |
 
-Only two researcher degrees of freedom in this setting but you will easily get into the thousands in a real research setting. For a real-life case study on how to use `rdfanalysis`, please refer to the [vignette included in the documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).
+Only two researcher degrees of freedom in this setting but you will
+easily get into the thousands in a real research setting. For a
+real-life case study on how to use `rdfanalysis`, please refer to the
+[vignette included in the
+documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).
+
+## Project Funding
+
+This is a project of the [Open Science Data
+Center](https://www.accounting-for-transparency.de/projects/open-science-data-center/)
+and funded by the [Deutsche Forschungsgemeinschaft (DFG, German Research
+Foundation)](https://www.dfg.de/en/index.jsp): [Project-ID 403041268 –
+TRR 266 Accounting for
+Transparency](https://www.accounting-for-transparency.de).

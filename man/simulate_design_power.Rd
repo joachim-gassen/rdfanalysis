@@ -4,8 +4,15 @@
 \alias{simulate_design_power}
 \title{Use Simulated Data to Test the Power of Your Research Design}
 \usage{
-simulate_design_power(d, protocol, input_sim_func, range_n, effect_size,
-  runs = 100, input_sim_params = NULL)
+simulate_design_power(
+  d,
+  protocol,
+  input_sim_func,
+  range_n,
+  effect_size,
+  runs = 100,
+  input_sim_params = NULL
+)
 }
 \arguments{
 \item{d}{A character vector of the research design steps function names}

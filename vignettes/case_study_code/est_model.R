@@ -60,6 +60,7 @@ est_model <- function(input = NULL, choice = NULL) {
     mult <- log(1.1)*mean(input$data$gdp_capita, na.rm = TRUE) *
     mean(exp(input$data$lifeexpectancy), na.rm = TRUE)
   else mult <- log(1.1)*mean(exp(input$data$lifeexpectancy), na.rm = TRUE)
+
   l <- list(
     est = mod$coefficients[row.names(mod$coefficients) == 'gdp_capita'] * mult,
     lb = confint(mod)[row.names(mod$coefficients) == 'gdp_capita', 1] * mult,

@@ -1,10 +1,10 @@
 ---
-title: "Analyzing Researcher Degrees of Freedom:  \nA Case Study"
+title: "Analyzing Researcher Degrees of Freedom: A Case Study"
 author: "Joachim Gassen"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Analyzing Researcher Degrees of Freedom: A Case Study}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -236,7 +236,7 @@ For the other steps you follow the same approach. For our case study, I implemen
 - `select_idvs()`: selects the independent variables that we want to include in our regression model. `idvs` names these variables.
 - `treat_extreme_obs()`: treats extreme observations that otherwise tend to be highly influential for regression outcomes. `outlier_tment_style` indicates whether you want to use truncating or winsorizing. `outlier_cutoff` holds the percentile cutoff. It can be within the range [0, 0.1] (0 to 10 %, with 0 indicating no outlier treatment).
 - `specify_model()`: provides the specification of the regression model. `model_type` determines whether the model will be estimated as level-level, log-level, level-log or log-log specification.
-- `est_model()`: estimates the main effect of interest. To make the estimates comparable across the different model specifications the model coefficients are transformed so that each estimates the life expectancy effect in years of a 10 % increase in GDP per capita. The choice `feffects` determines which fixed effects are used (none, country, year or both) and `cluster` indicates how the standard errors should be clustered (not, by country, by year, or two-way by country and year).
+- `est_model()`: estimates the main effect of interest. To make the estimates comparable across different model specifications model coefficients are transformed so that each estimates the life expectancy effect in years of a 10 % increase in GDP per capita. The choice `feffects` determines which fixed effects are used (none, country, year or both) and `cluster` indicates how the standard errors should be clustered (not, by country, by year, or two-way by country and year).
 
 All these choices are rather standard choices in research designs based on observational data. Taken together and assuming that you want to generate outlier cases for each percentile from 0 to 10, they generate $2 * 4 * 2 * 11 * 4 * 4 * 4 = 11,264$ researcher degrees of freedom! 
 
@@ -715,7 +715,19 @@ plot_rdf_estimate_density(ests, "est", "lb", "ub", color = "lightblue") +
   theme_minimal()
 ```
 
-Quite a range of estimates. How do the coefficients vary by model specification? To be able to assess the precise range of our estimates, we now use histogram-based ridge lines instead of densities.
+Quite a range of estimates. How do the coefficients vary by model specification?  
+For a quick overview the package has implemented the specification curve visual 
+as suggested by [Simonsohn, Simmons and Nelson](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998).
+
+``` {r spec_curve, fig.width = 7, fig.height = 10, fig.align = "center"}
+plot_rdf_spec_curve(ests, "est", "lb", "ub", sample_frac = 0.1) 
+```
+
+This visual is based on a 10 % sample of estimates (can be adjusted via the 
+`sample_frac` parameter). It provides a very good first impression of both, the overall distribution of 
+the main estimate of interest as well as influential choices. 
+
+For example, you see that the type of the estimation model is influential for the magnitude of the effect. To be able to assess the precise range of our estimates conditional on this discrete choice, we now use the `plot_rdf_by_dchoice()` function with histogram-based ridge lines instead of densities.
 
 ``` {r estimate_density_by_model_type, fig.width = 7, fig.height = 6, fig.align = "center"}
 plot_rdf_ridges_by_dchoice(ests, "est", "model_type", hist = TRUE, scale = 0.9, fill = "lightblue", color = NA)
@@ -777,7 +789,7 @@ Again, outliers turn out to be influential here but into the opposite direction.
 
 Using the `rdfanalysis` package, we are able to systematically explore the `r format(nrow(ests), big.mark = ",")` degrees of freedom that we identified in a supposedly straight-forward panel data analysis of observational data. 
 
-Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series and unemployment and years of schooling as controls, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$lb, 2)` to `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$ub, 2)` years. Assuming that no other unobservables or reverse causality issues affect our findings, this coefficient could be interpreted as causal, but given how courageous these assumptions are I strongly advise against it.
+Allowing for time-invariant country-level unobservables and country-invariant unobservables affecting the time-series and controlling for unemployment and years of schooling, we estimate the effect of a 10 % increase of GDP per capita on life expectancy to be in the area of `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$lb, 2)` to `r round(calculate_weighted_estimate(weighted_ests, "est", "lb", "ub")$ub, 2)` years. Assuming that no other unobservables or reverse causality issues affect our findings, this coefficient could be interpreted as causal, but given how courageous these assumptions are I strongly advise against it.
 
 As can be assessed by the researcher degrees of freedom exploration, our estimate is only one of many feasible estimates. The total range of estimates spans from a lower bound of `r round(min(ests$lb), 2)` to an upper bound of `r round(max(ests$ub), 2)` years. Three observations stand out from the exploration: 
 
@@ -826,24 +838,30 @@ for (var in c("gdp_capita", "lifeexpectancy", "mn_yrs_school", "unemployment")) 
                       list(paste0(var, "_ln"), paste("Log-transformed version of", var), "numeric", 1))
 }
 
-abstract <- paste("This interactive display is part of the <a href=https://joachim-gassen.github.io/rdfanalysis>",
+abstract <- paste("<p>&nbsp;</p><p>This interactive display is part of the ",
+                  "<a href=https://joachim-gassen.github.io/rdfanalysis>",
                   "R package rdfanalysis</a>.",
-                  "The package provides researchers with a coding framework that supports",
-                  "formal documentation and systematic exploration of",
-                  "the researcher degrees of freedom that are inherent in research designs.<p>",
-                  "This display provides data from the World Bank and the Wittgenstein Centre",
-                  "to assess the impact of real Gross Domestic Product (GDP) per capita on life expectancy.",
+                  "The package provides researchers with a coding framework",
+                  "that supports formal documentation and systematic",
+                  "exploration of the researcher degrees of freedom that are",
+                  "inherent in research designs.</p>",
+                  "<p>Data is provided by the World Bank and the Wittgenstein",
+                  "Centre and used to assess the impact of real",
+                  "gross domestic product (GDP) per capita on life expectancy.",
                   "This association has become known as the Preston Curve.<p>",
-                  "You can choose below whether you want to examine a sample with or without missing observations.", 
-                  "Hover over the variable names in the descriptive table to learn more about the variable",
-                  "definitions and use the various displays to explore the data.<p>",
-                  "Joachim Gassen - <a href=mailto:gassen@wiwi.hu-berlin.de>gassen@wiwi.hu-berlin.de</a> - March 2019")
+                  "You can choose below whether you want to examine a sample",
+                  "with or without missing observations. Hover over the",
+                  "variable names in the descriptive table to see variable",
+                  "definitions and use the various displays to explore the", 
+                  "data.<p>",
+                  "Joachim Gassen - <a href=mailto:gassen@wiwi.hu-berlin.de>",
+                  "gassen@wiwi.hu-berlin.de</a> - March 2019")
 
 
 ExPanD(list(df_all, df_na.omit), 
        df_name = c("All observations", "Observations with NAs omitted"),
        df_def = wb_var_def,
-       title = "Explore the Perston Curve",
+       title = "Explore the Link Between National Income and Life Expectancy (Preston Curve)",
        abstract = abstract)
 
 ```

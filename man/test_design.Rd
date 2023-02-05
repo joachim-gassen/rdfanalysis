@@ -4,8 +4,13 @@
 \alias{test_design}
 \title{Test Design for Code Consistency}
 \usage{
-test_design(d, input = NULL, input_test_code = NULL,
-  output_test_code = NULL, ...)
+test_design(
+  d,
+  input = NULL,
+  input_test_code = NULL,
+  output_test_code = NULL,
+  ...
+)
 }
 \arguments{
 \item{d}{A character vector of the research design steps function names}

@@ -4,8 +4,12 @@
 \alias{source_design}
 \title{Source the R Files that Contain the Design Steps}
 \usage{
-source_design(d, rel_dir = "code", one_file = FALSE,
-  one_file_name = "design_steps.R")
+source_design(
+  d,
+  rel_dir = "code",
+  one_file = FALSE,
+  one_file_name = "design_steps.R"
+)
 }
 \arguments{
 \item{d}{A character vector of the research design steps function names}

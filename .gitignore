@@ -2,5 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-test.R
-code
+README_cache
+.DS_Store
+

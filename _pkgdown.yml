@@ -1,4 +1,5 @@
 template:
+  bootstrap: 5
   params:
     ganalytics: UA-119053376-1
 development:
@@ -7,12 +8,18 @@ navbar:
   structure:
     left:
     - home
+    - articles
     - reference
     right: github
   components:
     home:
       icon: fa-home fa-lg
       href: index.html
+    articles:
+      text: Articles
+      menu:
+        - text: "Analyzing Researcher Degrees of Freedom: A Case Study"
+          href: articles/analyzing_rdf.html
     reference:
       text: Reference
       href: reference/index.html
@@ -33,8 +40,10 @@ reference:
   - exhaust_design
   - calculate_weighted_estimate
   - plot_rdf_estimate_density
+  - plot_rdf_spec_curve
   - plot_rdf_estimates_by_choice
   - plot_rdf_ridges_by_dchoice
+  - shiny_rdf_spec_curve
 - title: Helper functions
   desc: Functions used by the step template
   contents:
