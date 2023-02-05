@@ -9,7 +9,7 @@ exhaust_design_parallel(
   start_input,
   pc,
   libs,
-  export = ls(parent.env(environment())),
+  export = ls(globalenv()),
   weight = FALSE,
   est_by_cchoice = 10,
   verbose = FALSE
@@ -25,7 +25,7 @@ exhaust_design_parallel(
 \item{libs}{The libraries that the design steps rely on.}
 
 \item{export}{The members of the environment that you want to export to the
-parallel cores. Defaults to all members of the parent environment.}
+parallel cores. Defaults to all members of the global environment.}
 
 \item{weight}{Whether each step's choices should be weighted by their user
 assigned weights as included in the \code{choice_type}. Protocols with zero

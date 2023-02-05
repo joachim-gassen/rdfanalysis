@@ -10,7 +10,7 @@
 #' @param pc The number of cores you want \code{doParallel::makeCluster()} to use.
 #' @param libs The libraries that the design steps rely on.
 #' @param export The members of the environment that you want to export to the
-#' parallel cores. Defaults to all members of the parent environment.
+#' parallel cores. Defaults to all members of the global environment.
 #' @param weight Whether each step's choices should be weighted by their user
 #'   assigned weights as included in the \code{choice_type}. Protocols with zero
 #'   weight are excluded from the analysis. Defaults to \code{FALSE}.
@@ -29,7 +29,7 @@
 
 exhaust_design_parallel <- function(
     d, start_input, pc, libs,
-    export = ls(parent.env(environment())),
+    export = ls(globalenv()),
     weight = FALSE, est_by_cchoice = 10,
     verbose = FALSE
 ) {
@@ -45,7 +45,7 @@ exhaust_design_parallel <- function(
   results <-
     foreach::foreach (i = 1:nrow(choice_df), .combine = rbind,  .options.multicore = opts,
              .packages = libs,
-             .export = c(export, d)) %dopar% {
+             .export = unique(c(export, d))) %dopar% {
                for (step in d) {
                  vars <- unlist(get(step)()$choice_type)[names(unlist(get(step)()$choice_type)) %in% "name"]
                  params <- choice_df[i, vars]
