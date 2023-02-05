@@ -4,9 +4,16 @@
 \alias{exhaust_design_parallel}
 \title{Exhaust all Researcher Degrees of Freedom in Parallel}
 \usage{
-exhaust_design_parallel(d, start_input, pc, libs,
-  export = ls(parent.env(environment())), weight = FALSE,
-  est_by_cchoice = 10)
+exhaust_design_parallel(
+  d,
+  start_input,
+  pc,
+  libs,
+  export = ls(parent.env(environment())),
+  weight = FALSE,
+  est_by_cchoice = 10,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{d}{A character vector of the research design steps function names}
@@ -17,24 +24,28 @@ exhaust_design_parallel(d, start_input, pc, libs,
 
 \item{libs}{The libraries that the design steps rely on.}
 
-\item{weight}{Whether each step's choices should be weighted by their user assigned weights as
-included in the \code{choice_type}. Protocols with zero weight are excluded from the analysis.
-Defaults to FALSE.}
-
-\item{est_by_cchoice}{Each continous choice will be evaluated by \code{est_by_choice} equally
-spaced steps, staring at \code{valid_min} and ending at \code{valid_max}.}
-
-\item{exports}{The members of the environment that you want to export to the
+\item{export}{The members of the environment that you want to export to the
 parallel cores. Defaults to all members of the parent environment.}
+
+\item{weight}{Whether each step's choices should be weighted by their user
+assigned weights as included in the \code{choice_type}. Protocols with zero
+weight are excluded from the analysis. Defaults to \code{FALSE}.}
+
+\item{est_by_cchoice}{Each continuous choice will be evaluated by
+\code{est_by_choice} equally spaced steps, staring at \code{valid_min} and
+ending at \code{valid_max}.}
+
+\item{verbose}{Set to \code{TRUE} for some additional diagnostic output.
+Useful for large designs that take a while to process.}
 }
 \value{
 A data frame containing results for all feasible choice permutations.
 }
 \description{
-Parse through a reserch design, iterating over all possible choices, thereby exhausting all
-documented researcher degrees of freedom. Uses the DoParallel package to enable parallel
-computing. Returns a data frame containing the results for all
-choice combinations.
+Parse through a research design, iterating over all possible choices, thereby
+exhausting all documented researcher degrees of freedom. Uses the DoParallel
+package to enable parallel computing. Returns a data frame containing the
+results for all choice combinations.
 }
 \details{
 See the vignette of the package for further details.

@@ -9,7 +9,7 @@
 #' @param start_input The input data for the first step.
 #' @param pc The number of cores you want \code{doParallel::makeCluster()} to use.
 #' @param libs The libraries that the design steps rely on.
-#' @param exports The members of the environment that you want to export to the
+#' @param export The members of the environment that you want to export to the
 #' parallel cores. Defaults to all members of the parent environment.
 #' @param weight Whether each step's choices should be weighted by their user
 #'   assigned weights as included in the \code{choice_type}. Protocols with zero
@@ -17,6 +17,8 @@
 #' @param est_by_cchoice Each continuous choice will be evaluated by
 #'   \code{est_by_choice} equally spaced steps, staring at \code{valid_min} and
 #'   ending at \code{valid_max}.
+#' @param verbose Set to \code{TRUE} for some additional diagnostic output.
+#'   Useful for large designs that take a while to process.
 #' @return A data frame containing results for all feasible choice permutations.
 #' @details See the vignette of the package for further details.
 #' @examples
@@ -25,11 +27,15 @@
 #' }
 #' @export
 
-exhaust_design_parallel <- function(d, start_input, pc, libs,
-                                    export = ls(parent.env(environment())),
-                                    weight = FALSE, est_by_cchoice = 10,
-                                    ) {
-  choice_df <- generate_choice_df(d, weight, est_by_cchoice)
+exhaust_design_parallel <- function(
+    d, start_input, pc, libs,
+    export = ls(parent.env(environment())),
+    weight = FALSE, est_by_cchoice = 10,
+    verbose = FALSE
+) {
+  choice_df <- generate_choice_df(d, weight, est_by_cchoice, verbose)
+
+  i <- NULL # to make devtools:check() happy
 
   doParallel::registerDoParallel(cores = pc)
   pb <- utils::txtProgressBar(max = nrow(choice_df), style = 3)
@@ -51,7 +57,11 @@ exhaust_design_parallel <- function(d, start_input, pc, libs,
              }
   close(pb)
 
+  rownames(results) <- NULL
+  if (!weight) choices <- 1:ncol(choice_df)
+  else choices <- 1:(ncol(choice_df) - 1)
   choice_df <- cbind(choice_df, results)
+  attr(choice_df, "choices") <- choices
   rownames(choice_df) <- NULL
   choice_df
 }

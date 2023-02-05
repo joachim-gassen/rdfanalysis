@@ -16,8 +16,8 @@ URL: https://joachim-gassen.github.io/rdfanalysis
 BugReports: https://github.com/joachim-gassen/rdfanalysis/issues
 Encoding: UTF-8
 LazyData: true
-Imports: DiagrammeR, DiagrammeRsvg, rsvg, dplyr, rmarkdown, testthat, foreach,
-    ggplot2, gtable, grid, rlang, tidyr, modelsummary, shiny, doParallel
-Suggests: knitr, ExPanDaR, readr
-RoxygenNote: 7.1.2
+Imports: DiagrammeR, dplyr, rmarkdown, testthat, foreach,
+    ggplot2, ggridges, grid, rlang, tidyr, shiny, doParallel
+Suggests: knitr, ExPanDaR, readr, lfe
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
