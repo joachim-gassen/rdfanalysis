@@ -1,4 +1,5 @@
 template:
+  bootstrap: 5
   params:
     ganalytics: UA-119053376-1
 development:
@@ -7,12 +8,18 @@ navbar:
   structure:
     left:
     - home
+    - articles
     - reference
     right: github
   components:
     home:
       icon: fa-home fa-lg
       href: index.html
+    articles:
+      text: Articles
+      menu:
+        - text: "Analyzing Researcher Degrees of Freedom: A Case Study"
+          href: articles/analyzing_rdf.html
     reference:
       text: Reference
       href: reference/index.html

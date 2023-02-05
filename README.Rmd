@@ -5,7 +5,10 @@ author: Joachim Gassen
 
 ```{r setup, include=FALSE}
 set.seed(42)
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE, cache = TRUE,
+  fig.path = "man/figures/"
+)
 library(tidyverse)
 library(rdfanalysis)
 library(knitr)
@@ -70,7 +73,7 @@ shiny_rdf_spec_curve(ests, list("est", "lb", "ub"),
                      "https://joachim-gassen.github.io/data/wb_new.csv")
 ```
 
-![A Shiny Specification Curve](docs/articles/shiny_rdf_spec_curve.gif)
+![A Shiny Specification Curve](vignettes/shiny_rdf_spec_curve.gif)
 
 ## A Package Tour
 
@@ -241,4 +244,6 @@ For a real-life case study on how to use `rdfanalysis`, please refer to the
 [vignette included in the documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).
 
 
+## Project Funding
 
+This is a project of the [Open Science Data Center](https://www.accounting-for-transparency.de/projects/open-science-data-center/) and funded by the [Deutsche Forschungsgemeinschaft (DFG, German Research Foundation)](https://www.dfg.de/en/index.jsp): [Project-ID 403041268 – TRR 266 Accounting for Transparency](https://www.accounting-for-transparency.de).

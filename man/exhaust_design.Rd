@@ -4,7 +4,13 @@
 \alias{exhaust_design}
 \title{Exhaust all Researcher Degrees of Freedom}
 \usage{
-exhaust_design(d, start_input, weight = FALSE, est_by_cchoice = 10)
+exhaust_design(
+  d,
+  start_input,
+  weight = FALSE,
+  est_by_cchoice = 10,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{d}{A character vector of the research design steps function names.}
@@ -17,6 +23,9 @@ Defaults to FALSE.}
 
 \item{est_by_cchoice}{Each continous choice will be evaluated by \code{est_by_choice} equally
 spaced steps, staring at \code{valid_min} and ending at \code{valid_max}.}
+
+\item{verbose}{Set to \code{TRUE} for some additional diagnostic output.
+Useful for large designs that take a while to process.}
 }
 \value{
 A data frame containing results for all feasible choice permutations.

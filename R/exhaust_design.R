@@ -1,4 +1,6 @@
-generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
+generate_choice_df <- function(
+    d, weighted = FALSE, est_by_cchoice = 10, verbose = FALSE
+) {
   nobs <- NULL # to make devtools:check() happy
 
   choice_list <- vector("list", length(d))
@@ -34,18 +36,43 @@ generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
   }
   cl <- unlist(choice_list, recursive = FALSE)
   choice_df <- expand.grid(cl, stringsAsFactors = FALSE)
+  if (verbose) message(
+    sprintf(
+      "%s: Choice space determined: %d choices, %s options",
+      Sys.time(), length(cl), format(nrow(choice_df), big.mark = ",")
+    )
+  )
   colnames(choice_df) <- choice_df_cnames
   if(weighted) {
+    if (verbose) message(
+      sprintf(
+        "%s: weight = TRUE, idenitifying options with positive weights",
+        Sys.time()
+      )
+    )
     wl <- unlist(weight_list, recursive = FALSE)
     choice_df$weight <- NA
-    for (i in 1:nrow(choice_df)) {
+    for (i in 1:nrow(choice_df)) { #
       weight <- 1
       for (j in 1:(ncol(choice_df) - 1))
         weight <- weight * wl[[j]][match(choice_df[i,j], cl[[j]])]
       choice_df$weight[i] <- weight
+      if (verbose) {
+        if (i %% 10000 == 0) message(
+          sprintf(
+            "%s: Parsed %s options", Sys.time(), format(i, big.mark = ",")
+          )
+        )
+      }
     }
     choice_df <- choice_df%>%
       dplyr::filter(weight > 0)
+    if (verbose) message(
+      sprintf(
+        "%s: Done parsing weights. %s feasible options remain",
+        Sys.time(), format(nrow(choice_df), big.mark = ",")
+      )
+    )
   }
   choice_df
 }
@@ -64,6 +91,8 @@ generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
 #'   Defaults to FALSE.
 #' @param est_by_cchoice Each continous choice will be evaluated by \code{est_by_choice} equally
 #'   spaced steps, staring at \code{valid_min} and ending at \code{valid_max}.
+#' @param verbose Set to \code{TRUE} for some additional diagnostic output.
+#'   Useful for large designs that take a while to process.
 #' @return A data frame containing results for all feasible choice permutations.
 #'
 #' @details See the vignette of the package for further details.
@@ -73,8 +102,10 @@ generate_choice_df <- function(d, weighted = FALSE, est_by_cchoice = 10) {
 #' }
 #' @export
 
-exhaust_design <- function(d, start_input, weight = FALSE, est_by_cchoice = 10) {
-  choice_df <- generate_choice_df(d, weight, est_by_cchoice)
+exhaust_design <- function(
+    d, start_input, weight = FALSE, est_by_cchoice = 10, verbose = FALSE
+) {
+  choice_df <- generate_choice_df(d, weight, est_by_cchoice, verbose)
 
   pb <- utils::txtProgressBar(max = nrow(choice_df), style = 3)
 
@@ -92,6 +123,7 @@ exhaust_design <- function(d, start_input, weight = FALSE, est_by_cchoice = 10) 
     unlist(input$data)
   }
   close(pb)
+  rownames(results) <- NULL
   if (!weight) choices <- 1:ncol(choice_df)
   else choices <- 1:(ncol(choice_df) - 1)
   choice_df <- cbind(choice_df, results)

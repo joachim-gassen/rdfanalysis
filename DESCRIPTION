@@ -19,5 +19,5 @@ LazyData: true
 Imports: DiagrammeR, DiagrammeRsvg, rsvg, dplyr, rmarkdown, testthat, foreach,
     ggplot2, ggridges, gtable, grid, rlang, tidyr, modelsummary, shiny
 Suggests: knitr, ExPanDaR, readr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr

@@ -1,5 +1,5 @@
 ---
-title: "Analyzing Researcher Degrees of Freedom:  \nA Case Study"
+title: "Analyzing Researcher Degrees of Freedom: A Case Study"
 author: "Joachim Gassen"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

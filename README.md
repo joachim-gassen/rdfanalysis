@@ -32,9 +32,9 @@ load(url("https://joachim-gassen.github.io/data/rdf_ests.RData"))
 plot_rdf_spec_curve(ests, "est", "lb", "ub") 
 ```
 
-![](README_files/figure-gfm/spec_curve-1.png)<!-- -->
+![](man/figures/spec_curve-1.png)<!-- -->
 
-### Even newer: Let your researcher’s degrees of freedom shine\!
+### Even newer: Let your researcher’s degrees of freedom shine!
 
 To explore your specification curve you can also use a shiny frontend
 that is included with the package. If you use the coding infrastructure
@@ -64,7 +64,7 @@ shiny_rdf_spec_curve(ests, list("est", "lb", "ub"),
                      "https://joachim-gassen.github.io/data/wb_new.csv")
 ```
 
-![A Shiny Specification Curve](docs/articles/shiny_rdf_spec_curve.gif)
+![A Shiny Specification Curve](vignettes/shiny_rdf_spec_curve.gif)
 
 ## A Package Tour
 
@@ -173,8 +173,8 @@ test_design(design, input = sim_data(100, 0.1), reporter = "minimal")
 
 The below serves documentation purposes. The function
 `prepare_design_documentation()` generates a PDF file in your project
-directory that documents your code. For it to work you need a local `R
-Markdown` installation that is capable to produce PDF files.
+directory that documents your code. For it to work you need a local
+`R Markdown` installation that is capable to produce PDF files.
 
 ``` r
 prepare_design_documentation(design, output_file = "my_design.pdf")
@@ -186,7 +186,7 @@ prepare_design_documentation(design, output_file = "my_design.pdf")
 prepare_design_flow_chart(design, landscape = TRUE)
 ```
 
-![](README_files/figure-gfm/flow_chart-1.png)<!-- -->
+![](man/figures/flow_chart-1.png)<!-- -->
 
 ### Step 8: Run a single protocol of choices
 
@@ -227,7 +227,7 @@ power_df %>%
   theme_minimal()
 ```
 
-![](README_files/figure-gfm/sim_power-1.png)<!-- -->
+![](man/figures/sim_power-1.png)<!-- -->
 
 ### Step 10: Exhaust your researcher degrees of freedom
 
@@ -239,13 +239,22 @@ df <- exhaust_design(design, sim_data(1000, 0.1))
 kable(df)
 ```
 
-| control\_for\_z |       est |       lb |        ub |
-| :-------------- | --------: | -------: | --------: |
-| yes             | 0.1372860 | 0.078503 | 0.1960689 |
-| no              | 0.5653054 | 0.513296 | 0.6173148 |
+| control_for_z |       est |       lb |        ub |
+|:--------------|----------:|---------:|----------:|
+| yes           | 0.1372860 | 0.078503 | 0.1960689 |
+| no            | 0.5653054 | 0.513296 | 0.6173148 |
 
 Only two researcher degrees of freedom in this setting but you will
 easily get into the thousands in a real research setting. For a
 real-life case study on how to use `rdfanalysis`, please refer to the
 [vignette included in the
 documentation](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html).
+
+## Project Funding
+
+This is a project of the [Open Science Data
+Center](https://www.accounting-for-transparency.de/projects/open-science-data-center/)
+and funded by the [Deutsche Forschungsgemeinschaft (DFG, German Research
+Foundation)](https://www.dfg.de/en/index.jsp): [Project-ID 403041268 –
+TRR 266 Accounting for
+Transparency](https://www.accounting-for-transparency.de).
