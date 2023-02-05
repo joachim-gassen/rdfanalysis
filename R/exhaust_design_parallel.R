@@ -1,7 +1,7 @@
 #' Exhaust all Researcher Degrees of Freedom in Parallel
 #'
 #' Parse through a research design, iterating over all possible choices, thereby
-#' exhausting all documented researcher degrees of freedom. Uses the DoParallel
+#' exhausting all documented researcher degrees of freedom. Uses the parallel
 #' package to enable parallel computing. Returns a data frame containing the
 #' results for all choice combinations.
 #'
@@ -37,25 +37,43 @@ exhaust_design_parallel <- function(
 
   i <- NULL # to make devtools:check() happy
 
-  doParallel::registerDoParallel(cores = pc)
-  pb <- utils::txtProgressBar(max = nrow(choice_df), style = 3)
-  progress <- function(n) utils::setTxtProgressBar(pb, n)
-  opts <- list(progress = progress)
+  if (verbose) message(
+    sprintf("%s: Setting up %d clusters...", Sys.time(), pc), appendLF = FALSE
+  )
 
-  results <-
-    foreach::foreach (i = 1:nrow(choice_df), .combine = rbind,  .options.multicore = opts,
-             .packages = libs,
-             .export = unique(c(export, d))) %dopar% {
-               for (step in d) {
-                 vars <- unlist(get(step)()$choice_type)[names(unlist(get(step)()$choice_type)) %in% "name"]
-                 params <- choice_df[i, vars]
-                 if (match(c(step), d) == 1)
-                   input <- do.call(get(step), list(start_input, params))
-                 else input <- do.call(get(step), list(input, params))
-               }
-               unlist(input$data)
-             }
-  close(pb)
+  cl <- parallel::makeCluster(pc)
+  invisible({
+    parallel::clusterExport(cl = cl, varlist = unique(c(export, d)))
+    parallel::clusterExport(cl = cl, varlist = c("libs"), envir = environment())
+    parallel::clusterEvalQ(cl = cl, {
+      lapply(libs, library, character.only = TRUE)
+    })
+  })
+
+  if (verbose) message(" done!")
+
+  cl_job <- function(i) {
+    for (step in d) {
+      vars <- unlist(get(step)()$choice_type)[names(unlist(get(step)()$choice_type)) %in% "name"]
+      params <- choice_df[i, vars]
+      if (match(c(step), d) == 1)
+        input <- do.call(get(step), list(start_input, params))
+      else input <- do.call(get(step), list(input, params))
+    }
+    unlist(input$data)
+  }
+
+  if (verbose) message(
+    sprintf(
+      "%s: Running %s options...", Sys.time(),
+      format(nrow(choice_df), big.mark = ",")
+    )
+  )
+
+  results <- dplyr::bind_rows(
+    pbapply::pblapply(1:nrow(choice_df), cl_job, cl = cl)
+  )
+  parallel::stopCluster(cl)
 
   rownames(results) <- NULL
   if (!weight) choices <- 1:ncol(choice_df)

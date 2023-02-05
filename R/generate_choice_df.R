@@ -25,24 +25,24 @@ generate_choice_df <- function(
     step_cl <- vector("list", length(res$choice_type))
     if (weighted) step_wl <- vector("list", length(res$choice_type))
     i <- 1
-    for (c in res$choice_type) {
-      if(c$type == "character") {
-        cvals <- c$valid_values
-        if (weighted) cweights <- c$weights
+    for (cs in res$choice_type) {
+      if(cs$type == "character") {
+        cvals <- cs$valid_values
+        if (weighted) cweights <- cs$weights
       } else {
         if (weighted) {
-          df <- dplyr::tibble(cvals = c$weight_sample) %>%
+          df <- dplyr::tibble(cvals = cs$weight_sample) %>%
             dplyr::group_by(cvals) %>%
             dplyr::summarise(nobs = dplyr::n()) %>%
             dplyr::mutate(weights = nobs / sum(nobs))
           cvals <- df$cvals
           cweights <- df$weights
-        } else cvals <- seq(from = c$valid_min, to = c$valid_max,
-                            by = (c$valid_max - c$valid_min)/est_by_cchoice)
+        } else cvals <- seq(from = cs$valid_min, to = cs$valid_max,
+                            by = (cs$valid_max - cs$valid_min)/est_by_cchoice)
       }
       step_cl[[i]] <- cvals
       if (weighted) step_wl[[i]] <- cweights
-      choice_df_cnames <- c(choice_df_cnames, c$name)
+      choice_df_cnames <- c(choice_df_cnames, cs$name)
       i <- i + 1
     }
     choice_list[[match(c(step), d)]] <- step_cl
@@ -64,23 +64,29 @@ generate_choice_df <- function(
         Sys.time()
       )
     )
+
     wl <- unlist(weight_list, recursive = FALSE)
-    choice_df$weight <- NA
-    for (i in 1:nrow(choice_df)) { #
-      weight <- 1
-      for (j in 1:(ncol(choice_df) - 1))
-        weight <- weight * wl[[j]][match(choice_df[i,j], cl[[j]])]
-      choice_df$weight[i] <- weight
-      if (verbose) {
-        if (i %% 10000 == 0) message(
-          sprintf(
-            "%s: Parsed %s options", Sys.time(), format(i, big.mark = ",")
-          )
-        )
-      }
-    }
-    choice_df <- choice_df%>%
-      dplyr::filter(weight > 0)
+    wlup <- dplyr::bind_cols(
+      choice = rep(choice_df_cnames, lapply(cl, length)),
+      option = unlist(cl),
+      weight = unlist(wl)
+    )
+
+    pos_weights <- choice_df %>%
+      dplyr::mutate(id = 1:n()) %>%
+      tidyr::pivot_longer(
+        cols = -id, names_to = "choice", values_to = "option",
+      ) %>%
+      dplyr::left_join(wlup, by = c("choice", "option")) %>%
+      dplyr::group_by(id) %>%
+      dplyr::summarise(weight = prod(weight)) %>%
+      filter(weight > 0)
+
+    choice_df <- choice_df %>%
+      dplyr::mutate(id = 1:n()) %>%
+      dplyr::inner_join(pos_weights, by = "id") %>%
+      dplyr::select(-id)
+
     if (verbose) message(
       sprintf(
         "%s: Done parsing weights. %s feasible options remain",

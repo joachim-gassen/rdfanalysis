@@ -43,7 +43,7 @@ A data frame containing results for all feasible choice permutations.
 }
 \description{
 Parse through a research design, iterating over all possible choices, thereby
-exhausting all documented researcher degrees of freedom. Uses the DoParallel
+exhausting all documented researcher degrees of freedom. Uses the parallel
 package to enable parallel computing. Returns a data frame containing the
 results for all choice combinations.
 }
