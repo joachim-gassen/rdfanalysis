@@ -13,6 +13,8 @@ if (is.null(choice_labels)) {
     choice_labels <- sprintf("Choose %s", names(data)[attr(data, "choices")])
 }
 
+multiple_spec_curves <- all(unlist(lapply(spec_curve_parms, is.list)))
+
 est_models <- function(d, choice_df, start_input) {
     mods <- vector("list", nrow(choice_df))
     for (i in 1:nrow(choice_df)) {
@@ -31,7 +33,18 @@ est_models <- function(d, choice_df, start_input) {
 ui <- fluidPage(
     titlePanel(title),
     hr(),
-    p(HTML(abstract)),
+    if (multiple_spec_curves) {
+      sidebarLayout(
+        sidebarPanel(
+          selectInput(
+            "selected_spec_curve",
+            "Select specification to plot",
+            names(spec_curve_parms)
+          )
+        ), p(HTML(abstract))
+      )
+    } else p(HTML(abstract))
+    ,
     hr(),
     sidebarLayout(
         sidebarPanel(
@@ -67,7 +80,7 @@ ui <- fluidPage(
                 "<a href=https://www.wiwi.hu-berlin.de/de/professuren/bwl/rwuwp/staff/gassen>",
                 "Humboldt-Universität zu Berlin</a>",
                 "and <a href=https://www.accounting-for-transparency.de>",
-                "TRR 266 'Accounting for Transparency'</a>, 2020."
+                "TRR 266 'Accounting for Transparency'</a>, 2023."
             )
         )
     )
@@ -131,10 +144,13 @@ server <- function(input, output) {
     })
 
     output$spec_curve <- renderPlot({
+      if (multiple_spec_curves) {
+        scp <- spec_curve_parms[[input[["selected_spec_curve"]]]]
+      } else scp <- spec_curve_parms
         if(nrow(plot_df()) > 0) {
             do.call(
                 plot_rdf_spec_curve,
-                c(list(plot_df()), spec_curve_parms,
+                c(list(plot_df()), scp,
                   pt_size = min(max(50/nrow(plot_df()), 0.1), 3))
             )
         }

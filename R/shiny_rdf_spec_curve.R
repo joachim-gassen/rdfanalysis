@@ -4,8 +4,12 @@
 #'   researcher degrees of freedom's specification curve interactively.
 #'
 #' @param ests The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.
-#' @param spec_curve_parms A list containing additional paramters that will be
+#' @param spec_curve_parms A list containing additional parameters that will be
 #'   passed on to \code{\link[rdfanalysis:plot_rdf_spec_curve]{plot_rdf_spec_curve()}}.
+#'   You can also provide a named list of lists with each list containing
+#'   parameters for a specification curve. In this case, the shiny app will
+#'   include an additional Select Input element where the users can seltect
+#'   which specification curve to display.
 #' @param design if not \code{NULL} it takes the design that was used to generate
 #'   the estimates. In this case, you also need to specify the \code{rel_dir}
 #'   and \code{start_input} parameter below. The shiny app will then display
@@ -21,7 +25,7 @@
 #'   served including \code{library()} calls in your design code files or to use
 #'   the \code{::} operator in your code.
 #' @param add_files A character vector containing relative paths to files and
-#'   dreictories that you want to bundle with the shiny app. The files will be
+#'   directories that you want to bundle with the shiny app. The files will be
 #'   copied to the temporary directory that hosts the shiny app and directories
 #'   will be copied recursively.
 #' @param regression_cutoff If your choices generate less or equal estimates,
