@@ -3,7 +3,7 @@ library(dplyr)
 library(rdfanalysis)
 library(modelsummary)
 
-load("shiny.Rda")
+load("shiny.Rda", envir = .GlobalEnv)
 data <- ests
 mods <<- NULL
 
