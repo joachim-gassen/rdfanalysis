@@ -135,13 +135,19 @@ shiny_rdf_spec_curve <- function(
     ))
   }
 
-  save(
-    ests, spec_curve_parms, spec_curve_selected,
-    design, rel_dir, libs, start_input,
-    regression_cutoff, model_render_func, default_choices, title,
-    abstract, choice_labels,
-    file = paste0(app_dir, "/shiny.Rda")
+
+  objects <- c(
+    "ests", "spec_curve_parms", "spec_curve_selected",
+    "design", "rel_dir", "libs", "start_input",
+    "regression_cutoff", "model_render_func", "default_choices",
+    "title", "abstract", "choice_labels"
   )
+
+  if (!is.null(design) & is.null(rel_dir)) {
+    objects <- unique(objects, ls(all.names = TRUE))
+  }
+
+  save(list = objects, file = paste0(app_dir, "/shiny.Rda"))
   on.exit(unlink(app_dir, recursive = TRUE))
   try(shiny::runApp(appDir = app_dir))
 }
