@@ -144,7 +144,7 @@ shiny_rdf_spec_curve <- function(
   )
 
   if (!is.null(design) & is.null(rel_dir)) {
-    objects <- unique(objects, ls(all.names = TRUE))
+    objects <- unique(c(objects, ls(envir = .GlobalEnv)))
   }
 
   save(list = objects, file = paste0(app_dir, "/shiny.Rda"))
