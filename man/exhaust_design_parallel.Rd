@@ -7,8 +7,8 @@
 exhaust_design_parallel(
   d,
   start_input,
-  pc,
-  libs,
+  cl = NULL,
+  libs = NULL,
   export = ls(globalenv()),
   weight = FALSE,
   est_by_cchoice = 10,
@@ -20,7 +20,9 @@ exhaust_design_parallel(
 
 \item{start_input}{The input data for the first step.}
 
-\item{pc}{The number of cores you want \code{doParallel::makeCluster()} to use.}
+\item{cl}{Either the return value of \code{parallel::make_cluster()} or
+the number of cores that you want the function to start. If \code{cl} is
+\code{NULL} then no clusters are used.}
 
 \item{libs}{The libraries that the design steps rely on.}
 

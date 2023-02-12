@@ -7,12 +7,14 @@
 shiny_rdf_spec_curve(
   ests,
   spec_curve_parms,
+  spec_curve_selected = NULL,
   design = NULL,
   rel_dir = NULL,
   start_input = NULL,
   libs = NULL,
   add_files = NULL,
   regression_cutoff = 5,
+  model_render_func = NULL,
   default_choices = NULL,
   title = "A Shiny Specification Curve",
   abstract = NULL,
@@ -20,18 +22,30 @@ shiny_rdf_spec_curve(
 )
 }
 \arguments{
-\item{ests}{The data frame provided by \code{\link[rdfanalysis:exhaust_design]{exhaust_design()}}.}
+\item{ests}{The data frame provided by \code{\link{exhaust_design}}.}
 
-\item{spec_curve_parms}{A list containing additional paramters that will be
-passed on to \code{\link[rdfanalysis:plot_rdf_spec_curve]{plot_rdf_spec_curve()}}.}
+\item{spec_curve_parms}{A list containing additional parameters that will be
+passed on to \code{\link{plot_rdf_spec_curve}}.
+You can also provide a named list of lists with each list containing
+parameters for a specification curve. In this case, the shiny app will
+include an additional Select Input element where the users can select
+which specification curve to display.}
+
+\item{spec_curve_selected}{If you provide a named list of specification
+curves in \code{spec_curve_parms}, you can provide here the name of
+the default curve to plot first.}
 
 \item{design}{if not \code{NULL} it takes the design that was used to generate
-the estimates. In this case, you also need to specify the \code{rel_dir}
-and \code{start_input} parameter below. The shiny app will then display
-full regresssion results when you select choices that generate less than
+the estimates. In this case, you either need to have all required design
+elements in your current environment or you need to specify the
+\code{rel_dir} parameter pointing to the code files below. In addition, you
+need to set \code{start_input}. The shiny app will then display
+regression results when you select choices that generate less than
 \code{regression_cutoff} estimates.}
 
-\item{rel_dir}{The path to the code directory. See above.}
+\item{rel_dir}{The path to the code directory where the design functions are
+located. Only needed when the functions are loaded to your current
+environment See above.}
 
 \item{start_input}{The parameters that you pass to the first design step.
 See above.}
@@ -44,13 +58,25 @@ served including \code{library()} calls in your design code files or to use
 the \code{::} operator in your code.}
 
 \item{add_files}{A character vector containing relative paths to files and
-dreictories that you want to bundle with the shiny app. The files will be
+directories that you want to bundle with the shiny app. The files will be
 copied to the temporary directory that hosts the shiny app and directories
 will be copied recursively.}
 
 \item{regression_cutoff}{If your choices generate less or equal estimates,
-the display will switch to normal regression output (needs parameters above
-to be not \code{NULL}).}
+the display will switch to normal regression table output (needs parameters
+above to be not \code{NULL}).}
+
+\item{model_render_func}{A function to create the regression table,
+taking a list of the models as parameter. The function is evaluated within
+the shiny app environment. By default (\code{NULL}),
+the regressions are rendered by calling the internal function
+\code{renderModels()} that then calls
+\code{\link[modelsummary]{modelsummary}}
+to create the HTML output.
+If you need to prep the model data for preparation, you can provide
+a function here that calls \code{renderModels()} after prepping the data.
+Alternatively, you can provide a function
+that generates the HTML output directly.}
 
 \item{default_choices}{A list containing choices that you want
 the app to start with. If \code{NULL}, it will start with all choices

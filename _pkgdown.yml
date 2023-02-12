@@ -38,6 +38,7 @@ reference:
   - test_design
   - simulate_design_power
   - exhaust_design
+  - exhaust_design_parallel
   - calculate_weighted_estimate
   - plot_rdf_estimate_density
   - plot_rdf_spec_curve

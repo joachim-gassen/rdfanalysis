@@ -73,12 +73,14 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">shiny_rdf_spec_curve</span><span class="op">(</span></span>
 <span>  <span class="va">ests</span>,</span>
 <span>  <span class="va">spec_curve_parms</span>,</span>
+<span>  spec_curve_selected <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  design <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rel_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  start_input <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  libs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  add_files <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  regression_cutoff <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  model_render_func <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  default_choices <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"A Shiny Specification Curve"</span>,</span>
 <span>  abstract <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -89,24 +91,38 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>ests</dt>
-<dd><p>The data frame provided by <code><a href="exhaust_design.html">exhaust_design()</a></code>.</p></dd>
+<dd><p>The data frame provided by <code><a href="exhaust_design.html">exhaust_design</a></code>.</p></dd>
 
 
 <dt>spec_curve_parms</dt>
-<dd><p>A list containing additional paramters that will be
-passed on to <code><a href="plot_rdf_spec_curve.html">plot_rdf_spec_curve()</a></code>.</p></dd>
+<dd><p>A list containing additional parameters that will be
+passed on to <code><a href="plot_rdf_spec_curve.html">plot_rdf_spec_curve</a></code>.
+You can also provide a named list of lists with each list containing
+parameters for a specification curve. In this case, the shiny app will
+include an additional Select Input element where the users can select
+which specification curve to display.</p></dd>
+
+
+<dt>spec_curve_selected</dt>
+<dd><p>If you provide a named list of specification
+curves in <code>spec_curve_parms</code>, you can provide here the name of
+the default curve to plot first.</p></dd>
 
 
 <dt>design</dt>
 <dd><p>if not <code>NULL</code> it takes the design that was used to generate
-the estimates. In this case, you also need to specify the <code>rel_dir</code>
-and <code>start_input</code> parameter below. The shiny app will then display
-full regresssion results when you select choices that generate less than
+the estimates. In this case, you either need to have all required design
+elements in your current environment or you need to specify the
+<code>rel_dir</code> parameter pointing to the code files below. In addition, you
+need to set <code>start_input</code>. The shiny app will then display
+regression results when you select choices that generate less than
 <code>regression_cutoff</code> estimates.</p></dd>
 
 
 <dt>rel_dir</dt>
-<dd><p>The path to the code directory. See above.</p></dd>
+<dd><p>The path to the code directory where the design functions are
+located. Only needed when the functions are loaded to your current
+environment See above.</p></dd>
 
 
 <dt>start_input</dt>
@@ -125,15 +141,29 @@ the <code>::</code> operator in your code.</p></dd>
 
 <dt>add_files</dt>
 <dd><p>A character vector containing relative paths to files and
-dreictories that you want to bundle with the shiny app. The files will be
+directories that you want to bundle with the shiny app. The files will be
 copied to the temporary directory that hosts the shiny app and directories
 will be copied recursively.</p></dd>
 
 
 <dt>regression_cutoff</dt>
 <dd><p>If your choices generate less or equal estimates,
-the display will switch to normal regression output (needs parameters above
-to be not <code>NULL</code>).</p></dd>
+the display will switch to normal regression table output (needs parameters
+above to be not <code>NULL</code>).</p></dd>
+
+
+<dt>model_render_func</dt>
+<dd><p>A function to create the regression table,
+taking a list of the models as parameter. The function is evaluated within
+the shiny app environment. By default (<code>NULL</code>),
+the regressions are rendered by calling the internal function
+<code>renderModels()</code> that then calls
+<code><a href="https://vincentarelbundock.github.io/modelsummary/reference/modelsummary.html" class="external-link">modelsummary</a></code>
+to create the HTML output.
+If you need to prep the model data for preparation, you can provide
+a function here that calls <code>renderModels()</code> after prepping the data.
+Alternatively, you can provide a function
+that generates the HTML output directly.</p></dd>
 
 
 <dt>default_choices</dt>

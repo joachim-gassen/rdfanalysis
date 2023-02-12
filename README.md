@@ -15,9 +15,9 @@ estimates.
 ### New: Plot a specification curve
 
 The below displays a specification curve ([Simonsohn, Simmons and
-Nelson](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2694998))
-based on an systematic exploration of the Preston curve. It summarizes
-11,264 regressions in one plot. See this [blog
+Nelson](https://www.nature.com/articles/s41562-020-0912-z)) based on an
+systematic exploration of the Preston curve. It summarizes 11,264
+regressions in one plot. See this [blog
 article](https://joachim-gassen.github.io/2019/04/11264-regressions-in-one-tidy-plot/)
 and this
 [vignette](https://joachim-gassen.github.io/rdfanalysis/articles/analyzing_rdf.html)

@@ -3,11 +3,11 @@
 #' This sources all code files constructed by \code{define_design()}
 #'
 #' @param d A character vector of the research design steps function names
-#' @param rel_dir The relative path to your code directory, deafults to "code"
+#' @param rel_dir The relative path to your code directory, defaults to "code"
 #' @param one_file If \code{TRUE}, then all step code is expected to be in a file
 #'   with the name \code{one_file_name}. If {FALSE} (the default), each step code
 #'   is expected to be in a separate file with the step name as file name.
-#' @param one_file_name The name of the code file conating the code if
+#' @param one_file_name The name of the code file containing the code if
 #'   all step code is in one file. Defaults to "design_steps.R".
 #' @return The result of the \code{source()} command.
 #' @details See the vignette of the package for further details.

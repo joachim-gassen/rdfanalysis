@@ -7,7 +7,10 @@ load("shiny.Rda")
 data <- ests
 mods <<- NULL
 
-if (!is.null(design)) source_design(design)
+if (!is.null(design)) {
+  if (!all(unlist(lapply(design, exists)))) source_design(design)
+}
+
 if (!is.null(libs)) invisible(lapply(libs, library, character.only = TRUE))
 if (is.null(choice_labels)) {
     choice_labels <- sprintf("Choose %s", names(data)[attr(data, "choices")])
@@ -39,9 +42,10 @@ ui <- fluidPage(
           selectInput(
             "selected_spec_curve",
             "Select specification to plot",
-            names(spec_curve_parms)
+            names(spec_curve_parms),
+            spec_curve_selected
           )
-        ), p(HTML(abstract))
+        ), mainPanel(p(HTML(abstract)))
       )
     } else p(HTML(abstract))
     ,
@@ -64,7 +68,7 @@ ui <- fluidPage(
         ),
 
         mainPanel(
-            tags$style(HTML("#regression table{margin: auto; border-collapse:separate; border-spacing:10px 5px}")),
+           # tags$style(HTML("#regression table{margin: auto; border-collapse:separate; border-spacing:10px 5px}")),
             uiOutput("ui_display")
         )
     ),
@@ -80,7 +84,8 @@ ui <- fluidPage(
                 "<a href=https://www.wiwi.hu-berlin.de/de/professuren/bwl/rwuwp/staff/gassen>",
                 "Humboldt-Universität zu Berlin</a>",
                 "and <a href=https://www.accounting-for-transparency.de>",
-                "TRR 266 'Accounting for Transparency'</a>, 2023."
+                "TRR 266 'Accounting for Transparency'</a>, 2023.",
+                "<p>&nbsp;</p>"
             )
         )
     )
@@ -88,6 +93,33 @@ ui <- fluidPage(
 
 server <- function(input, output) {
     mods <- reactiveVal(NULL)
+
+    renderModels <- function(m) {
+      tab <- strsplit(
+        modelsummary(
+          m, estimate = "{estimate}{stars}", output = "html"
+        ), "\n"
+      )[[1]]
+
+      row_intro <- '<tr><td style="text-align:left">'
+      row_outro <- '</td></tr>'
+      cell_break <- '</td><td style="text-align:center">>'
+      start_tab <- tab[1:(length(tab) - 2)]
+      for (choice in attr(data, "choices")) {
+        name_choice <- names(data)[choice]
+        choices_made <- plot_df()[, name_choice]
+        new_line <- paste0(
+          row_intro,
+          name_choice,
+          cell_break,
+          paste0(choices_made, collapse = cell_break),
+          row_outro
+        )
+        start_tab <- c(start_tab, new_line)
+      }
+      tab <- c(start_tab, tab[(length(tab) - 1):length(tab)])
+      htmltools::HTML(tab)
+    }
 
     plot_df <- reactive({
         filter_choice <- function(data, choice, choices) {
@@ -116,30 +148,11 @@ server <- function(input, output) {
 
     output$regression <- renderPrint({
         if (!is.null(mods())) {
-            tab <- strsplit(
-              modelsummary(
-                mods(), estimate = "{estimate}{stars}", ouput = "html"
-              ), "\n"
-            )[[1]]
-
-            row_intro <- '<tr><td style="text-align:left">'
-            row_outro <- '</td></tr>'
-            cell_break <- '</td><td>'
-            start_tab <- tab[1:(length(tab) - 2)]
-            for (choice in attr(data, "choices")) {
-                name_choice <- names(data)[choice]
-                choices_made <- plot_df()[, name_choice]
-                new_line <- paste0(
-                    row_intro,
-                    name_choice,
-                    cell_break,
-                    paste0(choices_made, collapse = cell_break),
-                    row_outro
-                )
-                start_tab <- c(start_tab, new_line)
-            }
-            tab <- c(start_tab, tab[(length(tab) - 1):length(tab)])
-            htmltools::HTML(tab)
+          if (is.function(model_render_func)) {
+            environment(model_render_func) <- environment()
+            model_render_func(mods())
+          }
+          else renderModels(mods())
         }
     })
 

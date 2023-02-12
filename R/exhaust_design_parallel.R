@@ -44,7 +44,7 @@ exhaust_design_parallel <- function(
       if (verbose) message(
         sprintf("%s: Setting up %d clusters...", Sys.time(), cl), appendLF = FALSE
       )
-      cl <- parallel::makeCluster(pc)
+      cl <- parallel::makeCluster(cl)
       if (verbose) message(" done!")
       started_clusters <- TRUE
     } else started_clusters <- FALSE

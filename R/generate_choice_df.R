@@ -15,7 +15,7 @@
 generate_choice_df <- function(
     d, weighted = FALSE, est_by_cchoice = 10, verbose = FALSE
 ) {
-  nobs <- NULL # to make devtools:check() happy
+  nobs <- id <- weight <- NULL # to make devtools:check() happy
 
   choice_list <- vector("list", length(d))
   if(weighted) weight_list <- vector("list", length(d))
@@ -73,17 +73,20 @@ generate_choice_df <- function(
     )
 
     pos_weights <- choice_df %>%
-      dplyr::mutate(id = 1:n()) %>%
+      dplyr::mutate(
+        dplyr::across(tidyselect::where(is.numeric), as.character)
+      ) %>%
+      dplyr::mutate(id = 1:(dplyr::n())) %>%
       tidyr::pivot_longer(
         cols = -id, names_to = "choice", values_to = "option",
       ) %>%
       dplyr::left_join(wlup, by = c("choice", "option")) %>%
       dplyr::group_by(id) %>%
       dplyr::summarise(weight = prod(weight)) %>%
-      filter(weight > 0)
+      dplyr::filter(weight > 0)
 
     choice_df <- choice_df %>%
-      dplyr::mutate(id = 1:n()) %>%
+      dplyr::mutate(id = 1:(dplyr::n())) %>%
       dplyr::inner_join(pos_weights, by = "id") %>%
       dplyr::select(-id)
 
