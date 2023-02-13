@@ -26,11 +26,9 @@
 #' @param start_input The parameters that you pass to the first design step.
 #'   See above.
 #' @param libs A vector containing additional packages that need to be attached
-#'   to run the design. NOTE: While this works fine when you host the shiny app
-#'   yourself, shinyapps.io fails to include the listed packages when deploying
-#'   the app. So, if you plan to host your app on shinyapps.io, you are better
-#'   served including \code{library()} calls in your design code files or to use
-#'   the \code{::} operator in your code.
+#'   to run the design. NOTE: This will modify the shiny app code to include
+#'   literal \code{library()} calls so that shinyapps.io includes the libraries
+#'   on deployment.
 #' @param add_files A character vector containing relative paths to files and
 #'   directories that you want to bundle with the shiny app. The files will be
 #'   copied to the temporary directory that hosts the shiny app and directories
@@ -118,10 +116,7 @@ shiny_rdf_spec_curve <- function(
     file.copy(pkg_app_dir, tdir, recursive=TRUE)
   } else {
     libs_code <- sprintf("library(%s)", libs)
-    app_code <- scan(
-      file.path(pkg_app_dir, "app.R"), what = "character", sep = "\n",
-      quiet = TRUE
-    )
+    app_code <- readLines(file.path(pkg_app_dir, "app.R"), encoding = "UTF-8")
     dir.create(app_dir)
     writeLines(c(libs_code, app_code), file.path(app_dir, "app.R"))
   }
