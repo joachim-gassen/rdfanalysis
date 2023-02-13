@@ -11,7 +11,6 @@ if (!is.null(design)) {
   if (!all(unlist(lapply(design, exists)))) source_design(design)
 }
 
-if (!is.null(libs)) invisible(lapply(libs, library, character.only = TRUE))
 if (is.null(choice_labels)) {
     choice_labels <- sprintf("Choose %s", names(data)[attr(data, "choices")])
 }

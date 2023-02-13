@@ -112,8 +112,21 @@ shiny_rdf_spec_curve <- function(
   }
 
   pkg_app_dir <- system.file("application", package = "rdfanalysis")
-  file.copy(pkg_app_dir, tempdir(), recursive=TRUE)
-  app_dir <- file.path(tempdir(), "application")
+  tdir <- tempdir()
+  app_dir <- file.path(tdir, "application")
+  if (is.null(libs)) {
+    file.copy(pkg_app_dir, tdir, recursive=TRUE)
+  } else {
+    libs_code <- sprintf("library(%s)", libs)
+    app_code <- scan(
+      file.path(pkg_app_dir, "app.R"), what = "character", sep = "\n",
+      quiet = TRUE
+    )
+    dir.create(app_dir)
+    writeLines(c(libs_code, app_code), file.path(app_dir, "app.R"))
+  }
+
+
   if (!is.null(rel_dir)) {
     code_dir <- file.path(app_dir, "code")
     dir.create(code_dir)
