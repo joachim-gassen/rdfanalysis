@@ -51,11 +51,9 @@ environment See above.}
 See above.}
 
 \item{libs}{A vector containing additional packages that need to be attached
-to run the design. NOTE: While this works fine when you host the shiny app
-yourself, shinyapps.io fails to include the listed packages when deploying
-the app. So, if you plan to host your app on shinyapps.io, you are better
-served including \code{library()} calls in your design code files or to use
-the \code{::} operator in your code.}
+to run the design. NOTE: This will modify the shiny app code to include
+literal \code{library()} calls so that shinyapps.io includes the libraries
+on deployment.}
 
 \item{add_files}{A character vector containing relative paths to files and
 directories that you want to bundle with the shiny app. The files will be
