@@ -32,6 +32,14 @@ est_models <- function(d, choice_df, start_input) {
     mods
 }
 
+get_sc_labels <- function(scp) {
+  rv <- names(scp)
+  if (all(unlist(lapply(scp, function (x) {"label" %in% names(x)})))) {
+    names(rv) <- unlist(lapply(scp, function(x) x[["label"]]))
+  }
+  rv
+}
+
 ui <- fluidPage(
     titlePanel(title),
     hr(),
@@ -41,7 +49,7 @@ ui <- fluidPage(
           selectInput(
             "selected_spec_curve",
             "Select specification to plot",
-            names(spec_curve_parms),
+            get_sc_labels(spec_curve_parms),
             spec_curve_selected
           )
         ), mainPanel(p(HTML(abstract)))
@@ -158,6 +166,7 @@ server <- function(input, output) {
     output$spec_curve <- renderPlot({
       if (multiple_spec_curves) {
         scp <- spec_curve_parms[[input[["selected_spec_curve"]]]]
+        scp[["label"]] <- NULL
       } else scp <- spec_curve_parms
         if(nrow(plot_df()) > 0) {
             do.call(

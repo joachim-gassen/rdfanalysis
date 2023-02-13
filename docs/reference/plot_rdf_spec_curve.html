@@ -80,16 +80,20 @@ freedom by plotting its specification curve as introduced by
 <span>  ub <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  sample_frac <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  est_label <span class="op">=</span> <span class="va">est</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  est_color <span class="op">=</span> <span class="st">"black"</span>,</span>
-<span>  est_color_signeg <span class="op">=</span> <span class="st">"yellow"</span>,</span>
-<span>  est_color_sigpos <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span>  est_color_signeg <span class="op">=</span> <span class="st">"#E41A1C"</span>,</span>
+<span>  est_color_sigpos <span class="op">=</span> <span class="st">"#377EB8"</span>,</span>
+<span>  line_color <span class="op">=</span> <span class="st">"black"</span>,</span>
 <span>  ribbon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ests</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">30</span>,</span>
-<span>  ribbon_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ests</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">30</span>, <span class="st">"lightblue"</span>, <span class="st">"black"</span><span class="op">)</span>,</span>
+<span>  ribbon_color <span class="op">=</span> <span class="st">"gray90"</span>,</span>
 <span>  choice_ind_point <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  pt_size <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  lower_to_upper <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  highlight <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pt_size_highlight <span class="op">=</span> <span class="fl">3</span></span>
+<span>  pt_size_highlight <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  addon_sc <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  addon_dc <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -125,6 +129,10 @@ time and makes the plot less clutered.</p></dd>
 <code>est</code>.</p></dd>
 
 
+<dt>title</dt>
+<dd><p>A title for the plot</p></dd>
+
+
 <dt>est_color</dt>
 <dd><p>Color of estimates points for specification curve</p></dd>
 
@@ -137,17 +145,21 @@ time and makes the plot less clutered.</p></dd>
 <dd><p>Color of significantly positive estimates.</p></dd>
 
 
+<dt>line_color</dt>
+<dd><p>Color of confidence interval lines (only used when
+<code>lb</code> and <code>ub</code> are present).</p></dd>
+
+
 <dt>ribbon</dt>
 <dd><p>If TRUE a ribbon displaying the confidence interval is being
 plotted. If FALSE, lines are printed instead (looks nicer if you have only
-few degrees of freedom to plot). <code>ribbon_color</code> applies
-in either case (only used when <code>lb</code> and
+few degrees of freedom to plot) (only used when <code>lb</code> and
 <code>ub</code> are present).</p></dd>
 
 
 <dt>ribbon_color</dt>
-<dd><p>Color of the confidence interval (only used when <code>lb</code> and
-<code>ub</code> are present).</p></dd>
+<dd><p>Color of the confidence interval (only used when
+<code>lb</code> and <code>ub</code> are present).</p></dd>
 
 
 <dt>choice_ind_point</dt>
@@ -166,8 +178,8 @@ the specification curve itself.</p></dd>
 
 
 <dt>highlight</dt>
-<dd><p><code>NULL</code> or, if you want to highlight certain protocols by
-their point size, a data frame containing the choices that identify the
+<dd><p><code>NULL</code> or, if you want to highlight certain protocols
+by their point size, a data frame containing the choices that identify the
 protocols.</p></dd>
 
 
@@ -175,12 +187,20 @@ protocols.</p></dd>
 <dd><p>Point plot size for highlighted estimates and
 choice indicators.</p></dd>
 
+
+<dt>addon_sc</dt>
+<dd><p>ggplot objects to add to the the specification curve panel.</p></dd>
+
+
+<dt>addon_dc</dt>
+<dd><p>ggplot objects to add to the the design choice panel.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A ggplot object.</p>
+<p>Nothing. Instead the assembled grob is directly drawn.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

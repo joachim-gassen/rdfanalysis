@@ -11,16 +11,20 @@ plot_rdf_spec_curve(
   ub = "",
   sample_frac = 1,
   est_label = est,
+  title = "",
   est_color = "black",
-  est_color_signeg = "yellow",
-  est_color_sigpos = "blue",
+  est_color_signeg = "#E41A1C",
+  est_color_sigpos = "#377EB8",
+  line_color = "black",
   ribbon = nrow(ests) > 30,
-  ribbon_color = ifelse(nrow(ests) > 30, "lightblue", "black"),
+  ribbon_color = "gray90",
   choice_ind_point = TRUE,
   pt_size = 0.1,
   lower_to_upper = 3,
   highlight = NULL,
-  pt_size_highlight = 3
+  pt_size_highlight = 3,
+  addon_sc = NULL,
+  addon_dc = NULL
 )
 }
 \arguments{
@@ -42,20 +46,24 @@ time and makes the plot less clutered.}
 \item{est_label}{Y-Axis label for the specification curve. Defaults to
 \code{est}.}
 
+\item{title}{A title for the plot}
+
 \item{est_color}{Color of estimates points for specification curve}
 
 \item{est_color_signeg}{Color of significantly negative estimates.}
 
 \item{est_color_sigpos}{Color of significantly positive estimates.}
 
+\item{line_color}{Color of confidence interval lines (only used when
+\code{lb} and \code{ub} are present).}
+
 \item{ribbon}{If TRUE a ribbon displaying the confidence interval is being
 plotted. If FALSE, lines are printed instead (looks nicer if you have only
-few degrees of freedom to plot). \code{ribbon_color} applies
-in either case (only used when \code{lb} and
+few degrees of freedom to plot) (only used when \code{lb} and
 \code{ub} are present).}
 
-\item{ribbon_color}{Color of the confidence interval (only used when \code{lb} and
-\code{ub} are present).}
+\item{ribbon_color}{Color of the confidence interval (only used when
+\code{lb} and \code{ub} are present).}
 
 \item{choice_ind_point}{Whether you want your choice indicators to be
 points (TRUE) or vertical lines (FALSE).}
@@ -66,15 +74,19 @@ not highlighted (see below).}
 \item{lower_to_upper}{The size of the choice part of the plot, relative to
 the specification curve itself.}
 
-\item{highlight}{\code{NULL} or, if you want to highlight certain protocols by
-their point size, a data frame containing the choices that identify the
+\item{highlight}{\code{NULL} or, if you want to highlight certain protocols
+by their point size, a data frame containing the choices that identify the
 protocols.}
 
 \item{pt_size_highlight}{Point plot size for highlighted estimates and
 choice indicators.}
+
+\item{addon_sc}{ggplot objects to add to the the specification curve panel.}
+
+\item{addon_dc}{ggplot objects to add to the the design choice panel.}
 }
 \value{
-A ggplot object.
+Nothing. Instead the assembled grob is directly drawn.
 }
 \description{
 Visualizes a result estimate across your researcher degrees of
