@@ -104,8 +104,6 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
-  mods <- reactiveVal(NULL)
-
   observeEvent(input$restore, {
     reset()
   })
@@ -148,11 +146,14 @@ server <- function(input, output) {
                                  input[[names(data)[i]]])
       }
     }
-    if (nrow(plot_df) <= regression_cutoff && nrow(plot_df) > 0 &&
-        !is.null(design)) {
-      mods(est_models(design, plot_df, start_input))
-    } else mods(NULL)
     plot_df
+  })
+
+  mods <- reactive({
+    if (nrow(plot_df()) <= regression_cutoff && nrow(plot_df()) > 0 &&
+        !is.null(design)) {
+      return(est_models(design, plot_df(), start_input))
+    } else return(NULL)
   })
 
   output$ui_display <- renderUI({
