@@ -82,6 +82,7 @@
 <span>  regression_cutoff <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  model_render_func <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  default_choices <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  restore_button <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"A Shiny Specification Curve"</span>,</span>
 <span>  abstract <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  choice_labels <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -168,6 +169,11 @@ that generates the HTML output directly.</p></dd>
 <dd><p>A list containing choices that you want
 the app to start with. If <code>NULL</code>, it will start with all choices
 included.</p></dd>
+
+
+<dt>restore_button</dt>
+<dd><p>Set to <code>TRUE</code> when you want to have a restore
+button in the app (defaults to <code>FALSE</code>).</p></dd>
 
 
 <dt>title</dt>

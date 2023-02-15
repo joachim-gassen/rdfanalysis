@@ -16,6 +16,7 @@ shiny_rdf_spec_curve(
   regression_cutoff = 5,
   model_render_func = NULL,
   default_choices = NULL,
+  restore_button = FALSE,
   title = "A Shiny Specification Curve",
   abstract = NULL,
   choice_labels = NULL
@@ -79,6 +80,9 @@ that generates the HTML output directly.}
 \item{default_choices}{A list containing choices that you want
 the app to start with. If \code{NULL}, it will start with all choices
 included.}
+
+\item{restore_button}{Set to \code{TRUE} when you want to have a restore
+button in the app (defaults to \code{FALSE}).}
 
 \item{title}{The title of the shiny app.}
 

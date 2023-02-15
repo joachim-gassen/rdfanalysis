@@ -50,6 +50,8 @@
 #' @param default_choices A list containing choices that you want
 #'   the app to start with. If \code{NULL}, it will start with all choices
 #'   included.
+#' @param restore_button Set to \code{TRUE} when you want to have a restore
+#'   button in the app (defaults to \code{FALSE}).
 #' @param title The title of the shiny app.
 #' @param abstract Text that will be displayed by the app. Wrapped
 #'   into \code{HTML()} so that you can use HTML code.
@@ -69,7 +71,7 @@ shiny_rdf_spec_curve <- function(
     start_input = NULL, libs = NULL, add_files = NULL,
     regression_cutoff = 5,
     model_render_func = NULL,
-    default_choices = NULL,
+    default_choices = NULL, restore_button = FALSE,
     title = "A Shiny Specification Curve", abstract = NULL,
     choice_labels = NULL
 ) {
@@ -148,7 +150,7 @@ shiny_rdf_spec_curve <- function(
     "ests", "spec_curve_parms", "spec_curve_selected",
     "design", "rel_dir", "libs", "start_input",
     "regression_cutoff", "model_render_func", "default_choices",
-    "title", "abstract", "choice_labels"
+    "title", "abstract", "choice_labels", "restore_button"
   )
 
   if (!is.null(design) & is.null(rel_dir)) {
