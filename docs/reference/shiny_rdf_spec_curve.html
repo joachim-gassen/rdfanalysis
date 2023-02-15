@@ -85,7 +85,9 @@
 <span>  restore_button <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"A Shiny Specification Curve"</span>,</span>
 <span>  abstract <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  choice_labels <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  choice_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  with_spinner <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  spinner_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -190,6 +192,17 @@ into <code>HTML()</code> so that you can use HTML code.</p></dd>
 to label the select list input controls in the shiny app. If <code>NULL</code>,
 the select list input controls are labeled based on the choice column names
 from the <code>ests</code> data frame.</p></dd>
+
+
+<dt>with_spinner</dt>
+<dd><p>Do you want to include a spinner (useful when displays
+take some time to render). Defaults to <code>FALSE</code>.
+See <code><a href="https://rdrr.io/pkg/shinycssloaders/man/withSpinner.html" class="external-link">withSpinner</a></code> for detail.</p></dd>
+
+
+<dt>spinner_options</dt>
+<dd><p>A list containing parameters that you want to
+to pass to <code><a href="https://rdrr.io/pkg/shinycssloaders/man/withSpinner.html" class="external-link">withSpinner</a></code>.</p></dd>
 
 </dl></div>
 

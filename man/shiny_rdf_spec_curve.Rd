@@ -19,7 +19,9 @@ shiny_rdf_spec_curve(
   restore_button = FALSE,
   title = "A Shiny Specification Curve",
   abstract = NULL,
-  choice_labels = NULL
+  choice_labels = NULL,
+  with_spinner = FALSE,
+  spinner_options = list()
 )
 }
 \arguments{
@@ -93,6 +95,13 @@ into \code{HTML()} so that you can use HTML code.}
 to label the select list input controls in the shiny app. If \code{NULL},
 the select list input controls are labeled based on the choice column names
 from the \code{ests} data frame.}
+
+\item{with_spinner}{Do you want to include a spinner (useful when displays
+take some time to render). Defaults to \code{FALSE}.
+See \code{\link[shinycssloaders]{withSpinner}} for detail.}
+
+\item{spinner_options}{A list containing parameters that you want to
+to pass to \code{\link[shinycssloaders]{withSpinner}}.}
 }
 \description{
 A shiny based web app that allows you to explore your

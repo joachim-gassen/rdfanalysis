@@ -79,10 +79,12 @@ ui <- fluidPage(
       }
     ),
 
-    mainPanel(
-      # tags$style(HTML("#regression table{margin: auto; border-collapse:separate; border-spacing:10px 5px}")),
-      uiOutput("ui_display")
-    )
+    mainPanel({
+      uid <- uiOutput("ui_display")
+      if (with_spinner)
+        do.call(shinycssloaders::withSpinner, c(list(uid), spinner_options))
+      else uid
+    })
   ),
   hr(),
   fluidRow(

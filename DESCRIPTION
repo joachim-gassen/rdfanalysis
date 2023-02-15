@@ -17,7 +17,8 @@ BugReports: https://github.com/joachim-gassen/rdfanalysis/issues
 Encoding: UTF-8
 LazyData: true
 Imports: DiagrammeR, dplyr, rmarkdown, testthat, pbapply, foreach,
-    ggplot2, ggridges, grid, rlang, tidyr, tidyselect, shiny, shinyjs 
+    ggplot2, ggridges, grid, rlang, tidyr, tidyselect, 
+    shiny, shinyjs, shinycssloaders 
 Suggests: knitr, ExPanDaR, readr, lfe
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

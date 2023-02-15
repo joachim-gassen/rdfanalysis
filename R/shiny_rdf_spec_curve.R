@@ -59,6 +59,11 @@
 #'   to label the select list input controls in the shiny app. If \code{NULL},
 #'   the select list input controls are labeled based on the choice column names
 #'   from the \code{ests} data frame.
+#' @param with_spinner Do you want to include a spinner (useful when displays
+#'   take some time to render). Defaults to \code{FALSE}.
+#'   See \code{\link[shinycssloaders]{withSpinner}} for detail.
+#' @param spinner_options A list containing parameters that you want to
+#'   to pass to \code{\link[shinycssloaders]{withSpinner}}.
 #'
 #' @examples
 #' \dontrun{
@@ -73,7 +78,8 @@ shiny_rdf_spec_curve <- function(
     model_render_func = NULL,
     default_choices = NULL, restore_button = FALSE,
     title = "A Shiny Specification Curve", abstract = NULL,
-    choice_labels = NULL
+    choice_labels = NULL, with_spinner = FALSE,
+    spinner_options = list()
 ) {
   if (!is.data.frame(ests)) stop("ests is not a dataframe")
   if (!is.list(spec_curve_parms) || length(spec_curve_parms) < 1)
@@ -150,7 +156,8 @@ shiny_rdf_spec_curve <- function(
     "ests", "spec_curve_parms", "spec_curve_selected",
     "design", "rel_dir", "libs", "start_input",
     "regression_cutoff", "model_render_func", "default_choices",
-    "title", "abstract", "choice_labels", "restore_button"
+    "title", "abstract", "choice_labels", "restore_button",
+    "with_spinner", "spinner_options"
   )
 
   if (!is.null(design) & is.null(rel_dir)) {
