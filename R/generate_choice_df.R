@@ -1,8 +1,7 @@
 #' Creates the choice dataframe for the exhaust_design functions
 #'
 #' @param d A character vector of the research design steps function names
-#' @param weighted Whether the options should be lim
-#' @param weight Whether each step's choices should be weighted by their user
+#' @param weighted Whether each step's choices should be weighted by their user
 #'   assigned weights as included in the \code{choice_type}. Protocols with zero
 #'   weight are excluded from the analysis. Defaults to \code{FALSE}.
 #' @param est_by_cchoice Each continuous choice will be evaluated by
@@ -10,7 +9,13 @@
 #'   ending at \code{valid_max}.
 #' @param verbose Set to \code{TRUE} for some additional diagnostic output.
 #'   Useful for large designs that take a while to process.
-#' @noRd
+#' @return A dataframe containing all feasible research design choices
+#' @details See the vignette of the package for further details.
+#' @examples
+#' \dontrun{
+#'   print("Sorry. No examples yet.")
+#' }
+#' @export
 
 generate_choice_df <- function(
     d, weighted = FALSE, est_by_cchoice = 10, verbose = FALSE

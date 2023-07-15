@@ -29,13 +29,12 @@
 #'   print("Sorry. No examples yet.")
 #' }
 #' @export
-
 simulate_design_power <- function(d, protocol,
                               input_sim_func, range_n, effect_size,
                               runs = 100, input_sim_params = NULL) {
   r <- i <- NULL # for devtools::check()
-
-  df <- foreach::foreach (i = range_n, .combine = rbind) %do% {
+  `%do%` <- foreach::`%do%`
+  df <- foreach::foreach (i = range_n, .combine = rbind)  %do% {
     foreach::foreach (r = 1:runs, .combine = rbind) %do% {
       l <- 1
       if (!is.null(input_sim_params))

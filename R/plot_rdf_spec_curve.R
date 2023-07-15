@@ -41,6 +41,9 @@
 #' choice indicators.
 #' @param addon_sc ggplot objects to add to the the specification curve panel.
 #' @param addon_dc ggplot objects to add to the the design choice panel.
+#' @param file file name to save the plot to. Uses ggsave and defaults to NULL,
+#'  meaning no save
+#' @param ... Additional parameter that are forwarded to ggsave
 #' @return Nothing. Instead the assembled grob is directly drawn.
 #' @details
 #' Significance of estimates is only dislayed when \code{lb} and
@@ -63,7 +66,8 @@ plot_rdf_spec_curve <- function(
     choice_ind_point = TRUE, pt_size = 0.1,
     lower_to_upper = 3, highlight = NULL,
     pt_size_highlight = 3,
-    addon_sc = NULL, addon_dc = NULL
+    addon_sc = NULL, addon_dc = NULL,
+    file = NULL, ...
 ) {
   choice <- item <- n <- option <- sig <- NULL
   # To make devtools::check() happy
@@ -79,8 +83,12 @@ plot_rdf_spec_curve <- function(
   }
   if (xor(lb == "", ub == "")) stop("lb and ub need to be provided both or not at all")
 
-  if(!is.null(addon_sc) & !is.object(addon_sc)) stop("addon_sc needs to be an object")
-  if(!is.null(addon_dc) & !is.object(addon_dc)) stop("addon_dc needs to be an object")
+  if(!is.null(addon_sc) & !is.object(addon_sc) & !is.list(addon_sc)) stop(
+    "addon_sc needs to be an object or a list of objects"
+  )
+  if(!is.null(addon_dc) & !is.object(addon_dc) & !is.list(addon_dc)) stop(
+    "addon_dc needs to be an object or a list of objects"
+  )
 
   for(c in choices) {
     if (c == choices[1]) {
@@ -216,5 +224,6 @@ plot_rdf_spec_curve <- function(
   panels <- g$layout$t[grep("panel", g$layout$name)]
   g$heights[panels[2]] <- ggplot2::unit(lower_to_upper,"null")
   grid::grid.newpage()
+  if (!is.null(file)) ggplot2::ggsave(file, plot = g, ...)
   grid::grid.draw(g)
 }

@@ -24,7 +24,9 @@ plot_rdf_spec_curve(
   highlight = NULL,
   pt_size_highlight = 3,
   addon_sc = NULL,
-  addon_dc = NULL
+  addon_dc = NULL,
+  file = NULL,
+  ...
 )
 }
 \arguments{
@@ -84,6 +86,11 @@ choice indicators.}
 \item{addon_sc}{ggplot objects to add to the the specification curve panel.}
 
 \item{addon_dc}{ggplot objects to add to the the design choice panel.}
+
+\item{file}{file name to save the plot to. Uses ggsave and defaults to NULL,
+meaning no save}
+
+\item{...}{Additional parameter that are forwarded to ggsave}
 }
 \value{
 Nothing. Instead the assembled grob is directly drawn.

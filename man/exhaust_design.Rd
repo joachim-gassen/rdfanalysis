@@ -7,22 +7,53 @@
 exhaust_design(
   d,
   start_input,
+  cl = NULL,
+  db_conn_func = NULL,
+  db_table = "exhausted_designs",
+  libs = NULL,
+  export = ls(globalenv()),
+  choice_df = NULL,
   weight = FALSE,
   est_by_cchoice = 10,
   verbose = FALSE
 )
 }
 \arguments{
-\item{d}{A character vector of the research design steps function names.}
+\item{d}{A character vector of the research design steps function names}
 
 \item{start_input}{The input data for the first step.}
 
-\item{weight}{Whether each step's choices should be weighted by their user assigned weights as
-included in the \code{choice_type}. Protocols with zero weight are excluded from the analysis.
-Defaults to FALSE.}
+\item{cl}{Either the return value of \code{parallel::make_cluster()} or
+the number of cores that you want the function to start. If
+\code{NULL} (the default) no parallel processing is used and choices are
+evaluated sequentially.}
 
-\item{est_by_cchoice}{Each continous choice will be evaluated by \code{est_by_choice} equally
-spaced steps, staring at \code{valid_min} and ending at \code{valid_max}.}
+\item{db_conn_func}{A function that will return a \link[DBI]{DBIConnection-class}
+object. if not \code{NULL} the data is written to this
+connection and choice combinations are only estimated when they are not
+already present in the data. If \code{NULL} (the default) the evaluated
+choice combinations are returned as a data frame.}
+
+\item{db_table}{A character string providing the table name to use or
+create under the database connection provided with \code{conn}. Ignored
+if \code{conn} is \code{NULL} or has exactly one table.}
+
+\item{libs}{The libraries that the design steps rely on.}
+
+\item{export}{The members of the environment that you want to export to the
+parallel cores. Defaults to all members of the global environment.}
+
+\item{choice_df}{A dataframe containing the design choices that should be
+explored. If \code{NULL} (the default), it will be created using the
+parameters below.}
+
+\item{weight}{Whether each step's choices should be weighted by their user
+assigned weights as included in the \code{choice_type}. Protocols with zero
+weight are excluded from the analysis. Defaults to \code{FALSE}.}
+
+\item{est_by_cchoice}{Each continuous choice will be evaluated by
+\code{est_by_choice} equally spaced steps, staring at \code{valid_min} and
+ending at \code{valid_max}.}
 
 \item{verbose}{Set to \code{TRUE} for some additional diagnostic output.
 Useful for large designs that take a while to process.}
@@ -31,9 +62,12 @@ Useful for large designs that take a while to process.}
 A data frame containing results for all feasible choice permutations.
 }
 \description{
-Parse through a research design, iterating over all possible choices, thereby exhausting all
-documented researcher degrees of freedom. Returns a data frame containing the results for all
-choice combinations.
+Parse through a research design, iterating over all possible choices, thereby
+exhausting all documented researcher degrees of freedom. Provides the option
+for parallel processing. Returns a data frame containing the
+results for all choice combinations. Alternatively, you can provide a
+database handle. In this case, only choice combinations that are not
+present in the database are estimated
 }
 \details{
 See the vignette of the package for further details.
