@@ -181,10 +181,13 @@ server <- function(input, output) {
       scp[["label"]] <- NULL
     } else scp <- spec_curve_parms
     if(nrow(plot_df()) > 0) {
+      my_pt_size = min(max(50/nrow(plot_df()), 0.1), 3)
       do.call(
         plot_rdf_spec_curve,
         c(list(plot_df()), scp,
-          pt_size = min(max(50/nrow(plot_df()), 0.1), 3))
+          pt_size = my_pt_size,
+          pt_size_highlight = max(2, min(my_pt_size * 2, 4))
+        )
       )
     }
   })
